@@ -1,0 +1,66 @@
+rules_version = '2';
+
+// Deploy with: firebase deploy --only firestore:rules
+// (or paste into Firebase Console > Firestore Database > Rules)
+//
+// Design notes:
+// - All server-side reads (the public site's SSR pages, the /api/chat/send
+//   route, the admin session check) go through firebase-admin, which
+//   bypasses these rules entirely. These rules only govern requests made
+//   directly from the browser: the Backoffice app (signed-in admin) and the
+//   public chat widget (signed-in anonymously).
+// - Admin write access is granted via a custom claim `admin: true` on the
+//   Firebase Auth user. Set it once per admin account with the Admin SDK:
+//     await adminAuth.setCustomUserClaims(uid, { admin: true });
+//   (there is no UI for this yet — run it once from a local script after
+//   creating the user in the Firebase Console).
+
+function isAdmin() {
+  return request.auth != null && request.auth.token.admin == true;
+}
+
+function isSignedIn() {
+  return request.auth != null;
+}
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Content collections: public read (defense-in-depth if ever read
+    // directly from the client), admin-only write.
+    match /{collection}/{docId} {
+      allow read: if collection in [
+        'banners', 'videoPopup', 'services', 'portfolio',
+        'portfolioCategories', 'news', 'videoLibrary', 'eventGallery',
+        'team', 'awards', 'clients', 'faq'
+      ];
+      allow write: if isAdmin() && collection in [
+        'banners', 'videoPopup', 'services', 'portfolio',
+        'portfolioCategories', 'news', 'videoLibrary', 'eventGallery',
+        'team', 'awards', 'clients', 'faq'
+      ];
+    }
+
+    // Chat: a visitor (anonymous auth) may create/read their own
+    // conversation and post their own messages; only admins may edit the
+    // conversation doc itself (e.g. the "bot enabled" toggle) or post as
+    // "agent".
+    match /chatConversations/{conversationId} {
+      allow read: if isSignedIn() &&
+        (resource.data.visitorUid == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.visitorUid == request.auth.uid;
+      allow update: if isAdmin();
+      allow list: if isAdmin();
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn() &&
+          (get(/databases/$(database)/documents/chatConversations/$(conversationId)).data.visitorUid == request.auth.uid
+            || isAdmin());
+        allow create: if isAdmin() ||
+          (isSignedIn() &&
+            request.resource.data.from == 'user' &&
+            get(/databases/$(database)/documents/chatConversations/$(conversationId)).data.visitorUid == request.auth.uid);
+      }
+    }
+  }
+}

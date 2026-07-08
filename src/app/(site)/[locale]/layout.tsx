@@ -1,0 +1,60 @@
+import type { Metadata } from "next";
+import { Poppins, Noto_Sans_Thai } from "next/font/google";
+import { notFound } from "next/navigation";
+import "../../globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import FloatingChatButton from "@/components/FloatingChatButton";
+import { locales, isLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/dictionaries";
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+});
+
+const notoSansThai = Noto_Sans_Thai({
+  variable: "--font-noto-thai",
+  subsets: ["thai", "latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const dict = getDictionary(locale);
+  return { title: dict.meta.title, description: dict.meta.description };
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}>) {
+  const { locale: rawLocale } = await params;
+  if (!isLocale(rawLocale)) notFound();
+  const locale: Locale = rawLocale;
+  const dict = getDictionary(locale);
+
+  return (
+    <html lang={dict.meta.htmlLang} className={`${poppins.variable} ${notoSansThai.variable}`}>
+      <body>
+        <Header locale={locale} dict={dict} />
+        <main>{children}</main>
+        <Footer dict={dict} />
+        <FloatingChatButton locale={locale} dict={dict} />
+      </body>
+    </html>
+  );
+}

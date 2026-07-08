@@ -1,0 +1,89 @@
+.title {
+  margin: 0 0 8px;
+  font: 700 20px var(--font-admin);
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font: 500 13px var(--font-admin);
+}
+
+.thread {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 640px;
+  max-height: 55vh;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 80%;
+}
+
+.rowAgent {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.bubble {
+  padding: 9px 13px;
+  border-radius: 12px;
+  font: 400 13.5px/1.5 var(--font-admin);
+}
+
+.bubbleUser {
+  background: var(--surface-alt);
+  border: 1px solid var(--border-soft);
+}
+
+.bubbleAgent {
+  background: var(--gradient-cta);
+  color: #fff;
+}
+
+.bubbleBot {
+  background: #eef4fb;
+  border: 1px solid var(--border-soft);
+}
+
+.meta {
+  font: 500 10.5px var(--font-admin);
+  color: var(--text-muted);
+}
+
+.replyRow {
+  display: flex;
+  gap: 10px;
+  max-width: 640px;
+}
+
+.input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: 400 13.5px var(--font-admin);
+  outline: none;
+}
+
+.sendButton {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font: 600 13px var(--font-admin);
+  color: #fff;
+  background: var(--gradient-cta);
+  cursor: pointer;
+}

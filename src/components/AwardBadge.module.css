@@ -1,0 +1,16 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.name {
+  font: 700 12.5px var(--font-heading);
+  color: #4a5568;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}

@@ -1,0 +1,15 @@
+.wrap {
+  padding: 64px var(--shell-pad) 48px;
+}
+
+.breadcrumb {
+  font: 500 12.5px var(--font-heading);
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.title {
+  margin: 0;
+  font: 700 36px var(--font-heading);
+  color: var(--navy);
+}

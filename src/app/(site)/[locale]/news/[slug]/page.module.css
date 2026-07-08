@@ -1,0 +1,110 @@
+.date {
+  display: inline-block;
+  margin-top: 12px;
+  font: 500 13px var(--font-heading);
+  color: var(--text-muted);
+}
+
+.heroSection {
+  padding: 0 var(--shell-pad) 40px;
+}
+
+.heroImage {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.body {
+  padding: 0 var(--shell-pad) 56px;
+  max-width: 760px;
+  font: 400 15px/1.9 var(--font-body);
+  color: var(--text-body);
+}
+
+.body p {
+  margin: 0 0 18px;
+}
+
+.body h2 {
+  margin: 28px 0 12px;
+  font: 700 20px var(--font-heading);
+  color: var(--navy);
+}
+
+.body ul,
+.body ol {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+
+.body a {
+  color: var(--grad-blue);
+  text-decoration: underline;
+}
+
+.body img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 8px 0 18px;
+}
+
+.related {
+  padding: 40px var(--shell-pad) 64px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.relatedTitle {
+  margin: 0 0 24px;
+  font: 700 22px var(--font-heading);
+  color: var(--navy);
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 780px) {
+  .relatedGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.relatedCard {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  background-color: var(--surface);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.relatedCard:hover {
+  box-shadow: 0 10px 24px rgba(27, 42, 74, 0.12);
+  transform: translateY(-2px);
+}
+
+.relatedImage {
+  position: relative;
+  aspect-ratio: 16 / 10;
+}
+
+.relatedBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.relatedDate {
+  font: 500 11.5px var(--font-heading);
+  color: var(--text-muted);
+}
+
+.relatedCardTitle {
+  font: 600 15px/1.4 var(--font-heading);
+  color: var(--navy);
+}

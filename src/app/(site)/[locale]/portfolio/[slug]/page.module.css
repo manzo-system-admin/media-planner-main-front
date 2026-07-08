@@ -1,0 +1,147 @@
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.categoryBadge {
+  font: 600 11px var(--font-heading);
+  color: #fff;
+  background: var(--gradient-cta);
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+.client {
+  font: 500 13px var(--font-heading);
+  color: var(--text-muted);
+}
+
+.heroSection {
+  padding: 0 var(--shell-pad) 40px;
+}
+
+.heroImage {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.statsSection {
+  padding: 0 var(--shell-pad) 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .statsSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  background-color: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+}
+
+.statValue {
+  font: 700 26px var(--font-heading);
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font: 500 12.5px var(--font-heading);
+  color: var(--text-muted);
+}
+
+.story {
+  padding: 0 var(--shell-pad) 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.storyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 760px;
+}
+
+.storyLabel {
+  font: 600 12px var(--font-heading);
+  color: var(--grad-blue);
+  letter-spacing: 0.05em;
+}
+
+.storyText {
+  margin: 0;
+  font: 400 15px/1.8 var(--font-body);
+  color: var(--text-body);
+}
+
+.related {
+  padding: 40px var(--shell-pad) 64px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.relatedTitle {
+  margin: 0 0 24px;
+  font: 700 22px var(--font-heading);
+  color: var(--navy);
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 780px) {
+  .relatedGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.relatedCard {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  background-color: var(--surface);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.relatedCard:hover {
+  box-shadow: 0 10px 24px rgba(27, 42, 74, 0.12);
+  transform: translateY(-2px);
+}
+
+.relatedImage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+
+.relatedBody {
+  padding: 16px;
+}
+
+.relatedCategory {
+  font: 500 11px var(--font-heading);
+  color: var(--grad-blue);
+  margin-bottom: 6px;
+}
+
+.relatedCardTitle {
+  font: 600 14px var(--font-heading);
+  color: var(--navy);
+}

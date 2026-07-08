@@ -1,0 +1,60 @@
+.wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.toolButton {
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  font: 600 12.5px var(--font-admin);
+  color: var(--text-body);
+  cursor: pointer;
+}
+
+.toolButton:hover {
+  background: var(--border-soft);
+}
+
+.toolButtonActive {
+  background: var(--navy);
+  color: #fff;
+}
+
+.content {
+  padding: 12px 14px;
+  min-height: 180px;
+  font: 400 14px/1.7 var(--font-admin);
+}
+
+.content :global(p) {
+  margin: 0 0 10px;
+}
+
+.content :global(ul),
+.content :global(ol) {
+  margin: 0 0 10px;
+  padding-left: 22px;
+}
+
+.content :global(a) {
+  color: var(--grad-blue);
+  text-decoration: underline;
+}
+
+.content :global(img) {
+  max-width: 100%;
+  border-radius: 6px;
+}

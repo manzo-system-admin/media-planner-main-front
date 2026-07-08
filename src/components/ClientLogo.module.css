@@ -1,0 +1,12 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.name {
+  font: 700 13.5px var(--font-heading);
+  color: #4a5568;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}

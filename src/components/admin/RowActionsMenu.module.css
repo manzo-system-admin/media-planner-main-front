@@ -1,0 +1,61 @@
+.wrap {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.trigger {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-body);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.trigger:hover {
+  background: var(--surface-alt);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 130px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(27, 42, 74, 0.16);
+  overflow: hidden;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 8px 10px;
+  font: 500 13px var(--font-admin);
+  color: var(--text-body);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.menuItem:hover {
+  background: var(--surface-alt);
+}
+
+.menuItemDanger {
+  color: var(--grad-red);
+}

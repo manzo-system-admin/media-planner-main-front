@@ -1,0 +1,33 @@
+.title {
+  margin: 0 0 6px;
+  font: 700 22px var(--font-admin);
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  font: 400 14px var(--font-admin);
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-soft);
+}
+
+.cardTitle {
+  font: 600 14px var(--font-admin);
+  margin-bottom: 6px;
+}
+
+.cardDesc {
+  font: 400 12.5px/1.6 var(--font-admin);
+  color: var(--text-muted);
+}

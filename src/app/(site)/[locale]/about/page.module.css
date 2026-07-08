@@ -1,0 +1,162 @@
+.visionMission {
+  padding: 64px var(--shell-pad);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 720px) {
+  .visionMission {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 24px rgba(27, 42, 74, 0.12);
+  transform: translateY(-2px);
+}
+
+.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardTitle {
+  font: 700 18px var(--font-heading);
+  color: var(--navy);
+}
+
+.cardDesc {
+  font: 400 14px/1.8 var(--font-body);
+  color: var(--text-body);
+}
+
+.history {
+  padding: 64px var(--shell-pad);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .history {
+    grid-template-columns: 1fr;
+  }
+}
+
+.historyImage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.historyText {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.historyTitle {
+  margin: 0;
+  font: 700 26px var(--font-heading);
+  color: var(--navy);
+}
+
+.historyBody {
+  margin: 0;
+  font: 400 14px/1.9 var(--font-body);
+  color: var(--text-body);
+}
+
+.team {
+  padding: 64px var(--shell-pad);
+}
+
+.teamTitle {
+  margin: 0 0 32px;
+  font: 700 26px var(--font-heading);
+  color: var(--navy);
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 720px) {
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.teamMember {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.avatar {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.teamName {
+  font: 600 14px var(--font-heading);
+  color: var(--navy);
+}
+
+.teamRole {
+  font: 400 12.5px var(--font-body);
+  color: var(--text-muted);
+}
+
+.awards {
+  padding: 56px var(--shell-pad);
+}
+
+.awardsTitle {
+  margin: 0 0 28px;
+  font: 700 22px var(--font-heading);
+  color: var(--navy);
+}
+
+.awardsRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.awardBadge {
+  flex: 1;
+  min-width: 150px;
+  height: 56px;
+  border-radius: 8px;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+}

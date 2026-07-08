@@ -1,0 +1,56 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: 7px 14px;
+  font: 600 12.5px var(--font-admin);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tabActive {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+.input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: 400 13.5px var(--font-admin);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--grad-blue);
+}
+
+.hint {
+  font: 400 11.5px var(--font-admin);
+  color: var(--text-muted);
+}
+
+.error {
+  font: 500 12.5px var(--font-admin);
+  color: var(--grad-red);
+}
+
+.preview {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 16 / 9;
+  max-width: 320px;
+}

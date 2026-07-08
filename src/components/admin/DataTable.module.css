@@ -1,0 +1,103 @@
+.wrap {
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  flex-wrap: wrap;
+}
+
+.search {
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 12px;
+  font: 400 13px var(--font-admin);
+  outline: none;
+}
+
+.search:focus {
+  border-color: var(--grad-blue);
+}
+
+.newButton {
+  border: none;
+  border-radius: 7px;
+  padding: 9px 16px;
+  font: 600 13px var(--font-admin);
+  color: #fff;
+  background: var(--gradient-cta);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font: 600 11.5px var(--font-admin);
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.table td {
+  padding: 12px 16px;
+  font: 400 13.5px var(--font-admin);
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.actionsHeader,
+.actionsCell {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font: 400 13.5px var(--font-admin);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.pageButton {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font: 600 12.5px var(--font-admin);
+  cursor: pointer;
+}
+
+.pageButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
