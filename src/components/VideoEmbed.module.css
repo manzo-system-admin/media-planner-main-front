@@ -17,3 +17,20 @@
   height: 100%;
   object-fit: cover;
 }
+
+.fallbackLink {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 1;
+  font: 600 11.5px var(--font-heading, sans-serif);
+  color: #fff;
+  background: rgba(24, 119, 242, 0.9);
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.fallbackLink:hover {
+  background: rgb(24, 119, 242);
+}

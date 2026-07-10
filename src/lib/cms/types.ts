@@ -9,7 +9,7 @@ export function pick(field: Localized, locale: Locale): string {
 export type VideoSource =
   | { kind: "upload"; url: string }
   | { kind: "youtube"; videoId: string }
-  | { kind: "facebook"; url: string }
+  | { kind: "facebook"; url: string; isReel?: boolean }
   | { kind: "tiktok"; videoId: string; url: string };
 
 export type NewsDoc = {

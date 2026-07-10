@@ -12,7 +12,16 @@ import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<PortfolioCategoryDoc, "id">;
 
-const EMPTY: FormState = { key: "MEDIA_PLANNING", label: { th: "", en: "" }, order: 0 };
+const EMPTY: FormState = { key: "", label: { th: "", en: "" }, order: 0 };
+
+function slugifyKey(text: string): string {
+  const slug = text
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return slug || "CATEGORY";
+}
 
 export default function PortfolioCategoryFormPage() {
   const params = useParams<{ id: string }>();
@@ -46,11 +55,13 @@ export default function PortfolioCategoryFormPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const payload = { ...form, key: form.key.trim() || slugifyKey(form.label.th || form.label.en) };
       if (isNew) {
-        await addDoc(collection(getFirebaseDb(), "portfolioCategories"), form);
+        await addDoc(collection(getFirebaseDb(), "portfolioCategories"), payload);
       } else {
-        await updateDoc(doc(getFirebaseDb(), "portfolioCategories", params.id), { ...form });
+        await updateDoc(doc(getFirebaseDb(), "portfolioCategories", params.id), payload);
       }
+      setForm(payload);
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
       setAlert({ message: err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", tone: "error" });
@@ -75,13 +86,12 @@ export default function PortfolioCategoryFormPage() {
       <div className={formStyles.form}>
         <div className={formStyles.row}>
           <div className={formStyles.field}>
-            <label className={formStyles.label}>
-              Key (ต้องตรงกับ MEDIA_PLANNING, DIGITAL, CREATIVE, PR_EVENT)
-            </label>
+            <label className={formStyles.label}>Key (รหัสอ้างอิงภายใน ไม่ต้องกรอกก็ได้ ระบบจะสร้างให้จากชื่อ)</label>
             <input
               className={formStyles.input}
               value={form.key}
-              onChange={(e) => setForm({ ...form, key: e.target.value as FormState["key"] })}
+              placeholder="เว้นว่างไว้เพื่อให้ระบบสร้างให้อัตโนมัติ"
+              onChange={(e) => setForm({ ...form, key: e.target.value })}
             />
           </div>
           <div className={formStyles.field}>

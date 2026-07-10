@@ -29,7 +29,8 @@ export function parseVideoUrl(rawUrl: string): VideoSource | null {
   }
 
   if (host === "facebook.com" || host === "fb.watch") {
-    return { kind: "facebook", url: url.toString() };
+    const isReel = /\/reel\//.test(url.pathname);
+    return { kind: "facebook", url: url.toString(), isReel };
   }
 
   if (host === "tiktok.com") {

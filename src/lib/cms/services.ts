@@ -4,10 +4,20 @@ import { pick, type Localized } from "./types";
 import type { Locale } from "@/lib/i18n/config";
 import type { Service, GradientKey } from "@/lib/dictionaries/types";
 
+// Services created before the `icon` field existed have no stored icon;
+// map their known slugs to a sensible icon so they don't all fall back to the default.
+const LEGACY_SLUG_ICONS: Record<string, string> = {
+  "media-planning-buying": "target",
+  "digital-social-media": "network",
+  "creative-content-production": "play",
+  "pr-event": "megaphone",
+};
+
 export type ServiceDoc = {
   id: string;
   slug: string;
   gradient: GradientKey;
+  icon?: string;
   image: string;
   order?: number;
   title: Localized;
@@ -25,6 +35,7 @@ function toService(id: string, data: FirebaseFirestore.DocumentData, locale: Loc
     summary: pick(doc.summary, locale),
     description: pick(doc.description, locale),
     gradient: doc.gradient,
+    icon: doc.icon ?? LEGACY_SLUG_ICONS[doc.slug] ?? "star",
     image: doc.image,
     highlights: doc.highlights?.[locale] ?? [],
   };

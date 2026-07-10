@@ -142,6 +142,7 @@ const th: Dictionary = {
     emailLabel: "อีเมล",
     emailPlaceholder: "you@example.com",
     startButton: "เริ่มแชท",
+    editContactLabel: "เปลี่ยนชื่อ/อีเมล",
   },
   data: {
     socialLinks: [
@@ -181,6 +182,7 @@ const th: Dictionary = {
         description:
           "วางแผนสื่อและซื้อสื่ออย่างมีกลยุทธ์ ครอบคลุมทีวี ดิจิทัล และสื่อนอกบ้าน พร้อมรายงานผลที่วัดผลได้จริง",
         gradient: "purpleBlue",
+        icon: "target",
         image: "https://picsum.photos/seed/service-media-planning/640/480",
         highlights: [
           "วิเคราะห์กลุ่มเป้าหมายและพฤติกรรมผู้บริโภคเชิงลึก",
@@ -196,6 +198,7 @@ const th: Dictionary = {
         description:
           "บริหารช่องทางโซเชียลและแคมเปญดิจิทัลแบบครบวงจร ตั้งแต่กลยุทธ์ไปจนถึงการวัดผล",
         gradient: "blueCyan",
+        icon: "network",
         image: "https://picsum.photos/seed/service-digital-social/640/480",
         highlights: [
           "วางกลยุทธ์คอนเทนต์ให้เหมาะกับแต่ละแพลตฟอร์ม",
@@ -211,6 +214,7 @@ const th: Dictionary = {
         description:
           "ผลิตงานครีเอทีฟ วิดีโอ และคอนเทนต์คุณภาพสูง ที่สื่อสารตรงใจกลุ่มเป้าหมาย",
         gradient: "greenYellow",
+        icon: "play",
         image: "https://picsum.photos/seed/service-creative-content/640/480",
         highlights: [
           "ผลิตวิดีโอโฆษณาและคอนเทนต์คุณภาพสูง",
@@ -226,6 +230,7 @@ const th: Dictionary = {
         description:
           "วางแผนประชาสัมพันธ์และจัดกิจกรรมที่สร้างการรับรู้แบรนด์อย่างมีประสิทธิภาพ",
         gradient: "orangeRed",
+        icon: "megaphone",
         image: "https://picsum.photos/seed/service-pr-event/640/480",
         highlights: [
           "วางแผนประชาสัมพันธ์และบริหารความสัมพันธ์สื่อ",

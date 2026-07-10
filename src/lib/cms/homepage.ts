@@ -18,6 +18,7 @@ export type VideoPopupDoc = {
   videoSource: VideoSource | null;
   thumbnail: string;
   caption: Localized;
+  orientation?: "landscape" | "portrait";
 };
 
 const VIDEO_POPUP_DOC_ID = "config";
@@ -35,9 +36,12 @@ export async function getHeroSlides(locale: Locale): Promise<HeroSlide[]> {
     });
 }
 
-export async function getVideoPopup(
-  locale: Locale
-): Promise<{ videoSource: VideoSource | null; thumbnail: string; caption: string } | null> {
+export async function getVideoPopup(locale: Locale): Promise<{
+  videoSource: VideoSource | null;
+  thumbnail: string;
+  caption: string;
+  orientation?: "landscape" | "portrait";
+} | null> {
   const snapshot = await getAdminDb().collection("videoPopup").doc(VIDEO_POPUP_DOC_ID).get();
   if (!snapshot.exists) return null;
   const data = snapshot.data() as VideoPopupDoc;
@@ -45,6 +49,7 @@ export async function getVideoPopup(
     videoSource: data.videoSource ?? null,
     thumbnail: data.thumbnail,
     caption: pick(data.caption, locale),
+    orientation: data.orientation,
   };
 }
 

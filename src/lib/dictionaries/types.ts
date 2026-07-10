@@ -9,6 +9,7 @@ export type Service = {
   summary: string;
   description: string;
   gradient: GradientKey;
+  icon: string;
   image: string;
   highlights: string[];
 };
@@ -28,7 +29,7 @@ export type HeroSlide =
   | { type: "image"; src: string; alt: string }
   | { type: "video"; src: string; poster: string; alt: string };
 
-export type PortfolioCategory = "MEDIA_PLANNING" | "DIGITAL" | "CREATIVE" | "PR_EVENT";
+export type PortfolioCategory = string;
 
 export type PortfolioFilter = { key: PortfolioCategory | "ALL"; label: string };
 
@@ -163,6 +164,7 @@ export type Dictionary = {
     emailLabel: string;
     emailPlaceholder: string;
     startButton: string;
+    editContactLabel: string;
   };
   data: {
     socialLinks: SocialLink[];

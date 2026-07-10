@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import PortfolioExplorer from "./PortfolioExplorer";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
-import { getPortfolioCategoryLabels, getPortfolioList } from "@/lib/cms/portfolio";
+import { getPortfolioCategories, getPortfolioCategoryLabels, getPortfolioList } from "@/lib/cms/portfolio";
 import { getClients } from "@/lib/cms/org";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +35,11 @@ export default async function PortfolioPage({
   const items = await getPortfolioList(locale);
   const fetchedLabels = await getPortfolioCategoryLabels(locale);
   const categoryLabels = { ...portfolio.categoryLabels, ...fetchedLabels };
+  const fetchedCategories = await getPortfolioCategories(locale);
+  const filters =
+    fetchedCategories.length > 0
+      ? [{ key: "ALL", label: dict.common.all }, ...fetchedCategories]
+      : portfolio.filters;
   const clients = await getClients();
 
   return (
@@ -43,6 +48,7 @@ export default async function PortfolioPage({
         locale={locale}
         homeLabel={dict.common.home}
         portfolio={portfolio}
+        filters={filters}
         categoryLabels={categoryLabels}
         items={items}
       />

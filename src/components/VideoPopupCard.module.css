@@ -1,6 +1,7 @@
 .videoThumb {
   position: relative;
-  aspect-ratio: 16 / 9;
+  width: 100%;
+  aspect-ratio: var(--thumb-ratio, 16 / 9);
   background: var(--surface-alt);
 }
 
@@ -47,8 +48,11 @@
 
 .modal {
   position: relative;
-  width: min(880px, 100%);
-  aspect-ratio: 16 / 9;
+  --max-w: min(880px, 90vw);
+  --max-h: 85vh;
+  --ratio: 1.7778;
+  width: min(var(--max-w), calc(var(--max-h) * var(--ratio)));
+  height: min(var(--max-h), calc(var(--max-w) / var(--ratio)));
   background: #000;
   border-radius: 12px;
   overflow: hidden;

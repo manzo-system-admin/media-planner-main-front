@@ -15,11 +15,12 @@ import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAl
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import ServiceIcon, { SERVICE_ICON_KEYS } from "@/components/ServiceIcon";
 import type { ServiceDoc } from "@/lib/cms/services";
 import type { GradientKey } from "@/lib/dictionaries/types";
 import formStyles from "../../news/[id]/page.module.css";
 
-type FormState = Omit<ServiceDoc, "id">;
+type FormState = Omit<ServiceDoc, "id"> & { icon: string };
 
 const GRADIENT_OPTIONS: { value: GradientKey; label: string }[] = [
   { value: "purpleBlue", label: "ม่วง-น้ำเงิน" },
@@ -31,6 +32,7 @@ const GRADIENT_OPTIONS: { value: GradientKey; label: string }[] = [
 const EMPTY: FormState = {
   slug: "",
   gradient: "purpleBlue",
+  icon: "target",
   image: "",
   order: 0,
   title: { th: "", en: "" },
@@ -186,6 +188,31 @@ export default function ServiceFormPage() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ไอคอน</label>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {SERVICE_ICON_KEYS.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setForm({ ...form, icon: key })}
+                style={{
+                  padding: 0,
+                  border: form.icon === key ? "2px solid var(--grad-blue)" : "2px solid transparent",
+                  borderRadius: 12,
+                  background: "none",
+                  cursor: "pointer",
+                  lineHeight: 0,
+                }}
+              >
+                <span style={{ display: "flex", padding: 6, borderRadius: 8 }}>
+                  <ServiceIcon icon={key} gradient={form.gradient} size={20} />
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className={formStyles.field}>

@@ -75,3 +75,15 @@ export async function getPortfolioCategoryLabels(
     });
   return labels;
 }
+
+export async function getPortfolioCategories(
+  locale: Locale
+): Promise<{ key: string; label: string }[]> {
+  const snapshot = await getAdminDb().collection("portfolioCategories").orderBy("order", "asc").get();
+  return snapshot.docs
+    .filter((doc) => !doc.data().deleted)
+    .map((doc) => {
+      const data = doc.data() as Omit<PortfolioCategoryDoc, "id">;
+      return { key: data.key, label: pick(data.label, locale) };
+    });
+}

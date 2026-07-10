@@ -97,11 +97,11 @@ h3 {
   background-color: var(--surface-alt);
   background-repeat: no-repeat;
   background-image:
-    radial-gradient(460px circle at 100% 0%, rgba(142, 59, 150, 0.17), transparent 62%),
-    radial-gradient(420px circle at 0% 16%, rgba(46, 111, 186, 0.14), transparent 62%),
-    radial-gradient(460px circle at 100% 38%, rgba(35, 166, 213, 0.13), transparent 62%),
-    radial-gradient(420px circle at 0% 60%, rgba(76, 175, 80, 0.13), transparent 62%),
-    radial-gradient(460px circle at 100% 82%, rgba(244, 196, 48, 0.15), transparent 62%),
-    radial-gradient(420px circle at 0% 100%, rgba(242, 137, 46, 0.15), transparent 62%),
-    radial-gradient(360px circle at 100% 100%, rgba(230, 57, 70, 0.13), transparent 62%);
+    radial-gradient(480px circle at 100% 0%, rgba(142, 59, 150, 0.26), transparent 65%),
+    radial-gradient(440px circle at 0% 16%, rgba(46, 111, 186, 0.22), transparent 65%),
+    radial-gradient(480px circle at 100% 38%, rgba(35, 166, 213, 0.2), transparent 65%),
+    radial-gradient(440px circle at 0% 60%, rgba(76, 175, 80, 0.2), transparent 65%),
+    radial-gradient(480px circle at 100% 82%, rgba(244, 196, 48, 0.23), transparent 65%),
+    radial-gradient(440px circle at 0% 100%, rgba(242, 137, 46, 0.23), transparent 65%),
+    radial-gradient(380px circle at 100% 100%, rgba(230, 57, 70, 0.2), transparent 65%);
 }

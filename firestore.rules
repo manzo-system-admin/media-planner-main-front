@@ -32,12 +32,12 @@ service cloud.firestore {
       allow read: if collection in [
         'banners', 'videoPopup', 'services', 'portfolio',
         'portfolioCategories', 'news', 'videoLibrary', 'eventGallery',
-        'team', 'awards', 'clients', 'faq'
+        'team', 'awards', 'clients', 'faq', 'siteSettings', 'aboutContent'
       ];
       allow write: if isAdmin() && collection in [
         'banners', 'videoPopup', 'services', 'portfolio',
         'portfolioCategories', 'news', 'videoLibrary', 'eventGallery',
-        'team', 'awards', 'clients', 'faq'
+        'team', 'awards', 'clients', 'faq', 'siteSettings', 'aboutContent'
       ];
     }
 

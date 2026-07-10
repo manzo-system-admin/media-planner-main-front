@@ -3,12 +3,6 @@ import type { NextRequest } from "next/server";
 import { defaultLocale, locales } from "@/lib/i18n/config";
 import { SESSION_COOKIE } from "@/lib/auth/session";
 
-function getPreferredLocale(request: NextRequest): string {
-  const acceptLanguage = request.headers.get("accept-language") ?? "";
-  const preferred = acceptLanguage.split(",")[0]?.split("-")[0]?.toLowerCase();
-  return locales.find((locale) => locale === preferred) ?? defaultLocale;
-}
-
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -30,8 +24,7 @@ export function proxy(request: NextRequest) {
   );
   if (pathnameHasLocale) return;
 
-  const locale = getPreferredLocale(request);
-  request.nextUrl.pathname = `/${locale}${pathname}`;
+  request.nextUrl.pathname = `/${defaultLocale}${pathname}`;
   return NextResponse.redirect(request.nextUrl);
 }
 

@@ -5,10 +5,12 @@ export default function VideoEmbed({
   source,
   autoPlay = false,
   title = "video",
+  onAspectRatio,
 }: {
   source: VideoSource;
   autoPlay?: boolean;
   title?: string;
+  onAspectRatio?: (ratio: number) => void;
 }) {
   if (source.kind === "upload") {
     return (
@@ -20,6 +22,12 @@ export default function VideoEmbed({
           autoPlay={autoPlay}
           muted={autoPlay}
           playsInline
+          onLoadedMetadata={(e) => {
+            const video = e.currentTarget;
+            if (video.videoWidth && video.videoHeight) {
+              onAspectRatio?.(video.videoWidth / video.videoHeight);
+            }
+          }}
         />
       </div>
     );
@@ -46,15 +54,28 @@ export default function VideoEmbed({
 
   if (source.kind === "facebook") {
     const href = encodeURIComponent(source.url);
+    // Reels aren't reliably handled by the classic Video Plugin (built for
+    // /videos/ and watch/?v= links); the Post Plugin embeds them correctly.
+    const embedSrc = source.isReel
+      ? `https://www.facebook.com/plugins/post.php?href=${href}&show_text=false`
+      : `https://www.facebook.com/plugins/video.php?href=${href}&show_text=0&autoplay=${autoPlay ? "1" : "0"}`;
     return (
       <div className={styles.frame}>
         <iframe
           className={styles.iframe}
-          src={`https://www.facebook.com/plugins/video.php?href=${href}&show_text=0&autoplay=${autoPlay ? "1" : "0"}`}
+          src={embedSrc}
           title={title}
           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
           allowFullScreen
         />
+        <a
+          className={styles.fallbackLink}
+          href={source.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          เปิดดูใน Facebook ↗
+        </a>
       </div>
     );
   }

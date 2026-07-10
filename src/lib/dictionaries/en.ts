@@ -142,6 +142,7 @@ const en: Dictionary = {
     emailLabel: "Email",
     emailPlaceholder: "you@example.com",
     startButton: "Start chat",
+    editContactLabel: "Change name/email",
   },
   data: {
     socialLinks: [
@@ -181,6 +182,7 @@ const en: Dictionary = {
         description:
           "Strategic media planning and buying across TV, digital, and out-of-home, backed by reporting you can actually measure.",
         gradient: "purpleBlue",
+        icon: "target",
         image: "https://picsum.photos/seed/service-media-planning/640/480",
         highlights: [
           "In-depth audience and consumer behavior analysis",
@@ -196,6 +198,7 @@ const en: Dictionary = {
         description:
           "End-to-end management of social channels and digital campaigns, from strategy through measurement.",
         gradient: "blueCyan",
+        icon: "network",
         image: "https://picsum.photos/seed/service-digital-social/640/480",
         highlights: [
           "Content strategy tailored to each platform",
@@ -211,6 +214,7 @@ const en: Dictionary = {
         description:
           "High-quality creative work, video, and content production that speaks directly to your audience.",
         gradient: "greenYellow",
+        icon: "play",
         image: "https://picsum.photos/seed/service-creative-content/640/480",
         highlights: [
           "High-quality video ad and content production",
@@ -226,6 +230,7 @@ const en: Dictionary = {
         description:
           "Strategic PR planning and event management that builds brand awareness effectively.",
         gradient: "orangeRed",
+        icon: "megaphone",
         image: "https://picsum.photos/seed/service-pr-event/640/480",
         highlights: [
           "PR strategy and media relationship management",

@@ -1,9 +1,16 @@
 import Image from "next/image";
 import styles from "./Footer.module.css";
 import SocialIcon from "./SocialIcon";
-import type { Dictionary } from "@/lib/dictionaries/types";
+import type { Dictionary, SocialLink } from "@/lib/dictionaries/types";
 
-export default function Footer({ dict }: { dict: Dictionary }) {
+export default function Footer({
+  dict,
+  socialLinks,
+}: {
+  dict: Dictionary;
+  socialLinks?: SocialLink[];
+}) {
+  const links = socialLinks?.length ? socialLinks : dict.data.socialLinks;
   return (
     <footer className={styles.footer}>
       <div className={styles.top}>
@@ -15,7 +22,7 @@ export default function Footer({ dict }: { dict: Dictionary }) {
           className={styles.logo}
         />
         <div className={styles.socials}>
-          {dict.data.socialLinks.map((social) => (
+          {links.map((social) => (
             <a
               key={social.name}
               href={social.href}

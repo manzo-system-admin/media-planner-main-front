@@ -48,7 +48,7 @@ export default async function ServicesPage({
         return (
           <section key={service.slug} className={styles.row}>
             <div className={`${styles.textCol} ${imageFirst ? styles.textColReversed : ""}`}>
-              <ServiceIcon slug={service.slug} gradient={service.gradient} className={styles.icon} />
+              <ServiceIcon icon={service.icon} gradient={service.gradient} className={styles.icon} />
               <h2 className={styles.title}>{service.title}</h2>
               <div
                 className={styles.desc}

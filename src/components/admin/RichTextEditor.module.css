@@ -9,7 +9,7 @@
   flex-wrap: wrap;
   gap: 4px;
   padding: 6px;
-  background: var(--surface-alt);
+  background: var(--surface);
   border-bottom: 1px solid var(--border-soft);
 }
 
@@ -37,6 +37,7 @@
   padding: 12px 14px;
   min-height: 180px;
   font: 400 14px/1.7 var(--font-admin);
+  background: var(--surface);
 }
 
 .content :global(p) {

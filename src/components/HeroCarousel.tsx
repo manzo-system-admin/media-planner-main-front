@@ -70,7 +70,7 @@ export default function HeroCarousel({
         <div className={styles.overlay} />
       </div>
 
-      <button
+      {/* <button
         type="button"
         className={`${styles.arrow} ${styles.arrowPrev}`}
         aria-label={labels.prevLabel}
@@ -85,7 +85,7 @@ export default function HeroCarousel({
         onClick={() => goTo(active + 1)}
       >
         ›
-      </button>
+      </button> */}
 
       <div className={styles.dots}>
         {slides.map((slide, index) => (

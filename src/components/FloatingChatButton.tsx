@@ -118,6 +118,13 @@ export default function FloatingChatButton({
     setContactInfo(info);
   };
 
+  const handleEditContact = () => {
+    window.localStorage.removeItem(CONTACT_KEY);
+    setNameDraft(contactInfo?.name ?? "");
+    setEmailDraft(contactInfo?.email ?? "");
+    setContactInfo(null);
+  };
+
   const send = async () => {
     const text = draft.trim();
     const conversationId = conversationIdRef.current;
@@ -155,6 +162,15 @@ export default function FloatingChatButton({
                 {chat.status}
               </span>
             </div>
+            {contactInfo && (
+              <button
+                type="button"
+                className={styles.editContactButton}
+                onClick={handleEditContact}
+              >
+                {chat.editContactLabel}
+              </button>
+            )}
             <button
               type="button"
               className={styles.closeButton}

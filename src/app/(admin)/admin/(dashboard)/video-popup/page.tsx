@@ -18,6 +18,7 @@ const EMPTY: FormState = {
   videoSource: null,
   thumbnail: "",
   caption: { th: "", en: "" },
+  orientation: "landscape",
 };
 
 export default function VideoPopupAdminPage() {
@@ -65,6 +66,46 @@ export default function VideoPopupAdminPage() {
             accept="image/*"
             label="อัปโหลดภาพปก"
           />
+        </div>
+
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>แนววิดีโอ</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, orientation: "landscape" })}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: `1px solid ${form.orientation !== "portrait" ? "var(--grad-blue)" : "var(--border)"}`,
+                background: form.orientation !== "portrait" ? "var(--grad-blue)" : "var(--surface)",
+                color: form.orientation !== "portrait" ? "#fff" : "var(--text-body)",
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              แนวนอน (16:9)
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, orientation: "portrait" })}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: `1px solid ${form.orientation === "portrait" ? "var(--grad-blue)" : "var(--border)"}`,
+                background: form.orientation === "portrait" ? "var(--grad-blue)" : "var(--surface)",
+                color: form.orientation === "portrait" ? "#fff" : "var(--text-body)",
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              แนวตั้ง (9:16)
+            </button>
+          </div>
         </div>
 
         <div className={formStyles.field}>

@@ -1,0 +1,33 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.navButton,
+.pageButton {
+  font: 500 13px var(--font-heading);
+  color: var(--navy);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.navButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pageButtonActive {
+  font-weight: 700;
+  color: #fff;
+  background: var(--gradient-cta);
+  border-color: transparent;
+}

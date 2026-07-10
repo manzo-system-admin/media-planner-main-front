@@ -6,6 +6,9 @@ import SocialIcon from "@/components/SocialIcon";
 import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale } from "@/lib/i18n/config";
+import { getSiteSettings } from "@/lib/cms/siteSettings";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -27,10 +30,15 @@ export default async function ContactPage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
   const { contact } = dict;
-  const { contactInfo, socialLinks } = dict.data;
+  const settings = await getSiteSettings(locale);
+  const contactInfo = settings ?? dict.data.contactInfo;
+  const socialLinks = settings?.socialLinks.length ? settings.socialLinks : dict.data.socialLinks;
 
   const mapsApiKey = process.env.GOOGLE_MAPS_EMBED_API_KEY;
-  const mapQuery = encodeURIComponent(contactInfo.address);
+  const hasCoords = settings?.mapLat != null && settings?.mapLng != null;
+  const mapQuery = hasCoords
+    ? `${settings!.mapLat},${settings!.mapLng}`
+    : encodeURIComponent(contactInfo.address);
   const mapSrc = mapsApiKey
     ? `https://www.google.com/maps/embed/v1/place?key=${mapsApiKey}&q=${mapQuery}`
     : `https://maps.google.com/maps?q=${mapQuery}&z=15&output=embed`;

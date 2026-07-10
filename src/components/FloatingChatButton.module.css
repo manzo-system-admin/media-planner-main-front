@@ -101,6 +101,22 @@
   background: #4caf50;
 }
 
+.editContactButton {
+  flex: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: 500 10.5px var(--font-heading);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.editContactButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .closeButton {
   flex: none;
   width: 30px;

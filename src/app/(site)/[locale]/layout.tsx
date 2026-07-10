@@ -5,8 +5,10 @@ import "../../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingChatButton from "@/components/FloatingChatButton";
+import CookieConsent from "@/components/CookieConsent";
 import { locales, isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/dictionaries";
+import { getSiteSettings } from "@/lib/cms/siteSettings";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -46,14 +48,16 @@ export default async function LocaleLayout({
   if (!isLocale(rawLocale)) notFound();
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
+  const settings = await getSiteSettings(locale);
 
   return (
     <html lang={dict.meta.htmlLang} className={`${poppins.variable} ${notoSansThai.variable}`}>
       <body>
         <Header locale={locale} dict={dict} />
         <main>{children}</main>
-        <Footer dict={dict} />
+        <Footer dict={dict} socialLinks={settings?.socialLinks} />
         <FloatingChatButton locale={locale} dict={dict} />
+        <CookieConsent locale={locale} />
       </body>
     </html>
   );

@@ -75,7 +75,7 @@ export default async function ServiceDetailPage({
           />
         </div>
         <div className={styles.detailBody}>
-          <ServiceIcon slug={service.slug} gradient={service.gradient} className={styles.icon} size={24} />
+          <ServiceIcon icon={service.icon} gradient={service.gradient} className={styles.icon} size={24} />
           <div
             className={styles.description}
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(service.description) }}
@@ -106,7 +106,7 @@ export default async function ServiceDetailPage({
               href={`/${locale}/services/${item.slug}`}
               className={styles.relatedCard}
             >
-              <ServiceIcon slug={item.slug} gradient={item.gradient} className={styles.relatedIcon} size={18} />
+              <ServiceIcon icon={item.icon} gradient={item.gradient} className={styles.relatedIcon} size={18} />
               <span className={styles.relatedCardTitle}>{item.title}</span>
               <span className={styles.relatedCardSummary}>{item.summary}</span>
             </Link>

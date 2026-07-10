@@ -57,6 +57,7 @@ export default async function HomePage({
           caption={videoPopup?.caption || home.videoCaption}
           videoAlt={home.videoAlt}
           videoSource={videoPopup?.videoSource ?? null}
+          orientation={videoPopup?.orientation}
         />
       </section>
 
@@ -74,7 +75,7 @@ export default async function HomePage({
                 className={styles.serviceCard}
               >
                 <ServiceIcon
-                  slug={service.slug}
+                  icon={service.icon}
                   gradient={service.gradient}
                   className={styles.serviceIcon}
                 />

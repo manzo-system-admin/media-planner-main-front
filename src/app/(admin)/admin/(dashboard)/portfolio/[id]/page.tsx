@@ -2,23 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
-import type { PortfolioDoc, PortfolioStatDoc } from "@/lib/cms/portfolio";
-import type { PortfolioCategory } from "@/lib/dictionaries/types";
+import type { PortfolioCategoryDoc, PortfolioDoc, PortfolioStatDoc } from "@/lib/cms/portfolio";
+
 import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<PortfolioDoc, "id">;
 
-const CATEGORY_OPTIONS: PortfolioCategory[] = ["MEDIA_PLANNING", "DIGITAL", "CREATIVE", "PR_EVENT"];
-
 const EMPTY: FormState = {
   slug: "",
-  category: "MEDIA_PLANNING",
+  category: "",
   image: "",
   order: 0,
   client: { th: "", en: "" },
@@ -113,6 +111,25 @@ export default function PortfolioFormPage() {
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [categories, setCategories] = useState<{ key: string; label: string }[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const snapshot = await getDocs(
+        query(collection(getFirebaseDb(), "portfolioCategories"), orderBy("order", "asc"))
+      );
+      const list = snapshot.docs
+        .filter((d) => !d.data().deleted)
+        .map((d) => {
+          const data = d.data() as Omit<PortfolioCategoryDoc, "id">;
+          return { key: data.key, label: data.label?.th || data.key };
+        });
+      setCategories(list);
+      if (isNew && list.length > 0) {
+        setForm((f) => (f.category ? f : { ...f, category: list[0].key }));
+      }
+    })();
+  }, [isNew]);
 
   useEffect(() => {
     if (isNew) {
@@ -185,11 +202,12 @@ export default function PortfolioFormPage() {
           <select
             className={formStyles.input}
             value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value as PortfolioCategory })}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
           >
-            {CATEGORY_OPTIONS.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
+            {categories.length === 0 && <option value={form.category}>{form.category}</option>}
+            {categories.map((cat) => (
+              <option key={cat.key} value={cat.key}>
+                {cat.label}
               </option>
             ))}
           </select>

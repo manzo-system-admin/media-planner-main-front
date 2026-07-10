@@ -9,6 +9,7 @@ import { getDictionary } from "@/lib/dictionaries";
 import { GRADIENTS } from "@/lib/dictionaries/types";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getAwards, getTeamMembers } from "@/lib/cms/org";
+import { getAboutContent } from "@/lib/cms/about";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,11 @@ export default async function AboutPage({
   const { about } = dict;
   const teamMembers = await getTeamMembers(locale);
   const awards = await getAwards(locale);
+  const content = await getAboutContent(locale);
+  const visionBody = content?.visionBody || about.visionBody;
+  const missionBody = content?.missionBody || about.missionBody;
+  const historyBody = content?.historyBody || about.historyBody;
+  const historyImage = content?.historyImage || "https://picsum.photos/seed/about-office/640/480";
 
   return (
     <ContentSheet>
@@ -52,7 +58,7 @@ export default async function AboutPage({
             </svg>
           </span>
           <div className={styles.cardTitle}>{about.visionTitle}</div>
-          <p className={styles.cardDesc}>{about.visionBody}</p>
+          <p className={styles.cardDesc}>{visionBody}</p>
         </div>
         <div className={styles.card}>
           <span className={styles.icon} style={{ background: GRADIENTS.greenYellow }}>
@@ -62,14 +68,14 @@ export default async function AboutPage({
             </svg>
           </span>
           <div className={styles.cardTitle}>{about.missionTitle}</div>
-          <p className={styles.cardDesc}>{about.missionBody}</p>
+          <p className={styles.cardDesc}>{missionBody}</p>
         </div>
       </section>
 
       <section className={styles.history}>
         <div className={styles.historyImage}>
           <Image
-            src="https://picsum.photos/seed/about-office/640/480"
+            src={historyImage}
             alt={about.historyImageAlt}
             fill
             sizes="(max-width: 720px) 100vw, 50vw"
@@ -78,7 +84,7 @@ export default async function AboutPage({
         </div>
         <div className={styles.historyText}>
           <h2 className={styles.historyTitle}>{about.historyTitle}</h2>
-          <p className={styles.historyBody}>{about.historyBody}</p>
+          <p className={styles.historyBody}>{historyBody}</p>
         </div>
       </section>
 

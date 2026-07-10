@@ -52,7 +52,7 @@ export default function PortfolioCategoriesListPage() {
     <div>
       <h1 className={styles.title}>หมวดหมู่ผลงาน</h1>
       <p style={{ marginBottom: 16, color: "var(--text-muted)", font: "400 13px var(--font-admin)" }}>
-        Key ต้องตรงกับค่าที่ใช้ในผลงาน: MEDIA_PLANNING, DIGITAL, CREATIVE, PR_EVENT
+        เพิ่ม/ลบ/แก้ไขหมวดหมู่ได้อิสระ — ผลงานแต่ละชิ้นจะเลือกหมวดหมู่จากรายการนี้
       </p>
       <DataTable
         columns={columns}

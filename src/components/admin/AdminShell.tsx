@@ -16,6 +16,8 @@ const NAV_GROUPS: { label: string; links: { href: string; label: string }[] }[] 
     links: [
       { href: "/admin/banners", label: "แบนเนอร์" },
       { href: "/admin/video-popup", label: "วิดีโอป๊อปอัป" },
+      { href: "/admin/about", label: "หน้าเกี่ยวกับเรา" },
+      { href: "/admin/contact", label: "ข้อมูลติดต่อ" },
     ],
   },
   {
