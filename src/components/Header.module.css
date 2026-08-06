@@ -35,38 +35,20 @@
 .navLink {
   font: 500 14px/1 var(--font-heading);
   white-space: nowrap;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-  color: var(--navy);
-}
-
-.navLink:nth-child(1) {
-  color: var(--grad-purple);
-}
-
-.navLink:nth-child(2) {
+  padding: 6px 12px;
+  border-radius: 999px;
   color: var(--grad-blue);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.navLink:nth-child(3) {
-  color: var(--grad-cyan);
-}
-
-.navLink:nth-child(4) {
-  color: var(--grad-green);
-}
-
-.navLink:nth-child(5) {
-  color: var(--grad-orange);
-}
-
-.navLink:nth-child(6) {
-  color: var(--grad-red);
+.navLink:hover {
+  background: var(--grad-blue);
+  color: #fff;
 }
 
 .navLinkActive {
   font-weight: 600;
-  border-bottom-color: currentColor;
+  background: rgba(46, 111, 186, 0.12);
 }
 
 .menuToggle {
