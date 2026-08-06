@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, Noto_Sans_Thai } from "next/font/google";
+import { Itim } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../../globals.css";
 import Header from "@/components/Header";
@@ -10,16 +10,10 @@ import { locales, isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/dictionaries";
 import { getSiteSettings } from "@/lib/cms/siteSettings";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
-
-const notoSansThai = Noto_Sans_Thai({
-  variable: "--font-noto-thai",
+const itim = Itim({
+  variable: "--font-itim",
   subsets: ["thai", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400",
 });
 
 export function generateStaticParams() {
@@ -51,7 +45,7 @@ export default async function LocaleLayout({
   const settings = await getSiteSettings();
 
   return (
-    <html lang={dict.meta.htmlLang} className={`${poppins.variable} ${notoSansThai.variable}`}>
+    <html lang={dict.meta.htmlLang} className={itim.variable}>
       <body>
         <Header locale={locale} dict={dict} />
         <main>{children}</main>

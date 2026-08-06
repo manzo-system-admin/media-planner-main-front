@@ -45,8 +45,8 @@
   --container-max: 1280px;
   --shell-pad: clamp(20px, 5vw, 56px);
 
-  --font-heading: var(--font-poppins), "Noto Sans Thai", sans-serif;
-  --font-body: var(--font-noto-thai), var(--font-poppins), sans-serif;
+  --font-heading: var(--font-itim), "Noto Sans Thai", sans-serif;
+  --font-body: var(--font-itim), sans-serif;
 }
 
 html {
