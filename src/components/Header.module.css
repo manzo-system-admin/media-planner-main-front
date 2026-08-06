@@ -28,15 +28,20 @@
 
 .nav {
   display: flex;
-  align-items: center;
-  gap: clamp(16px, 2.4vw, 34px);
+  align-items: stretch;
+  height: 44px;
+  gap: clamp(12px, 2vw, 28px);
 }
 
 .navLink {
-  font: 500 14px/1 var(--font-heading);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font: 600 17px/1 var(--font-heading);
   white-space: nowrap;
-  padding: 6px 12px;
-  border-radius: 999px;
+  padding: 0 18px;
+  border-radius: 6px;
   color: var(--grad-blue);
   transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -93,6 +98,12 @@
 
   .navOpen {
     transform: translateX(0);
+  }
+
+  .navLink {
+    height: auto;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .menuToggle {
