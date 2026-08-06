@@ -33,7 +33,6 @@ const EMPTY: FormState = {
   category: "",
   title: "",
   image: "",
-  excerpt: "",
   body: "",
 };
 
@@ -81,7 +80,6 @@ export default function NewsFormPage() {
           category: data.category ?? "",
           title: toText(data.title),
           image: data.image ?? "",
-          excerpt: toText(data.excerpt),
           body: toText(data.body),
         });
       }
@@ -168,15 +166,6 @@ export default function NewsFormPage() {
             className={styles.input}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>คำโปรย</label>
-          <textarea
-            className={styles.textarea}
-            value={form.excerpt}
-            onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
           />
         </div>
 

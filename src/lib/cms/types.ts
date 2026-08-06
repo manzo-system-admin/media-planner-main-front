@@ -30,7 +30,6 @@ export type NewsDoc = {
   category?: string; // key referencing a newsCategories doc
   title: string;
   image: string;
-  excerpt: string;
   body: string; // rich text editor HTML, sanitized before render
   createdAt?: number;
   deleted?: boolean;
@@ -51,6 +50,5 @@ export type CmsNewsItem = {
   category: string;
   title: string;
   image: string;
-  excerpt: string;
   bodyHtml: string;
 };

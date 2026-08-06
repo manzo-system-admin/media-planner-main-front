@@ -74,12 +74,7 @@ export default function NewsTabs({
   const searchQuery = search.trim().toLowerCase();
   const filteredNewsItems = newsItems
     .filter((item) => activeCategory === "ALL" || item.category === activeCategory)
-    .filter(
-      (item) =>
-        !searchQuery ||
-        item.title.toLowerCase().includes(searchQuery) ||
-        item.excerpt.toLowerCase().includes(searchQuery)
-    );
+    .filter((item) => !searchQuery || item.title.toLowerCase().includes(searchQuery));
   const articlesTotalPages = Math.max(1, Math.ceil(filteredNewsItems.length / PAGE_SIZE));
   const pagedNewsItems = filteredNewsItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 

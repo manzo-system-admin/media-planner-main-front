@@ -21,7 +21,6 @@ function toCmsItem(id: string, data: FirebaseFirestore.DocumentData, locale: Loc
     category: doc.category ?? "",
     title: toText(doc.title),
     image: doc.image,
-    excerpt: toText(doc.excerpt),
     bodyHtml: toText(doc.body),
   };
 }

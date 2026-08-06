@@ -15,6 +15,11 @@ import { buildMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
+function excerptFromHtml(html: string, maxLength = 160): string {
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return text.length > maxLength ? `${text.slice(0, maxLength).trimEnd()}...` : text;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -26,7 +31,7 @@ export async function generateMetadata({
   if (!item) return { robots: { index: false, follow: false } };
   return buildMetadata({
     title: `${item.title} | Media Planner Consultant`,
-    description: item.excerpt,
+    description: excerptFromHtml(item.bodyHtml),
     path: `/${locale}/news/${id}`,
     image: item.image,
     type: "article",
