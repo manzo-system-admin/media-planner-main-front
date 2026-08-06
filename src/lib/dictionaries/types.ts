@@ -161,8 +161,8 @@ export type Dictionary = {
 };
 
 export const GRADIENTS: Record<GradientKey, string> = {
-  purpleBlue: "linear-gradient(135deg, var(--grad-purple), var(--grad-blue))",
-  blueCyan: "linear-gradient(135deg, var(--grad-blue), var(--grad-cyan))",
-  greenYellow: "linear-gradient(135deg, var(--grad-green), var(--grad-yellow))",
-  orangeRed: "linear-gradient(135deg, var(--grad-orange), var(--grad-red))",
+  purpleBlue: "linear-gradient(135deg, var(--icon-purple), var(--icon-blue))",
+  blueCyan: "linear-gradient(135deg, var(--icon-blue), var(--icon-cyan))",
+  greenYellow: "linear-gradient(135deg, var(--icon-green), var(--icon-yellow))",
+  orangeRed: "linear-gradient(135deg, var(--icon-orange), var(--icon-red))",
 };

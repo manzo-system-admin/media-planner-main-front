@@ -29,7 +29,18 @@
     var(--grad-orange) 94%,
     var(--grad-red) 100%
   );
-  --gradient-cta: linear-gradient(90deg, var(--grad-purple), var(--grad-blue), var(--grad-cyan));
+  --gradient-cta: linear-gradient(90deg, var(--icon-purple), var(--icon-blue), var(--icon-cyan));
+
+  /* Brighter palette used for CTA buttons/badges and service icons —
+     kept separate from the --grad-* brand colors above since those are
+     darker and still used elsewhere (nav link text, hero gradient bar). */
+  --icon-purple: #b06fd1;
+  --icon-blue: #4fa3e8;
+  --icon-cyan: #4fd6e8;
+  --icon-green: #7bd35f;
+  --icon-yellow: #ffd54f;
+  --icon-orange: #ffab5e;
+  --icon-red: #ff6b6b;
 
   --container-max: 1280px;
   --shell-pad: clamp(20px, 5vw, 56px);
