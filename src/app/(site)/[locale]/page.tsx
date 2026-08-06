@@ -5,9 +5,10 @@ import ContentSheet from "@/components/ContentSheet";
 import ServiceIcon from "@/components/ServiceIcon";
 import VideoPopupCard from "@/components/VideoPopupCard";
 import HeroCarousel from "@/components/HeroCarousel";
-import ClientLogo from "@/components/ClientLogo";
+import ClientsSection from "@/components/ClientsSection";
 import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
+import { GRADIENTS } from "@/lib/dictionaries/types";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getNewsList } from "@/lib/cms/news";
 import { getServiceList } from "@/lib/cms/services";
@@ -27,11 +28,11 @@ export default async function HomePage({
   const dict = getDictionary(locale);
   const { home, common } = dict;
   const newsItems = await getNewsList(locale, 3);
-  const services = await getServiceList(locale);
+  const services = await getServiceList();
   const clients = await getClients();
-  const fetchedSlides = await getHeroSlides(locale);
+  const fetchedSlides = await getHeroSlides();
   const heroSlides = fetchedSlides.length > 0 ? fetchedSlides : dict.data.heroSlides;
-  const videoPopup = await getVideoPopup(locale);
+  const videoPopup = await getVideoPopup();
 
   return (
     <>
@@ -74,13 +75,19 @@ export default async function HomePage({
                 href={`/${locale}/services/${service.slug}`}
                 className={styles.serviceCard}
               >
+                <span
+                  className={styles.serviceCardGlow}
+                  style={{ background: GRADIENTS[service.gradient] }}
+                />
                 <ServiceIcon
                   icon={service.icon}
                   gradient={service.gradient}
+                  size={26}
                   className={styles.serviceIcon}
                 />
                 <div className={styles.serviceTitle}>{service.title}</div>
                 <div className={styles.serviceDesc}>{service.summary}</div>
+                <span className={styles.serviceMore}>{dict.services.viewDetailLink}</span>
               </Link>
             ))}
           </div>
@@ -95,7 +102,7 @@ export default async function HomePage({
           </div>
           <div className={styles.newsGrid}>
             {newsItems.map((item) => (
-              <Link key={item.slug} href={`/${locale}/news/${item.slug}`} className={styles.newsCard}>
+              <Link key={item.id} href={`/${locale}/news/${item.id}`} className={styles.newsCard}>
                 <div className={styles.newsThumb}>
                   <Image
                     src={item.image}
@@ -114,16 +121,13 @@ export default async function HomePage({
           </div>
         </section>
 
-        <section className={styles.clients}>
-          <div className={styles.clientsLabel}>{home.clientsLabel}</div>
-          <div className={styles.clientsRow}>
-            {clients.map((client, index) => (
-              <div key={client.name} className={styles.clientLogo}>
-                <ClientLogo name={client.name} index={index} logoUrl={client.logoUrl} />
-              </div>
-            ))}
-          </div>
-        </section>
+        <ClientsSection
+          label={home.clientsLabel}
+          clients={clients}
+          styles={styles}
+          locale={locale}
+          linkToPortfolio
+        />
       </ContentSheet>
     </>
   );

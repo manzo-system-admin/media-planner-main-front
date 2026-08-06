@@ -4,18 +4,20 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
+import { logActivity } from "@/lib/admin/adminData";
+import { toText } from "@/lib/cms/types";
 import SocialIcon from "@/components/SocialIcon";
 import type { SiteSettingsDoc } from "@/lib/cms/siteSettings";
 import formStyles from "../news/[id]/page.module.css";
 
 const DOC_ID = "config";
 
-const SOCIAL_NAME_OPTIONS = ["Facebook", "YouTube", "TikTok", "Line"];
+const SOCIAL_NAME_OPTIONS = ["Facebook", "YouTube", "TikTok", "Line", "X"];
 
 type FormState = SiteSettingsDoc;
 
 const EMPTY: FormState = {
-  address: { th: "", en: "" },
+  address: "",
   phone: "",
   email: "",
   socialLinks: [],
@@ -30,7 +32,10 @@ export default function ContactSettingsPage() {
   useEffect(() => {
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "siteSettings", DOC_ID));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, address: toText(data.address) });
+      }
       setLoading(false);
     })();
   }, []);
@@ -39,6 +44,7 @@ export default function ContactSettingsPage() {
     setSaving(true);
     try {
       await setDoc(doc(getFirebaseDb(), "siteSettings", DOC_ID), form);
+      await logActivity("update", "ข้อมูลติดต่อ", "ข้อมูลติดต่อ/ช่องทางโซเชียล");
       setAlert({ message: "บันทึกสำเร็จ", tone: "success" });
     } catch (err) {
       setAlert({ message: err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", tone: "error" });
@@ -63,25 +69,14 @@ export default function ContactSettingsPage() {
       </p>
 
       <div className={formStyles.form}>
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ที่อยู่ (ไทย)</span>
-            <textarea
-              className={formStyles.input}
-              rows={3}
-              value={form.address.th}
-              onChange={(e) => setForm({ ...form, address: { ...form.address, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ที่อยู่ (English)</span>
-            <textarea
-              className={formStyles.input}
-              rows={3}
-              value={form.address.en}
-              onChange={(e) => setForm({ ...form, address: { ...form.address, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ที่อยู่</label>
+          <textarea
+            className={formStyles.input}
+            rows={3}
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.row}>

@@ -30,7 +30,7 @@ export default async function ContactPage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
   const { contact } = dict;
-  const settings = await getSiteSettings(locale);
+  const settings = await getSiteSettings();
   const contactInfo = settings ?? dict.data.contactInfo;
   const socialLinks = settings?.socialLinks.length ? settings.socialLinks : dict.data.socialLinks;
 

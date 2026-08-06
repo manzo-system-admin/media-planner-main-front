@@ -28,7 +28,7 @@ function getClientApp(): FirebaseApp {
 // `instanceof` checks internally that a Proxy-of-`{}` can't satisfy. These
 // only initialize on first call, which happens at request/interaction time,
 // not at module load — so client components that merely *import* this module
-// (e.g. FloatingChatButton, rendered on every page) don't break static
+// (e.g. FloatingSocialButton, rendered on every page) don't break static
 // prerendering if NEXT_PUBLIC_FIREBASE_API_KEY is missing/invalid.
 export function getFirebaseAuth(): Auth {
   if (!authInstance) authInstance = getAuth(getClientApp());

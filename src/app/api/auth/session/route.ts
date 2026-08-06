@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { SESSION_COOKIE, SESSION_MAX_AGE_MS } from "@/lib/auth/session";
+import { resolveRole } from "@/lib/auth/role";
 
 export async function POST(request: NextRequest) {
   const { idToken } = await request.json();
@@ -11,8 +12,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const decoded = await getAdminAuth().verifyIdToken(idToken);
-    if (decoded.admin !== true) {
-      return NextResponse.json({ error: "Not an admin account" }, { status: 403 });
+    if (!resolveRole(decoded)) {
+      return NextResponse.json({ error: "Not a backoffice account" }, { status: 403 });
     }
 
     const sessionCookie = await getAdminAuth().createSessionCookie(idToken, {

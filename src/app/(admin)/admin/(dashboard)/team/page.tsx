@@ -9,12 +9,13 @@ import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
-import type { TeamMemberDoc } from "@/lib/cms/org";
+import { toText } from "@/lib/cms/types";
+import type { TeamGalleryDoc } from "@/lib/cms/org";
 import styles from "../news/page.module.css";
 
-type Row = TeamMemberDoc;
+type Row = TeamGalleryDoc;
 
-export default function TeamListPage() {
+export default function TeamGalleryListPage() {
   const router = useRouter();
   const [items, setItems] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,14 @@ export default function TeamListPage() {
   useEffect(() => {
     (async () => {
       const snapshot = await getDocs(query(collection(getFirebaseDb(), "team"), orderBy("order", "asc")));
-      setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
+      setItems(
+        excludeDeleted(
+          snapshot.docs.map((d) => {
+            const data = d.data() as Omit<Row, "id">;
+            return { id: d.id, ...data, caption: toText(data.caption) };
+          })
+        )
+      );
       setLoading(false);
     })();
   }, []);
@@ -33,7 +41,13 @@ export default function TeamListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    await softDeleteDoc("team", confirmId);
+    const target = items.find((item) => item.id === confirmId);
+    await softDeleteDoc(
+      "team",
+      confirmId,
+      "แกลเลอรีภาพทีมงาน",
+      target?.caption || "รูปทีมงาน"
+    );
     setItems((list) => list.filter((item) => item.id !== confirmId));
     setDeleting(false);
     setConfirmId(null);
@@ -42,27 +56,26 @@ export default function TeamListPage() {
 
   const columns: DataTableColumn<Row>[] = [
     {
-      key: "avatar",
+      key: "image",
       label: "",
       render: (item) =>
         // eslint-disable-next-line @next/next/no-img-element
-        item.avatar ? <img src={item.avatar} alt="" className={styles.thumb} /> : null,
+        item.image ? <img src={item.image} alt="" className={styles.thumb} /> : null,
     },
-    { key: "name", label: "ชื่อ", render: (item) => item.name?.th },
-    { key: "role", label: "ตำแหน่ง", render: (item) => item.role?.th },
+    { key: "caption", label: "คำอธิบาย", render: (item) => item.caption || "-" },
     { key: "order", label: "ลำดับ", render: (item) => item.order ?? "-" },
   ];
 
   return (
     <div>
-      <h1 className={styles.title}>ทีมงาน</h1>
+      <h1 className={styles.title}>แกลเลอรีภาพทีมงาน/บรรยากาศการทำงาน</h1>
       <DataTable
         columns={columns}
         items={items}
         getRowId={(item) => item.id}
-        searchableText={(item) => `${item.name?.th ?? ""} ${item.role?.th ?? ""}`}
+        searchableText={(item) => item.caption ?? ""}
         onNewClick={() => router.push("/admin/team/new")}
-        newLabel="+ เพิ่มสมาชิกทีม"
+        newLabel="+ เพิ่มภาพ"
         loading={loading}
         renderActions={(item) => (
           <RowActionsMenu editHref={`/admin/team/${item.id}`} onDelete={() => setConfirmId(item.id)} />
@@ -71,7 +84,7 @@ export default function TeamListPage() {
 
       <AdminConfirmModal
         open={!!confirmId}
-        message="ลบสมาชิกทีมนี้ใช่หรือไม่?"
+        message="ลบภาพนี้ใช่หรือไม่?"
         busy={deleting}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmId(null)}

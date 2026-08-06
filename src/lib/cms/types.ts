@@ -1,9 +1,21 @@
-import type { Locale } from "@/lib/i18n/config";
+// Thai-only now, but reads stay defensive: documents saved before English was
+// removed may still literally hold a `{ th, en }` object for these fields.
+export function toText(field: unknown): string {
+  if (typeof field === "string") return field;
+  if (field && typeof field === "object") {
+    const obj = field as { th?: string; en?: string };
+    return obj.th ?? obj.en ?? "";
+  }
+  return "";
+}
 
-export type Localized = { th: string; en: string };
-
-export function pick(field: Localized, locale: Locale): string {
-  return field[locale] ?? field.th ?? field.en ?? "";
+export function toStringArray(field: unknown): string[] {
+  if (Array.isArray(field)) return field;
+  if (field && typeof field === "object") {
+    const obj = field as { th?: string[]; en?: string[] };
+    return obj.th ?? obj.en ?? [];
+  }
+  return [];
 }
 
 export type VideoSource =
@@ -14,21 +26,29 @@ export type VideoSource =
 
 export type NewsDoc = {
   id: string;
-  slug: string;
-  date: string;
-  title: Localized;
+  date: string; // stored as ISO "yyyy-mm-dd"; formatted on read
+  category?: string; // key referencing a newsCategories doc
+  title: string;
   image: string;
-  excerpt: Localized;
-  body: Localized; // rich text editor HTML, sanitized before render
+  excerpt: string;
+  body: string; // rich text editor HTML, sanitized before render
   createdAt?: number;
+  deleted?: boolean;
+};
+
+export type NewsCategoryDoc = {
+  id: string;
+  key: string;
+  label: string;
+  order?: number;
   deleted?: boolean;
 };
 
 // Shape handed to the public news pages after picking a locale.
 export type CmsNewsItem = {
   id: string;
-  slug: string;
   date: string;
+  category: string;
   title: string;
   image: string;
   excerpt: string;

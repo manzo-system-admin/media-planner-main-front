@@ -1,12 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import styles from "./AdminShell.module.css";
 
-const NAV_GROUPS: { label: string; links: { href: string; label: string }[] }[] = [
+const NAV_GROUPS: {
+  label: string;
+  adminOnly?: boolean;
+  links: { href: string; label: string; adminOnly?: boolean }[];
+}[] = [
   {
     label: "หน้าแรก",
     links: [{ href: "/admin", label: "แดชบอร์ด" }],
@@ -16,8 +21,8 @@ const NAV_GROUPS: { label: string; links: { href: string; label: string }[] }[] 
     links: [
       { href: "/admin/banners", label: "แบนเนอร์" },
       { href: "/admin/video-popup", label: "วิดีโอป๊อปอัป" },
-      { href: "/admin/about", label: "หน้าเกี่ยวกับเรา" },
-      { href: "/admin/contact", label: "ข้อมูลติดต่อ" },
+      { href: "/admin/about", label: "หน้าเกี่ยวกับเรา", adminOnly: true },
+      { href: "/admin/contact", label: "ข้อมูลติดต่อ", adminOnly: true },
     ],
   },
   {
@@ -25,8 +30,8 @@ const NAV_GROUPS: { label: string; links: { href: string; label: string }[] }[] 
     links: [
       { href: "/admin/services", label: "บริการ" },
       { href: "/admin/portfolio", label: "ผลงาน/เคส" },
-      { href: "/admin/portfolio-categories", label: "หมวดหมู่ผลงาน" },
       { href: "/admin/news", label: "ข่าวสาร/บทความ" },
+      { href: "/admin/news-categories", label: "หมวดหมู่ข่าว" },
       { href: "/admin/video-library", label: "คลังวิดีโอ" },
       { href: "/admin/event-gallery", label: "คลังภาพกิจกรรม" },
     ],
@@ -34,29 +39,35 @@ const NAV_GROUPS: { label: string; links: { href: string; label: string }[] }[] 
   {
     label: "องค์กร",
     links: [
-      { href: "/admin/team", label: "ทีมงาน" },
-      { href: "/admin/awards", label: "รางวัล" },
+      { href: "/admin/team", label: "แกลเลอรีภาพทีมงาน" },
       { href: "/admin/clients", label: "ลูกค้า/พันธมิตร" },
     ],
   },
   {
-    label: "แชท",
+    label: "ระบบ",
     links: [
-      { href: "/admin/faq", label: "FAQ" },
-      { href: "/admin/chat", label: "Live Chat" },
+      { href: "/admin/logs", label: "บันทึกกิจกรรม" },
+      { href: "/admin/users", label: "ผู้ใช้งาน", adminOnly: true },
     ],
   },
 ];
 
 export default function AdminShell({
   email,
+  role,
   children,
 }: {
   email: string;
+  role: "admin" | "staff";
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const visibleGroups = NAV_GROUPS.filter((group) => !group.adminOnly || role === "admin")
+    .map((group) => ({
+      ...group,
+      links: group.links.filter((link) => !link.adminOnly || role === "admin"),
+    }));
 
   const handleLogout = async () => {
     await fetch("/api/auth/session", { method: "DELETE" });
@@ -68,9 +79,23 @@ export default function AdminShell({
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
-        <div className={styles.brand}>Media Planner · Backoffice</div>
+        <div className={styles.brand}>
+          <span className={styles.logoBadge}>
+            <Image
+              src="/images/logo.jpg"
+              alt="Media Planner Consultant"
+              width={40}
+              height={40}
+              className={styles.logoImg}
+            />
+          </span>
+          <span className={styles.brandText}>
+            <span className={styles.brandName}>Media Planner</span>
+            <span className={styles.brandSub}>Backoffice</span>
+          </span>
+        </div>
         <nav className={styles.nav}>
-          {NAV_GROUPS.map((group) => (
+          {visibleGroups.map((group) => (
             <div key={group.label}>
               <div className={styles.navGroupLabel}>{group.label}</div>
               {group.links.map((link) => {
@@ -93,7 +118,11 @@ export default function AdminShell({
 
       <div className={styles.main}>
         <header className={styles.topbar}>
-          {email && <span className={styles.email}>{email}</span>}
+          {email && (
+            <span className={styles.email}>
+              {email} · {role === "admin" ? "Admin" : "Staff"}
+            </span>
+          )}
           <button type="button" className={styles.logout} onClick={handleLogout}>
             ออกจากระบบ
           </button>

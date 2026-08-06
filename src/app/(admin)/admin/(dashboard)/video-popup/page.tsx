@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
+import { logActivity } from "@/lib/admin/adminData";
 import MediaUploader from "@/components/admin/MediaUploader";
 import VideoLinkInput from "@/components/admin/VideoLinkInput";
 import type { VideoPopupDoc } from "@/lib/cms/homepage";
-import type { VideoSource } from "@/lib/cms/types";
+import { toText, type VideoSource } from "@/lib/cms/types";
 import formStyles from "../news/[id]/page.module.css";
 
 const DOC_ID = "config";
@@ -17,7 +18,7 @@ type FormState = VideoPopupDoc;
 const EMPTY: FormState = {
   videoSource: null,
   thumbnail: "",
-  caption: { th: "", en: "" },
+  caption: "",
   orientation: "landscape",
 };
 
@@ -30,7 +31,10 @@ export default function VideoPopupAdminPage() {
   useEffect(() => {
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "videoPopup", DOC_ID));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, caption: toText(data.caption) });
+      }
       setLoading(false);
     })();
   }, []);
@@ -39,6 +43,7 @@ export default function VideoPopupAdminPage() {
     setSaving(true);
     try {
       await setDoc(doc(getFirebaseDb(), "videoPopup", DOC_ID), form);
+      await logActivity("update", "วิดีโอป๊อปอัป", form.caption || "วิดีโอป๊อปอัป");
       setAlert({ message: "บันทึกสำเร็จ", tone: "success" });
     } catch (err) {
       setAlert({ message: err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", tone: "error" });
@@ -117,23 +122,13 @@ export default function VideoPopupAdminPage() {
           />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>คำอธิบาย (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.caption.th}
-              onChange={(e) => setForm({ ...form, caption: { ...form.caption, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>คำอธิบาย (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.caption.en}
-              onChange={(e) => setForm({ ...form, caption: { ...form.caption, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>คำอธิบาย</label>
+          <input
+            className={formStyles.input}
+            value={form.caption}
+            onChange={(e) => setForm({ ...form, caption: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.actions}>

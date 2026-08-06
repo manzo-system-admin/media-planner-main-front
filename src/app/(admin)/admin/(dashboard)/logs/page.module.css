@@ -1,0 +1,64 @@
+.wrap {
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font: 600 11.5px var(--font-admin);
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  font: 400 13.5px var(--font-admin);
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font: 600 11.5px var(--font-admin);
+}
+
+.badgeCreate {
+  background: rgba(76, 175, 80, 0.12);
+  color: var(--grad-green);
+}
+
+.badgeUpdate {
+  background: rgba(46, 111, 186, 0.12);
+  color: var(--grad-blue);
+}
+
+.badgeDelete {
+  background: rgba(230, 57, 70, 0.12);
+  color: var(--grad-red);
+}
+
+.empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font: 400 13.5px var(--font-admin);
+}

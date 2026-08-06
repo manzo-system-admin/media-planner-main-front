@@ -22,6 +22,7 @@ export default function MediaUploader({
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isVideo = /\.(mp4|webm|mov)$/i.test(value);
+  const acceptsImage = accept.includes("image");
 
   const handleFile = (file: File) => {
     setError(null);
@@ -48,6 +49,9 @@ export default function MediaUploader({
 
   return (
     <div className={styles.wrap}>
+      {acceptsImage && (
+        <span className={styles.ratioHint}>แนะนำอัตราส่วนรูปภาพ 16:9 (ไม่บังคับ)</span>
+      )}
       {value ? (
         <div className={styles.preview}>
           {isVideo ? (

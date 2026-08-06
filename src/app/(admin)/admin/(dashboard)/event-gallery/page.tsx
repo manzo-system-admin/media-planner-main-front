@@ -9,6 +9,7 @@ import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
+import { toText } from "@/lib/cms/types";
 import type { EventGalleryDoc } from "@/lib/cms/media";
 import styles from "../news/page.module.css";
 
@@ -27,7 +28,14 @@ export default function EventGalleryListPage() {
       const snapshot = await getDocs(
         query(collection(getFirebaseDb(), "eventGallery"), orderBy("order", "asc"))
       );
-      setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
+      setItems(
+        excludeDeleted(
+          snapshot.docs.map((d) => {
+            const data = d.data() as Omit<Row, "id">;
+            return { id: d.id, ...data, caption: toText(data.caption) };
+          })
+        )
+      );
       setLoading(false);
     })();
   }, []);
@@ -35,7 +43,13 @@ export default function EventGalleryListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    await softDeleteDoc("eventGallery", confirmId);
+    const target = items.find((item) => item.id === confirmId);
+    await softDeleteDoc(
+      "eventGallery",
+      confirmId,
+      "คลังภาพกิจกรรม",
+      target?.caption || "รูปกิจกรรม"
+    );
     setItems((list) => list.filter((item) => item.id !== confirmId));
     setDeleting(false);
     setConfirmId(null);
@@ -50,7 +64,7 @@ export default function EventGalleryListPage() {
         // eslint-disable-next-line @next/next/no-img-element
         item.image ? <img src={item.image} alt="" className={styles.thumb} /> : null,
     },
-    { key: "caption", label: "คำอธิบาย", render: (item) => item.caption?.th ?? "-" },
+    { key: "caption", label: "คำอธิบาย", render: (item) => item.caption ?? "-" },
     { key: "order", label: "ลำดับ", render: (item) => item.order ?? "-" },
   ];
 
@@ -61,7 +75,7 @@ export default function EventGalleryListPage() {
         columns={columns}
         items={items}
         getRowId={(item) => item.id}
-        searchableText={(item) => item.caption?.th ?? ""}
+        searchableText={(item) => item.caption ?? ""}
         onNewClick={() => router.push("/admin/event-gallery/new")}
         newLabel="+ เพิ่มภาพ"
         loading={loading}

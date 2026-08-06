@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import "../../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import FloatingChatButton from "@/components/FloatingChatButton";
+import FloatingSocialButton from "@/components/FloatingSocialButton";
 import CookieConsent from "@/components/CookieConsent";
 import { locales, isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/dictionaries";
@@ -48,7 +48,7 @@ export default async function LocaleLayout({
   if (!isLocale(rawLocale)) notFound();
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
-  const settings = await getSiteSettings(locale);
+  const settings = await getSiteSettings();
 
   return (
     <html lang={dict.meta.htmlLang} className={`${poppins.variable} ${notoSansThai.variable}`}>
@@ -56,7 +56,7 @@ export default async function LocaleLayout({
         <Header locale={locale} dict={dict} />
         <main>{children}</main>
         <Footer dict={dict} socialLinks={settings?.socialLinks} />
-        <FloatingChatButton locale={locale} dict={dict} />
+        <FloatingSocialButton socialLinks={settings?.socialLinks?.length ? settings.socialLinks : dict.data.socialLinks} />
         <CookieConsent locale={locale} />
       </body>
     </html>

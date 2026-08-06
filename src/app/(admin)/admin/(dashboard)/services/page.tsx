@@ -9,6 +9,7 @@ import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
+import { toText } from "@/lib/cms/types";
 import type { ServiceDoc } from "@/lib/cms/services";
 import styles from "../news/page.module.css";
 
@@ -25,7 +26,14 @@ export default function ServicesListPage() {
   useEffect(() => {
     (async () => {
       const snapshot = await getDocs(query(collection(getFirebaseDb(), "services"), orderBy("order", "asc")));
-      setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
+      setItems(
+        excludeDeleted(
+          snapshot.docs.map((d) => {
+            const data = d.data() as Omit<Row, "id">;
+            return { id: d.id, ...data, title: toText(data.title) };
+          })
+        )
+      );
       setLoading(false);
     })();
   }, []);
@@ -33,7 +41,8 @@ export default function ServicesListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    await softDeleteDoc("services", confirmId);
+    const target = items.find((item) => item.id === confirmId);
+    await softDeleteDoc("services", confirmId, "บริการ", target?.title || confirmId);
     setItems((list) => list.filter((item) => item.id !== confirmId));
     setDeleting(false);
     setConfirmId(null);
@@ -48,7 +57,7 @@ export default function ServicesListPage() {
         // eslint-disable-next-line @next/next/no-img-element
         item.image ? <img src={item.image} alt="" className={styles.thumb} /> : null,
     },
-    { key: "title", label: "ชื่อบริการ", render: (item) => item.title?.th },
+    { key: "title", label: "ชื่อบริการ", render: (item) => item.title },
     { key: "slug", label: "Slug", render: (item) => item.slug },
     { key: "order", label: "ลำดับ", render: (item) => item.order ?? "-" },
   ];
@@ -60,7 +69,7 @@ export default function ServicesListPage() {
         columns={columns}
         items={items}
         getRowId={(item) => item.id}
-        searchableText={(item) => `${item.title?.th ?? ""} ${item.title?.en ?? ""}`}
+        searchableText={(item) => item.title ?? ""}
         onNewClick={() => router.push("/admin/services/new")}
         newLabel="+ เพิ่มบริการใหม่"
         loading={loading}

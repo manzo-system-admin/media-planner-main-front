@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
-import type { PortfolioCategoryDoc } from "@/lib/cms/portfolio";
+import { toText, type NewsCategoryDoc } from "@/lib/cms/types";
 import formStyles from "../../news/[id]/page.module.css";
 
-type FormState = Omit<PortfolioCategoryDoc, "id">;
+type FormState = Omit<NewsCategoryDoc, "id">;
 
-const EMPTY: FormState = { key: "", label: { th: "", en: "" }, order: 0 };
+const EMPTY: FormState = { key: "", label: "", order: 0 };
 
 function slugifyKey(text: string): string {
   const slug = text
@@ -23,7 +23,7 @@ function slugifyKey(text: string): string {
   return slug || "CATEGORY";
 }
 
-export default function PortfolioCategoryFormPage() {
+export default function NewsCategoryFormPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const isNew = params.id === "new";
@@ -40,14 +40,17 @@ export default function PortfolioCategoryFormPage() {
   useEffect(() => {
     if (isNew) {
       (async () => {
-        const nextOrder = await getNextOrder("portfolioCategories");
+        const nextOrder = await getNextOrder("newsCategories");
         setForm((f) => ({ ...f, order: nextOrder }));
       })();
       return;
     }
     (async () => {
-      const snapshot = await getDoc(doc(getFirebaseDb(), "portfolioCategories", params.id));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      const snapshot = await getDoc(doc(getFirebaseDb(), "newsCategories", params.id));
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, label: toText(data.label) });
+      }
       setLoading(false);
     })();
   }, [isNew, params.id]);
@@ -55,11 +58,13 @@ export default function PortfolioCategoryFormPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const payload = { ...form, key: form.key.trim() || slugifyKey(form.label.th || form.label.en) };
+      const payload = { ...form, key: form.key.trim() || slugifyKey(form.label) };
       if (isNew) {
-        await addDoc(collection(getFirebaseDb(), "portfolioCategories"), payload);
+        await addDoc(collection(getFirebaseDb(), "newsCategories"), payload);
+        await logActivity("create", "หมวดหมู่ข่าว", payload.label);
       } else {
-        await updateDoc(doc(getFirebaseDb(), "portfolioCategories", params.id), payload);
+        await updateDoc(doc(getFirebaseDb(), "newsCategories", params.id), payload);
+        await logActivity("update", "หมวดหมู่ข่าว", payload.label);
       }
       setForm(payload);
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
@@ -72,7 +77,7 @@ export default function PortfolioCategoryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("portfolioCategories", params.id);
+    await softDeleteDoc("newsCategories", params.id, "หมวดหมู่ข่าว", form.label);
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -82,7 +87,7 @@ export default function PortfolioCategoryFormPage() {
 
   return (
     <div>
-      <h1 className={formStyles.title}>{isNew ? "เพิ่มหมวดหมู่" : "แก้ไขหมวดหมู่"}</h1>
+      <h1 className={formStyles.title}>{isNew ? "เพิ่มหมวดหมู่ข่าว" : "แก้ไขหมวดหมู่ข่าว"}</h1>
       <div className={formStyles.form}>
         <div className={formStyles.row}>
           <div className={formStyles.field}>
@@ -105,23 +110,14 @@ export default function PortfolioCategoryFormPage() {
           </div>
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อที่แสดง (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.label.th}
-              onChange={(e) => setForm({ ...form, label: { ...form.label, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อที่แสดง (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.label.en}
-              onChange={(e) => setForm({ ...form, label: { ...form.label, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ชื่อที่แสดง</label>
+          <input
+            className={formStyles.input}
+            value={form.label}
+            placeholder="เช่น ข่าวไอพีโอ"
+            onChange={(e) => setForm({ ...form, label: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.actions}>
@@ -151,7 +147,7 @@ export default function PortfolioCategoryFormPage() {
         onClose={() => {
           const shouldRedirect = alert?.redirect;
           setAlert(null);
-          if (shouldRedirect) router.push("/admin/portfolio-categories");
+          if (shouldRedirect) router.push("/admin/news-categories");
         }}
       />
     </div>

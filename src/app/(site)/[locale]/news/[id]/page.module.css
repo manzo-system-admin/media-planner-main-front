@@ -1,3 +1,11 @@
+.category {
+  display: inline-block;
+  margin-top: 12px;
+  margin-right: 10px;
+  font: 600 12px var(--font-heading);
+  color: var(--grad-blue);
+}
+
 .date {
   display: inline-block;
   margin-top: 12px;
@@ -9,16 +17,10 @@
   padding: 0 var(--shell-pad) 40px;
 }
 
-.heroImage {
-  position: relative;
-  aspect-ratio: 21 / 9;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
 .body {
   padding: 0 var(--shell-pad) 56px;
   max-width: 760px;
+  margin: 0 auto;
   font: 400 15px/1.9 var(--font-body);
   color: var(--text-body);
 }

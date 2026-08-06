@@ -4,63 +4,60 @@ rules_version = '2';
 // (or paste into Firebase Console > Firestore Database > Rules)
 //
 // Design notes:
-// - All server-side reads (the public site's SSR pages, the /api/chat/send
-//   route, the admin session check) go through firebase-admin, which
+// - All server-side reads (the public site's SSR pages, the admin session
+//   check, the /api/admin/users route) go through firebase-admin, which
 //   bypasses these rules entirely. These rules only govern requests made
-//   directly from the browser: the Backoffice app (signed-in admin) and the
-//   public chat widget (signed-in anonymously).
-// - Admin write access is granted via a custom claim `admin: true` on the
-//   Firebase Auth user. Set it once per admin account with the Admin SDK:
-//     await adminAuth.setCustomUserClaims(uid, { admin: true });
-//   (there is no UI for this yet — run it once from a local script after
-//   creating the user in the Firebase Console).
+//   directly from the browser: the Backoffice app (signed-in admin/staff).
+// - Backoffice access is granted via a custom claim `role: "admin" | "staff"`
+//   on the Firebase Auth user (legacy accounts may instead carry
+//   `admin: true`, treated as role "admin" for backward compatibility).
+//   Roles are managed from /admin/users (admin-only) — see
+//   src/app/api/admin/users/route.ts. Claim changes only take effect on the
+//   user's *next* login (new ID token / session cookie).
+// - Role split: "staff" can manage day-to-day content; "admin"-only
+//   collections are the site-wide settings (siteSettings, aboutContent) and
+//   anything touching other users' access.
 
 function isAdmin() {
-  return request.auth != null && request.auth.token.admin == true;
+  return request.auth != null &&
+    (request.auth.token.role == 'admin' || request.auth.token.admin == true);
 }
 
-function isSignedIn() {
-  return request.auth != null;
+function isStaff() {
+  return request.auth != null &&
+    (request.auth.token.role == 'staff' || request.auth.token.role == 'admin' || request.auth.token.admin == true);
 }
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Content collections: public read (defense-in-depth if ever read
-    // directly from the client), admin-only write.
+    // Content collections editable by staff and admin alike.
     match /{collection}/{docId} {
       allow read: if collection in [
         'banners', 'videoPopup', 'services', 'portfolio',
-        'portfolioCategories', 'news', 'videoLibrary', 'eventGallery',
-        'team', 'awards', 'clients', 'faq', 'siteSettings', 'aboutContent'
+        'news', 'newsCategories', 'videoLibrary', 'eventGallery',
+        'team', 'clients'
       ];
-      allow write: if isAdmin() && collection in [
+      allow write: if isStaff() && collection in [
         'banners', 'videoPopup', 'services', 'portfolio',
-        'portfolioCategories', 'news', 'videoLibrary', 'eventGallery',
-        'team', 'awards', 'clients', 'faq', 'siteSettings', 'aboutContent'
+        'news', 'newsCategories', 'videoLibrary', 'eventGallery',
+        'team', 'clients'
       ];
     }
 
-    // Chat: a visitor (anonymous auth) may create/read their own
-    // conversation and post their own messages; only admins may edit the
-    // conversation doc itself (e.g. the "bot enabled" toggle) or post as
-    // "agent".
-    match /chatConversations/{conversationId} {
-      allow read: if isSignedIn() &&
-        (resource.data.visitorUid == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.visitorUid == request.auth.uid;
-      allow update: if isAdmin();
-      allow list: if isAdmin();
+    // Site-wide settings: admin-only write (still publicly readable, same
+    // as the rest of the content collections above).
+    match /{collection}/{docId} {
+      allow read: if collection in ['siteSettings', 'aboutContent'];
+      allow write: if isAdmin() && collection in ['siteSettings', 'aboutContent'];
+    }
 
-      match /messages/{messageId} {
-        allow read: if isSignedIn() &&
-          (get(/databases/$(database)/documents/chatConversations/$(conversationId)).data.visitorUid == request.auth.uid
-            || isAdmin());
-        allow create: if isAdmin() ||
-          (isSignedIn() &&
-            request.resource.data.from == 'user' &&
-            get(/databases/$(database)/documents/chatConversations/$(conversationId)).data.visitorUid == request.auth.uid);
-      }
+    // Activity log: append-only audit trail of content changes made from the
+    // Backoffice. Staff/admin can read and create entries; nothing may be
+    // edited or deleted once written.
+    match /activityLogs/{logId} {
+      allow read: if isStaff();
+      allow create: if isStaff();
     }
   }
 }

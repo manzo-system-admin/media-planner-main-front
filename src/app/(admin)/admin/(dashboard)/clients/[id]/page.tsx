@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
@@ -49,8 +49,10 @@ export default function ClientFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "clients"), form);
+        await logActivity("create", "ลูกค้า/พันธมิตร", form.name);
       } else {
         await updateDoc(doc(getFirebaseDb(), "clients", params.id), { ...form });
+        await logActivity("update", "ลูกค้า/พันธมิตร", form.name);
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -62,7 +64,7 @@ export default function ClientFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("clients", params.id);
+    await softDeleteDoc("clients", params.id, "ลูกค้า/พันธมิตร", form.name);
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -74,24 +76,13 @@ export default function ClientFormPage() {
     <div>
       <h1 className={formStyles.title}>{isNew ? "เพิ่มลูกค้า/พันธมิตร" : "แก้ไขลูกค้า/พันธมิตร"}</h1>
       <div className={formStyles.form}>
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <label className={formStyles.label}>ชื่อลูกค้า/พันธมิตร</label>
-            <input
-              className={formStyles.input}
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <label className={formStyles.label}>ลำดับ</label>
-            <input
-              type="number"
-              className={formStyles.input}
-              value={form.order ?? 0}
-              onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ชื่อลูกค้า/พันธมิตร</label>
+          <input
+            className={formStyles.input}
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.field}>
@@ -104,6 +95,11 @@ export default function ClientFormPage() {
             label="อัปโหลดโลโก้"
           />
         </div>
+
+        <p style={{ color: "var(--text-muted)", font: "400 13px var(--font-admin)", margin: "-8px 0 0" }}>
+          ผลงาน/เคสสตัดดี้ที่เชื่อมโยงกับลูกค้ารายนี้ ให้ไปตั้งค่าจากหน้า &quot;ผลงาน/เคส&quot; ของแต่ละชิ้นงานแทน
+          (เลือกลูกค้าที่ช่องลูกค้าในฟอร์มผลงาน)
+        </p>
 
         <div className={formStyles.actions}>
           <button type="button" className={formStyles.saveButton} onClick={handleSave} disabled={saving}>

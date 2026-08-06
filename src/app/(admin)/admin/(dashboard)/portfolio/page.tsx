@@ -9,7 +9,9 @@ import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
+import { toText } from "@/lib/cms/types";
 import type { PortfolioDoc } from "@/lib/cms/portfolio";
+import type { ClientDoc } from "@/lib/cms/org";
 import styles from "../news/page.module.css";
 
 type Row = PortfolioDoc;
@@ -17,6 +19,7 @@ type Row = PortfolioDoc;
 export default function PortfolioListPage() {
   const router = useRouter();
   const [items, setItems] = useState<Row[]>([]);
+  const [clientNamesById, setClientNamesById] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
@@ -24,8 +27,23 @@ export default function PortfolioListPage() {
 
   useEffect(() => {
     (async () => {
-      const snapshot = await getDocs(query(collection(getFirebaseDb(), "portfolio"), orderBy("order", "asc")));
-      setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
+      const [portfolioSnapshot, clientsSnapshot] = await Promise.all([
+        getDocs(query(collection(getFirebaseDb(), "portfolio"), orderBy("order", "asc"))),
+        getDocs(collection(getFirebaseDb(), "clients")),
+      ]);
+      setItems(
+        excludeDeleted(
+          portfolioSnapshot.docs.map((d) => {
+            const data = d.data() as Omit<Row, "id">;
+            return { id: d.id, ...data, title: toText(data.title) };
+          })
+        )
+      );
+      const namesById: Record<string, string> = {};
+      clientsSnapshot.docs.forEach((d) => {
+        namesById[d.id] = (d.data() as Omit<ClientDoc, "id">).name;
+      });
+      setClientNamesById(namesById);
       setLoading(false);
     })();
   }, []);
@@ -33,7 +51,8 @@ export default function PortfolioListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    await softDeleteDoc("portfolio", confirmId);
+    const target = items.find((item) => item.id === confirmId);
+    await softDeleteDoc("portfolio", confirmId, "ผลงาน/เคส", target?.title || confirmId);
     setItems((list) => list.filter((item) => item.id !== confirmId));
     setDeleting(false);
     setConfirmId(null);
@@ -45,12 +64,17 @@ export default function PortfolioListPage() {
       key: "image",
       label: "",
       render: (item) =>
-        // eslint-disable-next-line @next/next/no-img-element
-        item.image ? <img src={item.image} alt="" className={styles.thumb} /> : null,
+        item.images?.[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.images[0]} alt="" className={styles.thumb} />
+        ) : null,
     },
-    { key: "title", label: "ชื่อผลงาน", render: (item) => item.title?.th },
-    { key: "category", label: "หมวดหมู่", render: (item) => item.category },
-    { key: "slug", label: "Slug", render: (item) => item.slug },
+    { key: "title", label: "ชื่อผลงาน", render: (item) => item.title },
+    {
+      key: "client",
+      label: "ลูกค้า",
+      render: (item) => (item.clientId ? clientNamesById[item.clientId] || "-" : "-"),
+    },
   ];
 
   return (
@@ -60,7 +84,9 @@ export default function PortfolioListPage() {
         columns={columns}
         items={items}
         getRowId={(item) => item.id}
-        searchableText={(item) => `${item.title?.th ?? ""} ${item.title?.en ?? ""} ${item.category}`}
+        searchableText={(item) =>
+          `${item.title ?? ""} ${item.clientId ? clientNamesById[item.clientId] ?? "" : ""}`
+        }
         onNewClick={() => router.push("/admin/portfolio/new")}
         newLabel="+ เพิ่มผลงานใหม่"
         loading={loading}

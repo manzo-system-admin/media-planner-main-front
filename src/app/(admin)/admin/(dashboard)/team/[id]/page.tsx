@@ -4,23 +4,19 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
-import type { TeamMemberDoc } from "@/lib/cms/org";
+import { toText } from "@/lib/cms/types";
+import type { TeamGalleryDoc } from "@/lib/cms/org";
 import formStyles from "../../news/[id]/page.module.css";
 
-type FormState = Omit<TeamMemberDoc, "id">;
+type FormState = Omit<TeamGalleryDoc, "id">;
 
-const EMPTY: FormState = {
-  name: { th: "", en: "" },
-  role: { th: "", en: "" },
-  avatar: "",
-  order: 0,
-};
+const EMPTY: FormState = { image: "", caption: "", order: 0 };
 
-export default function TeamFormPage() {
+export default function TeamGalleryFormPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const isNew = params.id === "new";
@@ -44,7 +40,10 @@ export default function TeamFormPage() {
     }
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "team", params.id));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, caption: toText(data.caption) });
+      }
       setLoading(false);
     })();
   }, [isNew, params.id]);
@@ -54,8 +53,10 @@ export default function TeamFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "team"), form);
+        await logActivity("create", "แกลเลอรีภาพทีมงาน", form.caption || "รูปทีมงาน");
       } else {
         await updateDoc(doc(getFirebaseDb(), "team", params.id), { ...form });
+        await logActivity("update", "แกลเลอรีภาพทีมงาน", form.caption || "รูปทีมงาน");
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -67,7 +68,7 @@ export default function TeamFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("team", params.id);
+    await softDeleteDoc("team", params.id, "แกลเลอรีภาพทีมงาน", form.caption || "รูปทีมงาน");
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -77,7 +78,7 @@ export default function TeamFormPage() {
 
   return (
     <div>
-      <h1 className={formStyles.title}>{isNew ? "เพิ่มสมาชิกทีม" : "แก้ไขสมาชิกทีม"}</h1>
+      <h1 className={formStyles.title}>{isNew ? "เพิ่มภาพทีมงาน" : "แก้ไขภาพทีมงาน"}</h1>
       <div className={formStyles.form}>
         <div className={formStyles.field}>
           <label className={formStyles.label}>ลำดับ</label>
@@ -92,50 +93,21 @@ export default function TeamFormPage() {
         <div className={formStyles.field}>
           <label className={formStyles.label}>รูปภาพ</label>
           <MediaUploader
-            value={form.avatar}
-            onChange={(url) => setForm({ ...form, avatar: url })}
+            value={form.image}
+            onChange={(url) => setForm({ ...form, image: url })}
             folder="team"
             accept="image/*"
             label="อัปโหลดรูปภาพ"
           />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อ (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.name.th}
-              onChange={(e) => setForm({ ...form, name: { ...form.name, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อ (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.name.en}
-              onChange={(e) => setForm({ ...form, name: { ...form.name, en: e.target.value } })}
-            />
-          </div>
-        </div>
-
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ตำแหน่ง (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.role.th}
-              onChange={(e) => setForm({ ...form, role: { ...form.role, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ตำแหน่ง (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.role.en}
-              onChange={(e) => setForm({ ...form, role: { ...form.role, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>คำอธิบาย (ไม่บังคับ)</label>
+          <input
+            className={formStyles.input}
+            value={form.caption ?? ""}
+            onChange={(e) => setForm({ ...form, caption: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.actions}>
@@ -144,7 +116,7 @@ export default function TeamFormPage() {
           </button>
           {!isNew && (
             <button type="button" className={formStyles.deleteButton} onClick={() => setConfirmOpen(true)}>
-              ลบสมาชิกทีมนี้
+              ลบภาพนี้
             </button>
           )}
         </div>
@@ -152,7 +124,7 @@ export default function TeamFormPage() {
 
       <AdminConfirmModal
         open={confirmOpen}
-        message="ลบสมาชิกทีมนี้ใช่หรือไม่?"
+        message="ลบภาพนี้ใช่หรือไม่?"
         busy={deleting}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmOpen(false)}

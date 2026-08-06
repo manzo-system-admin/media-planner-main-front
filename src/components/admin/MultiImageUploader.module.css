@@ -1,0 +1,130 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ratioHint {
+  font: 400 11.5px var(--font-admin);
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+
+.tileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.coverBadge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font: 600 10px var(--font-admin);
+  color: #fff;
+  background: rgba(27, 42, 74, 0.75);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.tileActions {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tile:hover .tileActions {
+  opacity: 1;
+}
+
+.tileActions button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--navy);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tileActions button:hover {
+  background: #fff;
+}
+
+.tileUploading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+}
+
+.progressTrack {
+  width: 80%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border-soft);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--gradient-cta);
+  transition: width 0.15s ease;
+}
+
+.error {
+  font: 500 10px var(--font-admin);
+  color: var(--grad-red);
+  text-align: center;
+}
+
+.addTile {
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--surface-alt);
+  font-size: 22px;
+}
+
+.addTile:hover {
+  border-color: var(--grad-blue);
+  color: var(--grad-blue);
+}
+
+.hint {
+  font: 400 10px var(--font-admin);
+  text-align: center;
+  padding: 0 6px;
+}

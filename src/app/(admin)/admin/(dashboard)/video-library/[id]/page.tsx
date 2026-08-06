@@ -4,19 +4,19 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
 import VideoLinkInput from "@/components/admin/VideoLinkInput";
 import type { VideoLibraryDoc } from "@/lib/cms/media";
-import type { VideoSource } from "@/lib/cms/types";
+import { toText, type VideoSource } from "@/lib/cms/types";
 import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<VideoLibraryDoc, "id">;
 
 const EMPTY: FormState = {
-  title: { th: "", en: "" },
+  title: "",
   thumbnail: "",
   videoSource: { kind: "upload", url: "" },
   order: 0,
@@ -46,7 +46,10 @@ export default function VideoLibraryFormPage() {
     }
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "videoLibrary", params.id));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, title: toText(data.title) });
+      }
       setLoading(false);
     })();
   }, [isNew, params.id]);
@@ -56,8 +59,10 @@ export default function VideoLibraryFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "videoLibrary"), form);
+        await logActivity("create", "คลังวิดีโอ", form.title);
       } else {
         await updateDoc(doc(getFirebaseDb(), "videoLibrary", params.id), { ...form });
+        await logActivity("update", "คลังวิดีโอ", form.title);
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -69,7 +74,7 @@ export default function VideoLibraryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("videoLibrary", params.id);
+    await softDeleteDoc("videoLibrary", params.id, "คลังวิดีโอ", form.title);
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -113,23 +118,13 @@ export default function VideoLibraryFormPage() {
           />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อวิดีโอ (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.title.th}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อวิดีโอ (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.title.en}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ชื่อวิดีโอ</label>
+          <input
+            className={formStyles.input}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.actions}>

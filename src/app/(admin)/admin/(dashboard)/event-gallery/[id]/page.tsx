@@ -4,16 +4,17 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
+import { toText } from "@/lib/cms/types";
 import type { EventGalleryDoc } from "@/lib/cms/media";
 import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<EventGalleryDoc, "id">;
 
-const EMPTY: FormState = { image: "", caption: { th: "", en: "" }, order: 0 };
+const EMPTY: FormState = { image: "", caption: "", order: 0 };
 
 export default function EventGalleryFormPage() {
   const params = useParams<{ id: string }>();
@@ -39,7 +40,10 @@ export default function EventGalleryFormPage() {
     }
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "eventGallery", params.id));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, caption: toText(data.caption) });
+      }
       setLoading(false);
     })();
   }, [isNew, params.id]);
@@ -49,8 +53,10 @@ export default function EventGalleryFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "eventGallery"), form);
+        await logActivity("create", "คลังภาพกิจกรรม", form.caption || "รูปกิจกรรม");
       } else {
         await updateDoc(doc(getFirebaseDb(), "eventGallery", params.id), { ...form });
+        await logActivity("update", "คลังภาพกิจกรรม", form.caption || "รูปกิจกรรม");
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -62,7 +68,7 @@ export default function EventGalleryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("eventGallery", params.id);
+    await softDeleteDoc("eventGallery", params.id, "คลังภาพกิจกรรม", form.caption || "รูปกิจกรรม");
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -95,27 +101,13 @@ export default function EventGalleryFormPage() {
           />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>คำอธิบาย (ไทย, ไม่บังคับ)</span>
-            <input
-              className={formStyles.input}
-              value={form.caption?.th ?? ""}
-              onChange={(e) =>
-                setForm({ ...form, caption: { th: e.target.value, en: form.caption?.en ?? "" } })
-              }
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>คำอธิบาย (English, optional)</span>
-            <input
-              className={formStyles.input}
-              value={form.caption?.en ?? ""}
-              onChange={(e) =>
-                setForm({ ...form, caption: { th: form.caption?.th ?? "", en: e.target.value } })
-              }
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>คำอธิบาย (ไม่บังคับ)</label>
+          <input
+            className={formStyles.input}
+            value={form.caption ?? ""}
+            onChange={(e) => setForm({ ...form, caption: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.actions}>

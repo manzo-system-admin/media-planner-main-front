@@ -22,6 +22,11 @@
   color: var(--text-muted);
 }
 
+.ratioHint {
+  font: 400 11.5px var(--font-admin);
+  color: var(--text-muted);
+}
+
 .preview {
   position: relative;
   width: 100%;

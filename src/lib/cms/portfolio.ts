@@ -1,89 +1,70 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { pick, type Localized } from "./types";
-import type { Locale } from "@/lib/i18n/config";
-import type { PortfolioCategory, PortfolioItem, PortfolioStat } from "@/lib/dictionaries/types";
+import { toText } from "./types";
+import type { PortfolioItem, PortfolioStat } from "@/lib/dictionaries/types";
 
-export type PortfolioStatDoc = { label: Localized; value: Localized };
+export type PortfolioStatDoc = { label: string; value: string };
 
 export type PortfolioDoc = {
   id: string;
-  slug: string;
-  category: PortfolioCategory;
-  image: string;
+  clientId?: string;
+  /** First entry is the cover image shown on list cards. */
+  images: string[];
   order?: number;
-  client: Localized;
-  title: Localized;
-  challenge: Localized;
-  approach: Localized;
-  result: Localized;
+  title: string;
+  /** Thai-only rich-text HTML; no English counterpart by design. */
+  description?: string;
   stats: PortfolioStatDoc[];
   deleted?: boolean;
 };
 
-export type PortfolioCategoryDoc = {
-  id: string;
-  key: PortfolioCategory;
-  label: Localized;
-  order?: number;
-  deleted?: boolean;
-};
+async function getClientNamesById(): Promise<Record<string, string>> {
+  const snapshot = await getAdminDb().collection("clients").get();
+  const map: Record<string, string> = {};
+  snapshot.docs.forEach((doc) => {
+    if (!doc.data().deleted) map[doc.id] = doc.data().name ?? "";
+  });
+  return map;
+}
 
-function toItem(id: string, data: FirebaseFirestore.DocumentData, locale: Locale): PortfolioItem {
+function toItem(
+  id: string,
+  data: FirebaseFirestore.DocumentData,
+  clientNamesById: Record<string, string>
+): PortfolioItem {
   const doc = data as Omit<PortfolioDoc, "id">;
   const stats: PortfolioStat[] = (doc.stats ?? []).map((stat) => ({
-    label: pick(stat.label, locale),
-    value: pick(stat.value, locale),
+    label: toText(stat.label),
+    value: toText(stat.value),
   }));
+  const images = doc.images ?? [];
   return {
-    slug: doc.slug,
-    category: doc.category,
-    title: pick(doc.title, locale),
-    image: doc.image,
-    client: pick(doc.client, locale),
-    challenge: pick(doc.challenge, locale),
-    approach: pick(doc.approach, locale),
-    result: pick(doc.result, locale),
+    id,
+    clientId: doc.clientId ?? "",
+    client: doc.clientId ? (clientNamesById[doc.clientId] ?? "") : "",
+    title: toText(doc.title),
+    image: images[0] ?? "",
+    images,
+    description: doc.description ?? "",
     stats,
   };
 }
 
-export async function getPortfolioList(locale: Locale): Promise<PortfolioItem[]> {
-  const snapshot = await getAdminDb().collection("portfolio").orderBy("order", "asc").get();
+export async function getPortfolioList(): Promise<PortfolioItem[]> {
+  const [snapshot, clientNamesById] = await Promise.all([
+    getAdminDb().collection("portfolio").orderBy("order", "asc").get(),
+    getClientNamesById(),
+  ]);
   return snapshot.docs
     .filter((doc) => !doc.data().deleted)
-    .map((doc) => toItem(doc.id, doc.data(), locale));
+    .map((doc) => toItem(doc.id, doc.data(), clientNamesById));
 }
 
-export async function getPortfolioBySlug(locale: Locale, slug: string): Promise<PortfolioItem | null> {
-  const snapshot = await getAdminDb().collection("portfolio").where("slug", "==", slug).limit(1).get();
-  const doc = snapshot.docs[0];
-  if (!doc || doc.data().deleted) return null;
-  return toItem(doc.id, doc.data(), locale);
-}
-
-export async function getPortfolioCategoryLabels(
-  locale: Locale
-): Promise<Record<PortfolioCategory, string>> {
-  const snapshot = await getAdminDb().collection("portfolioCategories").orderBy("order", "asc").get();
-  const labels = {} as Record<PortfolioCategory, string>;
-  snapshot.docs
-    .filter((doc) => !doc.data().deleted)
-    .forEach((doc) => {
-      const data = doc.data() as Omit<PortfolioCategoryDoc, "id">;
-      labels[data.key] = pick(data.label, locale);
-    });
-  return labels;
-}
-
-export async function getPortfolioCategories(
-  locale: Locale
-): Promise<{ key: string; label: string }[]> {
-  const snapshot = await getAdminDb().collection("portfolioCategories").orderBy("order", "asc").get();
-  return snapshot.docs
-    .filter((doc) => !doc.data().deleted)
-    .map((doc) => {
-      const data = doc.data() as Omit<PortfolioCategoryDoc, "id">;
-      return { key: data.key, label: pick(data.label, locale) };
-    });
+export async function getPortfolioById(id: string): Promise<PortfolioItem | null> {
+  const [doc, clientNamesById] = await Promise.all([
+    getAdminDb().collection("portfolio").doc(id).get(),
+    getClientNamesById(),
+  ]);
+  if (!doc.exists || doc.data()?.deleted) return null;
+  return toItem(doc.id, doc.data()!, clientNamesById);
 }

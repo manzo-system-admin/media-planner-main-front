@@ -4,7 +4,7 @@ import ContentSheet from "@/components/ContentSheet";
 import NewsTabs from "./NewsTabs";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
-import { getNewsList } from "@/lib/cms/news";
+import { getNewsCategories, getNewsCategoryLabels, getNewsList } from "@/lib/cms/news";
 import { getEventGallery, getVideoLibrary } from "@/lib/cms/media";
 
 export const dynamic = "force-dynamic";
@@ -30,8 +30,10 @@ export default async function NewsPage({
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
   const newsItems = await getNewsList(locale);
-  const videoLibrary = await getVideoLibrary(locale);
-  const eventGallery = await getEventGallery(locale);
+  const videoLibrary = await getVideoLibrary();
+  const eventGallery = await getEventGallery();
+  const categories = await getNewsCategories();
+  const categoryLabels = await getNewsCategoryLabels();
 
   return (
     <ContentSheet>
@@ -39,9 +41,12 @@ export default async function NewsPage({
         locale={locale}
         homeLabel={dict.common.home}
         news={dict.news}
+        allLabel={dict.common.all}
         newsItems={newsItems}
         videoLibrary={videoLibrary}
         eventGallery={eventGallery}
+        categories={categories}
+        categoryLabels={categoryLabels}
       />
     </ContentSheet>
   );

@@ -79,7 +79,7 @@
   padding: 16px;
 }
 
-.cardCategory {
+.cardClient {
   font: 500 11px var(--font-heading);
   color: var(--grad-blue);
   margin-bottom: 6px;
@@ -103,16 +103,16 @@
   letter-spacing: 0.04em;
 }
 
-.clientsRow {
+.clientsGrid {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }
 
 .clientLogo {
-  flex: 1;
-  min-width: 150px;
+  flex: 0 0 auto;
+  width: 150px;
   height: 56px;
   border-radius: 8px;
   background: var(--surface);

@@ -34,7 +34,7 @@ export default async function ServicesPage({
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
   const { services } = dict;
-  const serviceList = await getServiceList(locale);
+  const serviceList = await getServiceList();
 
   return (
     <ContentSheet>

@@ -1,11 +1,10 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { pick, type Localized, type VideoSource } from "./types";
-import type { Locale } from "@/lib/i18n/config";
+import { toText, type VideoSource } from "./types";
 
 export type VideoLibraryDoc = {
   id: string;
-  title: Localized;
+  title: string;
   thumbnail: string;
   videoSource: VideoSource;
   order?: number;
@@ -15,7 +14,7 @@ export type VideoLibraryDoc = {
 export type EventGalleryDoc = {
   id: string;
   image: string;
-  caption?: Localized;
+  caption?: string;
   order?: number;
   deleted?: boolean;
 };
@@ -33,7 +32,7 @@ export type CmsGalleryItem = {
   caption: string;
 };
 
-export async function getVideoLibrary(locale: Locale): Promise<CmsVideoItem[]> {
+export async function getVideoLibrary(): Promise<CmsVideoItem[]> {
   const snapshot = await getAdminDb().collection("videoLibrary").orderBy("order", "asc").get();
   return snapshot.docs
     .filter((doc) => !doc.data().deleted)
@@ -41,19 +40,19 @@ export async function getVideoLibrary(locale: Locale): Promise<CmsVideoItem[]> {
       const data = doc.data() as Omit<VideoLibraryDoc, "id">;
       return {
         id: doc.id,
-        title: pick(data.title, locale),
+        title: toText(data.title),
         thumbnail: data.thumbnail,
         videoSource: data.videoSource,
       };
     });
 }
 
-export async function getEventGallery(locale: Locale): Promise<CmsGalleryItem[]> {
+export async function getEventGallery(): Promise<CmsGalleryItem[]> {
   const snapshot = await getAdminDb().collection("eventGallery").orderBy("order", "asc").get();
   return snapshot.docs
     .filter((doc) => !doc.data().deleted)
     .map((doc) => {
       const data = doc.data() as Omit<EventGalleryDoc, "id">;
-      return { id: doc.id, image: data.image, caption: data.caption ? pick(data.caption, locale) : "" };
+      return { id: doc.id, image: data.image, caption: data.caption ? toText(data.caption) : "" };
     });
 }

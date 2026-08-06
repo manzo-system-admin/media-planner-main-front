@@ -9,6 +9,7 @@ import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
+import { toText } from "@/lib/cms/types";
 import type { BannerDoc } from "@/lib/cms/homepage";
 import styles from "../news/page.module.css";
 
@@ -25,7 +26,14 @@ export default function BannersListPage() {
   useEffect(() => {
     (async () => {
       const snapshot = await getDocs(query(collection(getFirebaseDb(), "banners"), orderBy("order", "asc")));
-      setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
+      setItems(
+        excludeDeleted(
+          snapshot.docs.map((d) => {
+            const data = d.data() as Omit<Row, "id">;
+            return { id: d.id, ...data, alt: toText(data.alt) };
+          })
+        )
+      );
       setLoading(false);
     })();
   }, []);
@@ -33,7 +41,8 @@ export default function BannersListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    await softDeleteDoc("banners", confirmId);
+    const target = items.find((item) => item.id === confirmId);
+    await softDeleteDoc("banners", confirmId, "แบนเนอร์", target?.alt || "แบนเนอร์");
     setItems((list) => list.filter((item) => item.id !== confirmId));
     setDeleting(false);
     setConfirmId(null);
@@ -51,7 +60,7 @@ export default function BannersListPage() {
         ) : null,
     },
     { key: "type", label: "ประเภท", render: (item) => (item.type === "video" ? "วิดีโอ" : "รูปภาพ") },
-    { key: "alt", label: "คำอธิบาย", render: (item) => item.alt?.th },
+    { key: "alt", label: "คำอธิบาย", render: (item) => item.alt },
     { key: "order", label: "ลำดับ", render: (item) => item.order ?? "-" },
   ];
 
@@ -62,7 +71,7 @@ export default function BannersListPage() {
         columns={columns}
         items={items}
         getRowId={(item) => item.id}
-        searchableText={(item) => `${item.alt?.th ?? ""} ${item.type}`}
+        searchableText={(item) => `${item.alt ?? ""} ${item.type}`}
         onNewClick={() => router.push("/admin/banners/new")}
         newLabel="+ เพิ่มสไลด์"
         loading={loading}

@@ -10,12 +10,13 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 import ServiceIcon, { SERVICE_ICON_KEYS } from "@/components/ServiceIcon";
+import { toText, toStringArray } from "@/lib/cms/types";
 import type { ServiceDoc } from "@/lib/cms/services";
 import type { GradientKey } from "@/lib/dictionaries/types";
 import formStyles from "../../news/[id]/page.module.css";
@@ -35,10 +36,10 @@ const EMPTY: FormState = {
   icon: "target",
   image: "",
   order: 0,
-  title: { th: "", en: "" },
-  summary: { th: "", en: "" },
-  description: { th: "", en: "" },
-  highlights: { th: [], en: [] },
+  title: "",
+  summary: "",
+  description: "",
+  highlights: [],
 };
 
 function HighlightsEditor({
@@ -117,8 +118,15 @@ export default function ServiceFormPage() {
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "services", params.id));
       if (snapshot.exists()) {
-        const data = snapshot.data() as FormState;
-        setForm({ ...EMPTY, ...data });
+        const data = snapshot.data();
+        setForm({
+          ...EMPTY,
+          ...data,
+          title: toText(data.title),
+          summary: toText(data.summary),
+          description: toText(data.description),
+          highlights: toStringArray(data.highlights),
+        });
       }
       setLoading(false);
     })();
@@ -129,8 +137,10 @@ export default function ServiceFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "services"), form);
+        await logActivity("create", "บริการ", form.title);
       } else {
         await updateDoc(doc(getFirebaseDb(), "services", params.id), { ...form });
+        await logActivity("update", "บริการ", form.title);
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -142,7 +152,7 @@ export default function ServiceFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("services", params.id);
+    await softDeleteDoc("services", params.id, "บริการ", form.title);
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -226,71 +236,34 @@ export default function ServiceFormPage() {
           />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อบริการ (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.title.th}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อบริการ (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.title.en}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, en: e.target.value } })}
-            />
-          </div>
-        </div>
-
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>สรุปสั้น (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.summary.th}
-              onChange={(e) => setForm({ ...form, summary: { ...form.summary, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>สรุปสั้น (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.summary.en}
-              onChange={(e) => setForm({ ...form, summary: { ...form.summary, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ชื่อบริการ</label>
+          <input
+            className={formStyles.input}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.field}>
-          <span className={formStyles.langLabel}>รายละเอียด (ไทย)</span>
-          <RichTextEditor
-            value={form.description.th}
-            onChange={(html) => setForm({ ...form, description: { ...form.description, th: html } })}
-          />
-        </div>
-        <div className={formStyles.field}>
-          <span className={formStyles.langLabel}>รายละเอียด (English)</span>
-          <RichTextEditor
-            value={form.description.en}
-            onChange={(html) => setForm({ ...form, description: { ...form.description, en: html } })}
+          <label className={formStyles.label}>สรุปสั้น</label>
+          <input
+            className={formStyles.input}
+            value={form.summary}
+            onChange={(e) => setForm({ ...form, summary: e.target.value })}
           />
         </div>
 
-        <div className={formStyles.row}>
-          <HighlightsEditor
-            label="สิ่งที่ลูกค้าจะได้รับ (ไทย)"
-            items={form.highlights.th}
-            onChange={(items) => setForm({ ...form, highlights: { ...form.highlights, th: items } })}
-          />
-          <HighlightsEditor
-            label="สิ่งที่ลูกค้าจะได้รับ (English)"
-            items={form.highlights.en}
-            onChange={(items) => setForm({ ...form, highlights: { ...form.highlights, en: items } })}
-          />
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>รายละเอียด</label>
+          <RichTextEditor value={form.description} onChange={(html) => setForm({ ...form, description: html })} />
         </div>
+
+        <HighlightsEditor
+          label="สิ่งที่ลูกค้าจะได้รับ"
+          items={form.highlights}
+          onChange={(items) => setForm({ ...form, highlights: items })}
+        />
 
         <div className={formStyles.actions}>
           <button type="button" className={formStyles.saveButton} onClick={handleSave} disabled={saving}>

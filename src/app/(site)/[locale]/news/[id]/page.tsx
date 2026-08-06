@@ -6,10 +6,11 @@ import DOMPurify from "isomorphic-dompurify";
 import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import NotFoundView from "@/components/NotFoundView";
+import NewsHeroImage from "@/components/NewsHeroImage";
 import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
-import { getNewsBySlug, getNewsList } from "@/lib/cms/news";
+import { getNewsById, getNewsCategoryLabels, getNewsList } from "@/lib/cms/news";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
@@ -17,16 +18,16 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const { locale, id } = await params;
   if (!isLocale(locale)) return {};
-  const item = await getNewsBySlug(locale, slug);
+  const item = await getNewsById(locale, id);
   if (!item) return { robots: { index: false, follow: false } };
   return buildMetadata({
     title: `${item.title} | Media Planner Consultant`,
     description: item.excerpt,
-    path: `/${locale}/news/${slug}`,
+    path: `/${locale}/news/${id}`,
     image: item.image,
     type: "article",
   });
@@ -35,14 +36,14 @@ export async function generateMetadata({
 export default async function NewsDetailPage({
   params,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }) {
-  const { locale: rawLocale, slug } = await params;
+  const { locale: rawLocale, id } = await params;
   if (!isLocale(rawLocale)) notFound();
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
   const { news } = dict;
-  const item = await getNewsBySlug(locale, slug);
+  const item = await getNewsById(locale, id);
   if (!item) {
     return (
       <ContentSheet>
@@ -52,8 +53,10 @@ export default async function NewsDetailPage({
   }
 
   const allNews = await getNewsList(locale);
-  const related = allNews.filter((entry) => entry.slug !== slug).slice(0, 3);
+  const related = allNews.filter((entry) => entry.id !== id).slice(0, 3);
   const safeBody = DOMPurify.sanitize(item.bodyHtml);
+  const categoryLabels = await getNewsCategoryLabels();
+  const categoryLabel = item.category ? categoryLabels[item.category] : undefined;
 
   return (
     <ContentSheet>
@@ -65,19 +68,12 @@ export default async function NewsDetailPage({
         ]}
         title={item.title}
       >
+        {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
         <span className={styles.date}>{item.date}</span>
       </PageIntro>
 
       <section className={styles.heroSection}>
-        <div className={styles.heroImage}>
-          <Image
-            src={item.image}
-            alt={item.title}
-            fill
-            sizes="100vw"
-            style={{ objectFit: "cover" }}
-          />
-        </div>
+        <NewsHeroImage src={item.image} alt={item.title} />
       </section>
 
       <section
@@ -92,7 +88,7 @@ export default async function NewsDetailPage({
           <h2 className={styles.relatedTitle}>{news.relatedTitle}</h2>
           <div className={styles.relatedGrid}>
             {related.map((entry) => (
-              <Link key={entry.slug} href={`/${locale}/news/${entry.slug}`} className={styles.relatedCard}>
+              <Link key={entry.id} href={`/${locale}/news/${entry.id}`} className={styles.relatedCard}>
                 <div className={styles.relatedImage}>
                   <Image
                     src={entry.image}

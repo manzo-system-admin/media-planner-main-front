@@ -29,25 +29,23 @@ export type HeroSlide =
   | { type: "image"; src: string; alt: string }
   | { type: "video"; src: string; poster: string; alt: string };
 
-export type PortfolioCategory = string;
-
-export type PortfolioFilter = { key: PortfolioCategory | "ALL"; label: string };
+export type PortfolioFilter = { key: string; label: string };
 
 export type PortfolioStat = { label: string; value: string };
 
 export type PortfolioItem = {
-  slug: string;
-  category: PortfolioCategory;
+  id: string;
+  clientId: string;
   title: string;
   image: string;
+  images: string[];
   client: string;
-  challenge: string;
-  approach: string;
-  result: string;
+  /** Thai-only rich-text HTML; no English counterpart by design. */
+  description?: string;
   stats: PortfolioStat[];
 };
 
-export type TeamMember = { name: string; role: string; avatar: string };
+export type TeamGalleryPhoto = { id: string; image: string; caption: string };
 
 export type Dictionary = {
   meta: {
@@ -59,7 +57,6 @@ export type Dictionary = {
     links: NavLink[];
     contactCta: string;
     menuOpenLabel: string;
-    langSwitchLabel: string;
   };
   footer: {
     privacyPolicy: string;
@@ -99,7 +96,6 @@ export type Dictionary = {
     historyBody: string;
     historyImageAlt: string;
     teamTitle: string;
-    awardsTitle: string;
   };
   services: {
     listBreadcrumb: string;
@@ -114,14 +110,12 @@ export type Dictionary = {
     breadcrumb: string;
     title: string;
     filters: PortfolioFilter[];
-    categoryLabels: Record<PortfolioCategory, string>;
     empty: string;
-    clientLabel: string;
-    challengeLabel: string;
-    approachLabel: string;
-    resultLabel: string;
     relatedTitle: string;
     clientsLabel: string;
+    viewCaseStudy: string;
+    clientDrawerEmpty: string;
+    closeLabel: string;
   };
   news: {
     breadcrumb: string;
@@ -132,6 +126,8 @@ export type Dictionary = {
     galleryLabel: string;
     galleryImageAlt: string;
     relatedTitle: string;
+    searchPlaceholder: string;
+    searchEmpty: string;
   };
   contact: {
     breadcrumb: string;
@@ -148,24 +144,6 @@ export type Dictionary = {
     homeButton: string;
     contactButton: string;
   };
-  chat: {
-    openLabel: string;
-    closeLabel: string;
-    title: string;
-    status: string;
-    welcome: string;
-    autoReply: string;
-    placeholder: string;
-    sendLabel: string;
-    preChatTitle: string;
-    preChatDescription: string;
-    nameLabel: string;
-    namePlaceholder: string;
-    emailLabel: string;
-    emailPlaceholder: string;
-    startButton: string;
-    editContactLabel: string;
-  };
   data: {
     socialLinks: SocialLink[];
     heroSlides: HeroSlide[];
@@ -175,8 +153,7 @@ export type Dictionary = {
     eventGallery: string[];
     portfolioItems: PortfolioItem[];
     clientLogos: string[];
-    teamMembers: TeamMember[];
-    awards: string[];
+    teamGallery: TeamGalleryPhoto[];
     contactInfo: { address: string; phone: string; email: string };
     companyName: string;
     copyrightYear: string;

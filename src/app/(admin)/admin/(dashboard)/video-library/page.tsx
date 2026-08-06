@@ -9,6 +9,7 @@ import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
+import { toText } from "@/lib/cms/types";
 import type { VideoLibraryDoc } from "@/lib/cms/media";
 import styles from "../news/page.module.css";
 
@@ -27,7 +28,14 @@ export default function VideoLibraryListPage() {
       const snapshot = await getDocs(
         query(collection(getFirebaseDb(), "videoLibrary"), orderBy("order", "asc"))
       );
-      setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
+      setItems(
+        excludeDeleted(
+          snapshot.docs.map((d) => {
+            const data = d.data() as Omit<Row, "id">;
+            return { id: d.id, ...data, title: toText(data.title) };
+          })
+        )
+      );
       setLoading(false);
     })();
   }, []);
@@ -35,7 +43,8 @@ export default function VideoLibraryListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    await softDeleteDoc("videoLibrary", confirmId);
+    const target = items.find((item) => item.id === confirmId);
+    await softDeleteDoc("videoLibrary", confirmId, "คลังวิดีโอ", target?.title || confirmId);
     setItems((list) => list.filter((item) => item.id !== confirmId));
     setDeleting(false);
     setConfirmId(null);
@@ -50,7 +59,7 @@ export default function VideoLibraryListPage() {
         // eslint-disable-next-line @next/next/no-img-element
         item.thumbnail ? <img src={item.thumbnail} alt="" className={styles.thumb} /> : null,
     },
-    { key: "title", label: "ชื่อวิดีโอ", render: (item) => item.title?.th },
+    { key: "title", label: "ชื่อวิดีโอ", render: (item) => item.title },
     { key: "order", label: "ลำดับ", render: (item) => item.order ?? "-" },
   ];
 
@@ -61,7 +70,7 @@ export default function VideoLibraryListPage() {
         columns={columns}
         items={items}
         getRowId={(item) => item.id}
-        searchableText={(item) => `${item.title?.th ?? ""} ${item.title?.en ?? ""}`}
+        searchableText={(item) => item.title ?? ""}
         onNewClick={() => router.push("/admin/video-library/new")}
         newLabel="+ เพิ่มวิดีโอ"
         loading={loading}

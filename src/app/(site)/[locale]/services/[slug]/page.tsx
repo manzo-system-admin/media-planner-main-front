@@ -22,7 +22,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
-  const service = await getServiceBySlug(locale, slug);
+  const service = await getServiceBySlug(slug);
   if (!service) return { robots: { index: false, follow: false } };
   return buildMetadata({
     title: `${service.title} | Media Planner Consultant`,
@@ -42,7 +42,7 @@ export default async function ServiceDetailPage({
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
   const { services } = dict;
-  const service = await getServiceBySlug(locale, slug);
+  const service = await getServiceBySlug(slug);
   if (!service) {
     return (
       <ContentSheet>
@@ -51,7 +51,7 @@ export default async function ServiceDetailPage({
     );
   }
 
-  const otherServices = (await getServiceList(locale)).filter((item) => item.slug !== slug);
+  const otherServices = (await getServiceList()).filter((item) => item.slug !== slug);
 
   return (
     <ContentSheet>

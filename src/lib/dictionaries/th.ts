@@ -1,4 +1,4 @@
-import type { Dictionary } from "./types";
+﻿import type { Dictionary } from "./types";
 
 const th: Dictionary = {
   meta: {
@@ -18,7 +18,6 @@ const th: Dictionary = {
     ],
     contactCta: "ติดต่อเรา",
     menuOpenLabel: "เปิดเมนู",
-    langSwitchLabel: "English",
   },
   footer: {
     privacyPolicy: "Privacy Policy",
@@ -61,8 +60,7 @@ const th: Dictionary = {
     historyBody:
       "Media Planner Consultant ก่อตั้งขึ้นจากความตั้งใจให้ธุรกิจไทยเข้าถึงงานวางแผนสื่อและครีเอทีฟระดับมืออาชีพ ตลอดหลายปีที่ผ่านมาเราเติบโตพร้อมลูกค้าในหลากหลายอุตสาหกรรม ด้วยทีมงานที่เชี่ยวชาญเฉพาะด้าน",
     historyImageAlt: "บรรยากาศออฟฟิศ Media Planner Consultant",
-    teamTitle: "โครงสร้าง/ทีมผู้บริหาร",
-    awardsTitle: "รางวัล/การรับรอง",
+    teamTitle: "แกลเลอรีภาพทีมงาน/บรรยากาศการทำงาน",
   },
   services: {
     listBreadcrumb: "หน้าหลัก / บริการของเรา",
@@ -76,26 +74,13 @@ const th: Dictionary = {
   portfolio: {
     breadcrumb: "หน้าหลัก / ผลงาน-ลูกค้า",
     title: "ผลงาน/ลูกค้า",
-    filters: [
-      { key: "ALL", label: "ทั้งหมด" },
-      { key: "MEDIA_PLANNING", label: "Media Planning" },
-      { key: "DIGITAL", label: "Digital" },
-      { key: "CREATIVE", label: "Creative" },
-      { key: "PR_EVENT", label: "PR & Event" },
-    ],
-    categoryLabels: {
-      MEDIA_PLANNING: "MEDIA PLANNING",
-      DIGITAL: "DIGITAL",
-      CREATIVE: "CREATIVE",
-      PR_EVENT: "PR & EVENT",
-    },
+    filters: [{ key: "ALL", label: "ทั้งหมด" }],
     empty: "ยังไม่มีผลงานในหมวดนี้",
-    clientLabel: "ลูกค้า",
-    challengeLabel: "โจทย์",
-    approachLabel: "แนวทางการทำงาน",
-    resultLabel: "ผลลัพธ์",
     relatedTitle: "ผลงานอื่นๆ ที่คุณอาจสนใจ",
     clientsLabel: "ลูกค้า/พันธมิตรของเรา",
+    viewCaseStudy: "ดูรายละเอียดผลงาน →",
+    clientDrawerEmpty: "ยังไม่มีผลงานที่เชื่อมโยงกับลูกค้ารายนี้",
+    closeLabel: "ปิด",
   },
   news: {
     breadcrumb: "หน้าหลัก / ข่าวสาร-กิจกรรม",
@@ -110,6 +95,8 @@ const th: Dictionary = {
     galleryLabel: "คลังภาพกิจกรรม",
     galleryImageAlt: "ภาพกิจกรรม",
     relatedTitle: "ข่าวสารอื่นๆ ที่คุณอาจสนใจ",
+    searchPlaceholder: "ค้นหาข่าวสาร...",
+    searchEmpty: "ไม่พบข่าวที่ค้นหา",
   },
   contact: {
     breadcrumb: "หน้าหลัก / ติดต่อเรา",
@@ -125,24 +112,6 @@ const th: Dictionary = {
     description: "หน้าที่คุณกำลังค้นหาอาจถูกย้าย ลบไปแล้ว หรือไม่เคยมีอยู่จริง",
     homeButton: "กลับหน้าหลัก",
     contactButton: "ติดต่อเรา",
-  },
-  chat: {
-    openLabel: "เปิดหน้าต่างแชท",
-    closeLabel: "ปิดหน้าต่างแชท",
-    title: "Media Planner Consultant",
-    status: "ออนไลน์ — ตอบกลับภายในไม่กี่นาที",
-    welcome: "สวัสดีค่ะ 👋 ยินดีต้อนรับสู่ Media Planner Consultant มีอะไรให้เราช่วยไหมคะ?",
-    autoReply: "ขอบคุณสำหรับข้อความค่ะ ทีมงานได้รับเรื่องแล้ว และจะติดต่อกลับโดยเร็วที่สุดค่ะ",
-    placeholder: "พิมพ์ข้อความ...",
-    sendLabel: "ส่งข้อความ",
-    preChatTitle: "เริ่มแชทกับเรา",
-    preChatDescription: "กรอกชื่อและอีเมลก่อนเริ่มแชท เพื่อให้ทีมงานติดต่อกลับได้",
-    nameLabel: "ชื่อ",
-    namePlaceholder: "ชื่อของคุณ",
-    emailLabel: "อีเมล",
-    emailPlaceholder: "you@example.com",
-    startButton: "เริ่มแชท",
-    editContactLabel: "เปลี่ยนชื่อ/อีเมล",
   },
   data: {
     socialLinks: [
@@ -306,17 +275,12 @@ const th: Dictionary = {
     ],
     portfolioItems: [
       {
-        slug: "retail-product-launch",
-        category: "MEDIA_PLANNING",
+        id: "retail-product-launch",
+        clientId: "",
         title: "แคมเปญเปิดตัวสินค้าใหม่ — ธุรกิจค้าปลีก",
         image: "https://picsum.photos/seed/portfolio-retail-launch/500/375",
+        images: ["https://picsum.photos/seed/portfolio-retail-launch/500/375"],
         client: "ธุรกิจค้าปลีกรายใหญ่",
-        challenge:
-          "ลูกค้าต้องการเปิดตัวสินค้าใหม่ในตลาดที่มีคู่แข่งหนาแน่น และต้องการสร้างการรับรู้อย่างรวดเร็วในงบประมาณที่จำกัด",
-        approach:
-          "วางแผนสื่อแบบผสมผสานระหว่างทีวี ดิจิทัล และสื่อนอกบ้าน โดยเน้นช่วงเวลาที่กลุ่มเป้าหมายมีการรับสื่อสูงสุด พร้อมเจรจาต่อรองอัตราสื่อให้คุ้มค่าที่สุด",
-        result:
-          "แคมเปญสร้างการรับรู้แบรนด์เพิ่มขึ้นอย่างมีนัยสำคัญ และยอดขายสินค้าใหม่เติบโตเกินเป้าหมายภายในไตรมาสแรก",
         stats: [
           { label: "Reach", value: "2.4M+" },
           { label: "การเติบโตยอดขาย", value: "+32%" },
@@ -324,17 +288,12 @@ const th: Dictionary = {
         ],
       },
       {
-        slug: "food-social-campaign",
-        category: "DIGITAL",
+        id: "food-social-campaign",
+        clientId: "",
         title: "แคมเปญโซเชียลมีเดีย — ธุรกิจอาหาร",
         image: "https://picsum.photos/seed/portfolio-food-social/500/375",
+        images: ["https://picsum.photos/seed/portfolio-food-social/500/375"],
         client: "ธุรกิจอาหารและเครื่องดื่ม",
-        challenge:
-          "แบรนด์อาหารต้องการเข้าถึงกลุ่มคนรุ่นใหม่ผ่านช่องทางโซเชียลมีเดีย แต่ขาดคอนเทนต์ที่โดนใจและกลยุทธ์ที่ชัดเจน",
-        approach:
-          "ออกแบบคอนเทนต์ซีรีส์ที่เล่าเรื่องผ่านอินฟลูเอนเซอร์ ควบคู่กับแคมเปญโฆษณาบนโซเชียลมีเดียที่เจาะกลุ่มเป้าหมายอย่างแม่นยำ",
-        result:
-          "ยอดผู้ติดตามเพิ่มขึ้นต่อเนื่อง อัตราการมีส่วนร่วมสูงกว่าค่าเฉลี่ยอุตสาหกรรม และมียอดสั่งซื้อผ่านช่องทางออนไลน์เพิ่มขึ้น",
         stats: [
           { label: "Engagement Rate", value: "+58%" },
           { label: "ผู้ติดตามใหม่", value: "45K+" },
@@ -342,17 +301,12 @@ const th: Dictionary = {
         ],
       },
       {
-        slug: "finance-ad-video",
-        category: "CREATIVE",
+        id: "finance-ad-video",
+        clientId: "",
         title: "ผลิตวิดีโอโฆษณา — ธุรกิจการเงิน",
         image: "https://picsum.photos/seed/portfolio-finance-video/500/375",
+        images: ["https://picsum.photos/seed/portfolio-finance-video/500/375"],
         client: "ธุรกิจการเงินและประกันภัย",
-        challenge:
-          "ผลิตภัณฑ์ทางการเงินมีความซับซ้อน ลูกค้าต้องการสื่อสารให้เข้าใจง่ายและน่าเชื่อถือในเวลาอันสั้น",
-        approach:
-          "พัฒนาบทและผลิตวิดีโอโฆษณาที่เล่าเรื่องผ่านสถานการณ์ในชีวิตจริง ใช้ภาษาที่เข้าใจง่าย พร้อมงานโพสต์โปรดักชันคุณภาพสูง",
-        result:
-          "วิดีโอได้รับการเผยแพร่ทั้งบนทีวีและออนไลน์ ช่วยเพิ่มความเข้าใจในผลิตภัณฑ์และยอดสมัครใช้บริการ",
         stats: [
           { label: "ยอดรับชม", value: "1.8M+" },
           { label: "อัตราการดูจบ", value: "71%" },
@@ -360,17 +314,12 @@ const th: Dictionary = {
         ],
       },
       {
-        slug: "real-estate-brand-launch",
-        category: "PR_EVENT",
+        id: "real-estate-brand-launch",
+        clientId: "",
         title: "งานเปิดตัวแบรนด์ — ธุรกิจอสังหาริมทรัพย์",
         image: "https://picsum.photos/seed/portfolio-realestate-launch/500/375",
+        images: ["https://picsum.photos/seed/portfolio-realestate-launch/500/375"],
         client: "ธุรกิจอสังหาริมทรัพย์",
-        challenge:
-          "โครงการอสังหาริมทรัพย์ใหม่ต้องการสร้างการรับรู้และความน่าเชื่อถือให้กับกลุ่มลูกค้าระดับบนตั้งแต่วันเปิดตัว",
-        approach:
-          "จัดงานเปิดตัวแบรนด์ร่วมกับสื่อมวลชนและอินฟลูเอนเซอร์สายอสังหาริมทรัพย์ ควบคู่กับแผนประชาสัมพันธ์ต่อเนื่องหลังงาน",
-        result:
-          "งานเปิดตัวได้รับความสนใจจากสื่อจำนวนมาก และสร้างยอดจองห้องชุดตั้งแต่ช่วงพรีเซล",
         stats: [
           { label: "สื่อมวลชนเข้าร่วม", value: "40+ ราย" },
           { label: "ยอดข่าวที่เผยแพร่", value: "60+ ชิ้น" },
@@ -378,17 +327,12 @@ const th: Dictionary = {
         ],
       },
       {
-        slug: "automotive-annual-plan",
-        category: "MEDIA_PLANNING",
+        id: "automotive-annual-plan",
+        clientId: "",
         title: "แผนสื่อประจำปี — ธุรกิจยานยนต์",
         image: "https://picsum.photos/seed/portfolio-automotive-plan/500/375",
+        images: ["https://picsum.photos/seed/portfolio-automotive-plan/500/375"],
         client: "ธุรกิจยานยนต์",
-        challenge:
-          "แบรนด์รถยนต์ต้องการแผนสื่อประจำปีที่ครอบคลุมทุกไตรมาส และรองรับการเปิดตัวรุ่นใหม่หลายรุ่นตลอดปี",
-        approach:
-          "วางแผนงบประมาณสื่อรายไตรมาส จัดสรรสัดส่วนสื่อตามช่วงเวลาเปิดตัวสินค้า และติดตามผลอย่างต่อเนื่องเพื่อปรับแผนให้เหมาะสม",
-        result:
-          "แบรนด์รักษาส่วนแบ่งการรับรู้ในตลาดได้อย่างสม่ำเสมอตลอดทั้งปี และควบคุมงบประมาณสื่อได้อย่างมีประสิทธิภาพ",
         stats: [
           { label: "งบประมาณที่บริหาร", value: "120M+ บาท" },
           { label: "จำนวนรุ่นที่เปิดตัว", value: "5 รุ่น" },
@@ -396,17 +340,12 @@ const th: Dictionary = {
         ],
       },
       {
-        slug: "beauty-content-series",
-        category: "DIGITAL",
+        id: "beauty-content-series",
+        clientId: "",
         title: "Content Series — ธุรกิจความงาม",
         image: "https://picsum.photos/seed/portfolio-beauty-series/500/375",
+        images: ["https://picsum.photos/seed/portfolio-beauty-series/500/375"],
         client: "ธุรกิจความงามและเครื่องสำอาง",
-        challenge:
-          "แบรนด์ความงามต้องการคอนเทนต์ต่อเนื่องที่สร้างการมีส่วนร่วมและกระตุ้นยอดขายในช่องทางออนไลน์",
-        approach:
-          "ผลิตคอนเทนต์ซีรีส์รายสัปดาห์ที่ให้ความรู้ด้านความงามควบคู่กับการแนะนำสินค้า ผสานกับแคมเปญโปรโมชันตามเทศกาล",
-        result:
-          "คอนเทนต์ซีรีส์สร้างฐานผู้ติดตามที่เหนียวแน่น และมียอดขายผ่านช่องทางออนไลน์เพิ่มขึ้นต่อเนื่องตลอดแคมเปญ",
         stats: [
           { label: "ตอนที่เผยแพร่", value: "24 ตอน" },
           { label: "ยอดชมรวม", value: "3.1M+" },
@@ -422,33 +361,11 @@ const th: Dictionary = {
       "Glow Beauty Co.",
       "Metro Living",
     ],
-    teamMembers: [
-      {
-        name: "ชื่อ-นามสกุล",
-        role: "ประธานเจ้าหน้าที่บริหาร",
-        avatar: "https://i.pravatar.cc/300?img=12",
-      },
-      {
-        name: "ชื่อ-นามสกุล",
-        role: "ผู้อำนวยการฝ่ายวางแผนสื่อ",
-        avatar: "https://i.pravatar.cc/300?img=45",
-      },
-      {
-        name: "ชื่อ-นามสกุล",
-        role: "ผู้อำนวยการฝ่ายครีเอทีฟ",
-        avatar: "https://i.pravatar.cc/300?img=32",
-      },
-      {
-        name: "ชื่อ-นามสกุล",
-        role: "ผู้จัดการฝ่ายลูกค้าสัมพันธ์",
-        avatar: "https://i.pravatar.cc/300?img=68",
-      },
-    ],
-    awards: [
-      "Agency of the Year 2568",
-      "Best Digital Campaign",
-      "Creative Excellence Award",
-      "ISO 9001 Certified",
+    teamGallery: [
+      { id: "team-1", image: "https://picsum.photos/seed/team-office-1/480/480", caption: "" },
+      { id: "team-2", image: "https://picsum.photos/seed/team-office-2/480/480", caption: "" },
+      { id: "team-3", image: "https://picsum.photos/seed/team-office-3/480/480", caption: "" },
+      { id: "team-4", image: "https://picsum.photos/seed/team-office-4/480/480", caption: "" },
     ],
     contactInfo: {
       address:

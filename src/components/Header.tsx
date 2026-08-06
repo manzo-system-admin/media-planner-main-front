@@ -16,8 +16,6 @@ export default function Header({ locale, dict }: { locale: Locale; dict: Diction
   const unprefixedPath = pathname.startsWith(localePrefix)
     ? pathname.slice(localePrefix.length) || "/"
     : pathname;
-  const otherLocale: Locale = locale === "th" ? "en" : "th";
-  const langSwitchHref = `/${otherLocale}${unprefixedPath === "/" ? "" : unprefixedPath}`;
 
   return (
     <header className={`${styles.header} ${styles.light}`}>
@@ -44,6 +42,8 @@ export default function Header({ locale, dict }: { locale: Locale; dict: Diction
         <span />
       </button>
 
+      {menuOpen && <div className={styles.backdrop} onClick={() => setMenuOpen(false)} />}
+
       <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
         {dict.nav.links.map((link) => {
           const href = `${localePrefix}${link.href === "/" ? "" : link.href}`;
@@ -59,23 +59,6 @@ export default function Header({ locale, dict }: { locale: Locale; dict: Diction
             </Link>
           );
         })}
-        <Link
-          href={langSwitchHref}
-          className={styles.langSwitch}
-          aria-label={dict.nav.langSwitchLabel}
-          onClick={() => setMenuOpen(false)}
-        >
-          <span
-            className={`${styles.langThumb} ${locale === "en" ? styles.langThumbEn : ""}`}
-            aria-hidden="true"
-          />
-          <span className={`${styles.langOption} ${locale === "th" ? styles.langOptionActive : ""}`}>
-            TH
-          </span>
-          <span className={`${styles.langOption} ${locale === "en" ? styles.langOptionActive : ""}`}>
-            EN
-          </span>
-        </Link>
       </nav>
     </header>
   );

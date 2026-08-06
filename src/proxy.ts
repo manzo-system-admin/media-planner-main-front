@@ -19,6 +19,14 @@ export function proxy(request: NextRequest) {
     return;
   }
 
+  // English has been removed — send any old /en links to their Thai equivalent
+  // instead of letting them fall through to the generic redirect below (which
+  // would otherwise double-prefix them as /th/en/...).
+  if (pathname === "/en" || pathname.startsWith("/en/")) {
+    request.nextUrl.pathname = `/${defaultLocale}${pathname.slice(3)}`;
+    return NextResponse.redirect(request.nextUrl);
+  }
+
   const pathnameHasLocale = locales.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );

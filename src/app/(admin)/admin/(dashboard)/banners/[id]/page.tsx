@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
+import { toText } from "@/lib/cms/types";
 import type { BannerDoc } from "@/lib/cms/homepage";
 import formStyles from "../../news/[id]/page.module.css";
 
@@ -17,7 +18,7 @@ const EMPTY: FormState = {
   type: "image",
   src: "",
   poster: "",
-  alt: { th: "", en: "" },
+  alt: "",
   order: 0,
 };
 
@@ -45,7 +46,10 @@ export default function BannerFormPage() {
     }
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "banners", params.id));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setForm({ ...EMPTY, ...data, alt: toText(data.alt) });
+      }
       setLoading(false);
     })();
   }, [isNew, params.id]);
@@ -55,8 +59,10 @@ export default function BannerFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "banners"), form);
+        await logActivity("create", "แบนเนอร์", form.alt || "แบนเนอร์");
       } else {
         await updateDoc(doc(getFirebaseDb(), "banners", params.id), { ...form });
+        await logActivity("update", "แบนเนอร์", form.alt || "แบนเนอร์");
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -68,7 +74,7 @@ export default function BannerFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("banners", params.id);
+    await softDeleteDoc("banners", params.id, "แบนเนอร์", form.alt || "แบนเนอร์");
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -127,23 +133,13 @@ export default function BannerFormPage() {
           </div>
         )}
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>คำอธิบายภาพ (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.alt.th}
-              onChange={(e) => setForm({ ...form, alt: { ...form.alt, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>คำอธิบายภาพ (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.alt.en}
-              onChange={(e) => setForm({ ...form, alt: { ...form.alt, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>คำอธิบายภาพ</label>
+          <input
+            className={formStyles.input}
+            value={form.alt}
+            onChange={(e) => setForm({ ...form, alt: e.target.value })}
+          />
         </div>
 
         <div className={formStyles.actions}>

@@ -4,27 +4,27 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { getNextOrder, softDeleteDoc } from "@/lib/admin/adminData";
+import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
-import MediaUploader from "@/components/admin/MediaUploader";
-import type { PortfolioCategoryDoc, PortfolioDoc, PortfolioStatDoc } from "@/lib/cms/portfolio";
+import MultiImageUploader from "@/components/admin/MultiImageUploader";
+import RichTextEditor from "@/components/admin/RichTextEditor";
+import SearchableSelect from "@/components/admin/SearchableSelect";
+import { toText } from "@/lib/cms/types";
+import type { PortfolioDoc, PortfolioStatDoc } from "@/lib/cms/portfolio";
+import type { ClientDoc } from "@/lib/cms/org";
 
 import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<PortfolioDoc, "id">;
 
 const EMPTY: FormState = {
-  slug: "",
-  category: "",
-  image: "",
+  clientId: "",
+  images: [],
   order: 0,
-  client: { th: "", en: "" },
-  title: { th: "", en: "" },
-  challenge: { th: "", en: "" },
-  approach: { th: "", en: "" },
-  result: { th: "", en: "" },
+  title: "",
   stats: [],
+  description: "",
 };
 
 function StatsEditor({
@@ -46,27 +46,19 @@ function StatsEditor({
       {stats.map((stat, index) => (
         <div
           key={index}
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 8, alignItems: "center" }}
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 8, alignItems: "center" }}
         >
           <input
             className={formStyles.input}
-            placeholder="ป้ายกำกับ (ไทย)"
-            value={stat.label.th}
-            onChange={(e) => update(index, { label: { ...stat.label, th: e.target.value } })}
-          />
-          <input
-            className={formStyles.input}
-            placeholder="ป้ายกำกับ (English)"
-            value={stat.label.en}
-            onChange={(e) => update(index, { label: { ...stat.label, en: e.target.value } })}
+            placeholder="ป้ายกำกับ"
+            value={stat.label}
+            onChange={(e) => update(index, { label: e.target.value })}
           />
           <input
             className={formStyles.input}
             placeholder="ค่า (เช่น +32%)"
-            value={stat.value.th}
-            onChange={(e) =>
-              update(index, { value: { th: e.target.value, en: e.target.value } })
-            }
+            value={stat.value}
+            onChange={(e) => update(index, { value: e.target.value })}
           />
           <button
             type="button"
@@ -79,9 +71,7 @@ function StatsEditor({
       ))}
       <button
         type="button"
-        onClick={() =>
-          onChange([...stats, { label: { th: "", en: "" }, value: { th: "", en: "" } }])
-        }
+        onClick={() => onChange([...stats, { label: "", value: "" }])}
         style={{
           alignSelf: "flex-start",
           font: "600 12.5px var(--font-admin)",
@@ -111,22 +101,20 @@ export default function PortfolioFormPage() {
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [categories, setCategories] = useState<{ key: string; label: string }[]>([]);
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     (async () => {
-      const snapshot = await getDocs(
-        query(collection(getFirebaseDb(), "portfolioCategories"), orderBy("order", "asc"))
-      );
+      const snapshot = await getDocs(query(collection(getFirebaseDb(), "clients"), orderBy("order", "asc")));
       const list = snapshot.docs
         .filter((d) => !d.data().deleted)
         .map((d) => {
-          const data = d.data() as Omit<PortfolioCategoryDoc, "id">;
-          return { key: data.key, label: data.label?.th || data.key };
+          const data = d.data() as Omit<ClientDoc, "id">;
+          return { id: d.id, name: data.name };
         });
-      setCategories(list);
+      setClients(list);
       if (isNew && list.length > 0) {
-        setForm((f) => (f.category ? f : { ...f, category: list[0].key }));
+        setForm((f) => (f.clientId ? f : { ...f, clientId: list[0].id }));
       }
     })();
   }, [isNew]);
@@ -141,7 +129,16 @@ export default function PortfolioFormPage() {
     }
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "portfolio", params.id));
-      if (snapshot.exists()) setForm({ ...EMPTY, ...(snapshot.data() as FormState) });
+      if (snapshot.exists()) {
+        const data = snapshot.data() as FormState & { image?: string };
+        // Older docs stored a single `image` string — migrate it into `images` on load.
+        const images = data.images ?? (data.image ? [data.image] : []);
+        const stats = (data.stats ?? []).map((stat) => ({
+          label: toText(stat.label),
+          value: toText(stat.value),
+        }));
+        setForm({ ...EMPTY, ...data, images, title: toText(data.title), stats });
+      }
       setLoading(false);
     })();
   }, [isNew, params.id]);
@@ -151,8 +148,10 @@ export default function PortfolioFormPage() {
     try {
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "portfolio"), form);
+        await logActivity("create", "ผลงาน/เคส", form.title);
       } else {
         await updateDoc(doc(getFirebaseDb(), "portfolio", params.id), { ...form });
+        await logActivity("update", "ผลงาน/เคส", form.title);
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -164,7 +163,7 @@ export default function PortfolioFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("portfolio", params.id);
+    await softDeleteDoc("portfolio", params.id, "ผลงาน/เคส", form.title);
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -177,149 +176,53 @@ export default function PortfolioFormPage() {
       <h1 className={formStyles.title}>{isNew ? "เพิ่มผลงานใหม่" : "แก้ไขผลงาน"}</h1>
 
       <div className={formStyles.form}>
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <label className={formStyles.label}>Slug</label>
-            <input
-              className={formStyles.input}
-              value={form.slug}
-              onChange={(e) => setForm({ ...form, slug: e.target.value })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <label className={formStyles.label}>ลำดับ</label>
-            <input
-              type="number"
-              className={formStyles.input}
-              value={form.order ?? 0}
-              onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
-            />
-          </div>
-        </div>
-
         <div className={formStyles.field}>
-          <label className={formStyles.label}>หมวดหมู่</label>
-          <select
+          <label className={formStyles.label}>ลำดับ</label>
+          <input
+            type="number"
             className={formStyles.input}
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-          >
-            {categories.length === 0 && <option value={form.category}>{form.category}</option>}
-            {categories.map((cat) => (
-              <option key={cat.key} value={cat.key}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={formStyles.field}>
-          <label className={formStyles.label}>รูปภาพ</label>
-          <MediaUploader
-            value={form.image}
-            onChange={(url) => setForm({ ...form, image: url })}
-            folder="portfolio"
-            accept="image/*"
-            label="อัปโหลดรูปภาพ"
+            value={form.order ?? 0}
+            onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
           />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อผลงาน (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.title.th}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ชื่อผลงาน (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.title.en}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ลูกค้า</label>
+          <SearchableSelect
+            options={clients.map((client) => ({ value: client.id, label: client.name }))}
+            value={form.clientId ?? ""}
+            onChange={(clientId) => setForm({ ...form, clientId })}
+            placeholder="ค้นหาลูกค้า..."
+          />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ลูกค้า (ไทย)</span>
-            <input
-              className={formStyles.input}
-              value={form.client.th}
-              onChange={(e) => setForm({ ...form, client: { ...form.client, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ลูกค้า (English)</span>
-            <input
-              className={formStyles.input}
-              value={form.client.en}
-              onChange={(e) => setForm({ ...form, client: { ...form.client, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>รูปภาพ (รูปแรกจะใช้เป็นภาพปก)</label>
+          <MultiImageUploader
+            values={form.images}
+            onChange={(images) => setForm({ ...form, images })}
+            folder="portfolio"
+          />
         </div>
 
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>โจทย์ (ไทย)</span>
-            <textarea
-              className={formStyles.textarea}
-              value={form.challenge.th}
-              onChange={(e) => setForm({ ...form, challenge: { ...form.challenge, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>โจทย์ (English)</span>
-            <textarea
-              className={formStyles.textarea}
-              value={form.challenge.en}
-              onChange={(e) => setForm({ ...form, challenge: { ...form.challenge, en: e.target.value } })}
-            />
-          </div>
-        </div>
-
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>แนวทางการทำงาน (ไทย)</span>
-            <textarea
-              className={formStyles.textarea}
-              value={form.approach.th}
-              onChange={(e) => setForm({ ...form, approach: { ...form.approach, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>แนวทางการทำงาน (English)</span>
-            <textarea
-              className={formStyles.textarea}
-              value={form.approach.en}
-              onChange={(e) => setForm({ ...form, approach: { ...form.approach, en: e.target.value } })}
-            />
-          </div>
-        </div>
-
-        <div className={formStyles.row}>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ผลลัพธ์ (ไทย)</span>
-            <textarea
-              className={formStyles.textarea}
-              value={form.result.th}
-              onChange={(e) => setForm({ ...form, result: { ...form.result, th: e.target.value } })}
-            />
-          </div>
-          <div className={formStyles.field}>
-            <span className={formStyles.langLabel}>ผลลัพธ์ (English)</span>
-            <textarea
-              className={formStyles.textarea}
-              value={form.result.en}
-              onChange={(e) => setForm({ ...form, result: { ...form.result, en: e.target.value } })}
-            />
-          </div>
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ชื่อผลงาน</label>
+          <input
+            className={formStyles.input}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
         </div>
 
         <StatsEditor stats={form.stats} onChange={(stats) => setForm({ ...form, stats })} />
+
+        <div className={formStyles.field}>
+          <span className={formStyles.langLabel}>รายละเอียดผลงาน (ไทย)</span>
+          <RichTextEditor
+            value={form.description ?? ""}
+            onChange={(html) => setForm({ ...form, description: html })}
+          />
+        </div>
 
         <div className={formStyles.actions}>
           <button type="button" className={formStyles.saveButton} onClick={handleSave} disabled={saving}>

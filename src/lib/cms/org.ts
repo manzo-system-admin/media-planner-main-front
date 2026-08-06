@@ -1,21 +1,12 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { pick, type Localized } from "./types";
-import type { Locale } from "@/lib/i18n/config";
-import type { TeamMember } from "@/lib/dictionaries/types";
+import { toText } from "./types";
+import type { TeamGalleryPhoto } from "@/lib/dictionaries/types";
 
-export type TeamMemberDoc = {
+export type TeamGalleryDoc = {
   id: string;
-  name: Localized;
-  role: Localized;
-  avatar: string;
-  order?: number;
-  deleted?: boolean;
-};
-
-export type AwardDoc = {
-  id: string;
-  name: Localized;
+  image: string;
+  caption?: string;
   order?: number;
   deleted?: boolean;
 };
@@ -28,29 +19,22 @@ export type ClientDoc = {
   deleted?: boolean;
 };
 
-export async function getTeamMembers(locale: Locale): Promise<TeamMember[]> {
+export async function getTeamGallery(): Promise<TeamGalleryPhoto[]> {
   const snapshot = await getAdminDb().collection("team").orderBy("order", "asc").get();
   return snapshot.docs
     .filter((doc) => !doc.data().deleted)
     .map((doc) => {
-      const data = doc.data() as Omit<TeamMemberDoc, "id">;
-      return { name: pick(data.name, locale), role: pick(data.role, locale), avatar: data.avatar };
+      const data = doc.data() as Omit<TeamGalleryDoc, "id">;
+      return { id: doc.id, image: data.image, caption: data.caption ? toText(data.caption) : "" };
     });
 }
 
-export async function getAwards(locale: Locale): Promise<string[]> {
-  const snapshot = await getAdminDb().collection("awards").orderBy("order", "asc").get();
-  return snapshot.docs
-    .filter((doc) => !doc.data().deleted)
-    .map((doc) => pick((doc.data() as Omit<AwardDoc, "id">).name, locale));
-}
-
-export async function getClients(): Promise<{ name: string; logoUrl?: string }[]> {
+export async function getClients(): Promise<{ id: string; name: string; logoUrl?: string }[]> {
   const snapshot = await getAdminDb().collection("clients").orderBy("order", "asc").get();
   return snapshot.docs
     .filter((doc) => !doc.data().deleted)
     .map((doc) => {
       const data = doc.data() as Omit<ClientDoc, "id">;
-      return { name: data.name, logoUrl: data.logoUrl };
+      return { id: doc.id, name: data.name, logoUrl: data.logoUrl };
     });
 }

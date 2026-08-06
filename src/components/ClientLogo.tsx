@@ -61,7 +61,7 @@ export default function ClientLogo({
       <span className={styles.logo}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoUrl} alt="" style={{ maxHeight: 28, maxWidth: 40, objectFit: "contain" }} />
-        <span className={styles.name}>{name}</span>
+        {/* <span className={styles.name}>{name}</span> */}
       </span>
     );
   }

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import Pagination from "@/components/Pagination";
 import styles from "./page.module.css";
-import type { Dictionary, PortfolioCategory, PortfolioFilter, PortfolioItem } from "@/lib/dictionaries/types";
+import type { Dictionary, PortfolioFilter, PortfolioItem } from "@/lib/dictionaries/types";
 import type { Locale } from "@/lib/i18n/config";
 
 const PAGE_SIZE = 6;
@@ -16,24 +16,22 @@ export default function PortfolioExplorer({
   homeLabel,
   portfolio,
   filters,
-  categoryLabels,
   items: allItems,
 }: {
   locale: Locale;
   homeLabel: string;
   portfolio: Dictionary["portfolio"];
   filters: PortfolioFilter[];
-  categoryLabels: Record<PortfolioCategory, string>;
   items: PortfolioItem[];
 }) {
-  const [active, setActive] = useState<PortfolioCategory | "ALL">("ALL");
+  const [active, setActive] = useState<string>("ALL");
   const [page, setPage] = useState(1);
 
-  const filteredItems = active === "ALL" ? allItems : allItems.filter((item) => item.category === active);
+  const filteredItems = active === "ALL" ? allItems : allItems.filter((item) => item.clientId === active);
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE));
   const items = filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const handleFilterClick = (key: PortfolioCategory | "ALL") => {
+  const handleFilterClick = (key: string) => {
     setActive(key);
     setPage(1);
   };
@@ -62,7 +60,7 @@ export default function PortfolioExplorer({
       <div className={styles.grid}>
         {items.length === 0 && <p className={styles.empty}>{portfolio.empty}</p>}
         {items.map((item) => (
-          <Link key={item.slug} href={`/${locale}/portfolio/${item.slug}`} className={styles.card}>
+          <Link key={item.id} href={`/${locale}/portfolio/${item.id}`} className={styles.card}>
             <div className={styles.cardImage}>
               <Image
                 src={item.image}
@@ -73,7 +71,7 @@ export default function PortfolioExplorer({
               />
             </div>
             <div className={styles.cardBody}>
-              <div className={styles.cardCategory}>{categoryLabels[item.category]}</div>
+              {item.client && <div className={styles.cardClient}>{item.client}</div>}
               <div className={styles.cardTitle}>{item.title}</div>
             </div>
           </Link>

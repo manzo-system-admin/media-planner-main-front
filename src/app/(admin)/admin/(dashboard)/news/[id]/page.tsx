@@ -7,27 +7,34 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
+  orderBy,
+  query,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { softDeleteDoc } from "@/lib/admin/adminData";
+import { logActivity, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
 import RichTextEditor from "@/components/admin/RichTextEditor";
-import type { NewsDoc } from "@/lib/cms/types";
+import { toText, type NewsCategoryDoc, type NewsDoc } from "@/lib/cms/types";
 import styles from "./page.module.css";
 
 type FormState = Omit<NewsDoc, "id" | "createdAt">;
 
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 const EMPTY: FormState = {
-  slug: "",
-  date: "",
-  title: { th: "", en: "" },
+  date: todayIso(),
+  category: "",
+  title: "",
   image: "",
-  excerpt: { th: "", en: "" },
-  body: { th: "", en: "" },
+  excerpt: "",
+  body: "",
 };
 
 export default function NewsFormPage() {
@@ -43,20 +50,39 @@ export default function NewsFormPage() {
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [categories, setCategories] = useState<{ key: string; label: string }[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const snapshot = await getDocs(
+        query(collection(getFirebaseDb(), "newsCategories"), orderBy("order", "asc"))
+      );
+      const list = snapshot.docs
+        .filter((d) => !d.data().deleted)
+        .map((d) => {
+          const data = d.data() as Omit<NewsCategoryDoc, "id">;
+          return { key: data.key, label: toText(data.label) || data.key };
+        });
+      setCategories(list);
+      if (isNew && list.length > 0) {
+        setForm((f) => (f.category ? f : { ...f, category: list[0].key }));
+      }
+    })();
+  }, [isNew]);
 
   useEffect(() => {
     if (isNew) return;
     (async () => {
       const snapshot = await getDoc(doc(getFirebaseDb(), "news", params.id));
       if (snapshot.exists()) {
-        const data = snapshot.data() as FormState;
+        const data = snapshot.data();
         setForm({
-          slug: data.slug ?? "",
-          date: data.date ?? "",
-          title: data.title ?? { th: "", en: "" },
+          date: data.date || todayIso(),
+          category: data.category ?? "",
+          title: toText(data.title),
           image: data.image ?? "",
-          excerpt: data.excerpt ?? { th: "", en: "" },
-          body: data.body ?? { th: "", en: "" },
+          excerpt: toText(data.excerpt),
+          body: toText(data.body),
         });
       }
       setLoading(false);
@@ -71,8 +97,10 @@ export default function NewsFormPage() {
           ...form,
           createdAt: serverTimestamp(),
         });
+        await logActivity("create", "ข่าวสาร", form.title);
       } else {
         await updateDoc(doc(getFirebaseDb(), "news", params.id), { ...form });
+        await logActivity("update", "ข่าวสาร", form.title);
       }
       setAlert({ message: "บันทึกสำเร็จ", tone: "success", redirect: true });
     } catch (err) {
@@ -84,7 +112,7 @@ export default function NewsFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("news", params.id);
+    await softDeleteDoc("news", params.id, "ข่าวสาร", form.title);
     setDeleting(false);
     setConfirmOpen(false);
     setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
@@ -97,24 +125,30 @@ export default function NewsFormPage() {
       <h1 className={styles.title}>{isNew ? "เพิ่มข่าวใหม่" : "แก้ไขข่าว"}</h1>
 
       <div className={styles.form}>
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <label className={styles.label}>Slug (ใช้ใน URL, ต้องไม่ซ้ำ)</label>
-            <input
-              className={styles.input}
-              value={form.slug}
-              onChange={(e) => setForm({ ...form, slug: e.target.value })}
-            />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label}>วันที่</label>
-            <input
-              className={styles.input}
-              value={form.date}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              placeholder="12 มิ.ย. 2569"
-            />
-          </div>
+        <div className={styles.field}>
+          <label className={styles.label}>วันที่</label>
+          <input
+            type="date"
+            className={styles.input}
+            value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label}>หมวดหมู่</label>
+          <select
+            className={styles.input}
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+          >
+            {categories.length === 0 && <option value={form.category}>{form.category}</option>}
+            {categories.map((cat) => (
+              <option key={cat.key} value={cat.key}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={styles.field}>
@@ -128,58 +162,27 @@ export default function NewsFormPage() {
           />
         </div>
 
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.langLabel}>หัวข้อ (ไทย)</span>
-            <input
-              className={styles.input}
-              value={form.title.th}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, th: e.target.value } })}
-            />
-          </div>
-          <div className={styles.field}>
-            <span className={styles.langLabel}>หัวข้อ (English)</span>
-            <input
-              className={styles.input}
-              value={form.title.en}
-              onChange={(e) => setForm({ ...form, title: { ...form.title, en: e.target.value } })}
-            />
-          </div>
-        </div>
-
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.langLabel}>คำโปรย (ไทย)</span>
-            <textarea
-              className={styles.textarea}
-              value={form.excerpt.th}
-              onChange={(e) => setForm({ ...form, excerpt: { ...form.excerpt, th: e.target.value } })}
-            />
-          </div>
-          <div className={styles.field}>
-            <span className={styles.langLabel}>คำโปรย (English)</span>
-            <textarea
-              className={styles.textarea}
-              value={form.excerpt.en}
-              onChange={(e) => setForm({ ...form, excerpt: { ...form.excerpt, en: e.target.value } })}
-            />
-          </div>
-        </div>
-
         <div className={styles.field}>
-          <span className={styles.langLabel}>เนื้อหาบทความ (ไทย)</span>
-          <RichTextEditor
-            value={form.body.th}
-            onChange={(html) => setForm({ ...form, body: { ...form.body, th: html } })}
+          <label className={styles.label}>หัวข้อ</label>
+          <input
+            className={styles.input}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
         </div>
 
         <div className={styles.field}>
-          <span className={styles.langLabel}>เนื้อหาบทความ (English)</span>
-          <RichTextEditor
-            value={form.body.en}
-            onChange={(html) => setForm({ ...form, body: { ...form.body, en: html } })}
+          <label className={styles.label}>คำโปรย</label>
+          <textarea
+            className={styles.textarea}
+            value={form.excerpt}
+            onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
           />
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label}>เนื้อหาบทความ</label>
+          <RichTextEditor value={form.body} onChange={(html) => setForm({ ...form, body: html })} />
         </div>
 
         <div className={styles.actions}>

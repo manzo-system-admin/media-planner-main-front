@@ -1,13 +1,12 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { pick, type Localized } from "./types";
-import type { Locale } from "@/lib/i18n/config";
+import { toText } from "./types";
 import type { SocialLink } from "@/lib/dictionaries/types";
 
 const DOC_ID = "config";
 
 export type SiteSettingsDoc = {
-  address: Localized;
+  address: string;
   phone: string;
   email: string;
   socialLinks: SocialLink[];
@@ -24,12 +23,12 @@ export type SiteSettings = {
   mapLng?: number;
 };
 
-export async function getSiteSettings(locale: Locale): Promise<SiteSettings | null> {
+export async function getSiteSettings(): Promise<SiteSettings | null> {
   const snapshot = await getAdminDb().collection("siteSettings").doc(DOC_ID).get();
   if (!snapshot.exists) return null;
   const data = snapshot.data() as SiteSettingsDoc;
   return {
-    address: pick(data.address, locale),
+    address: toText(data.address),
     phone: data.phone,
     email: data.email,
     socialLinks: data.socialLinks ?? [],
