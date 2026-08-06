@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "cross-env IS_WEBPACK_TEST=1 firebase deploy --only hosting"
   },
   "dependencies": {
     "@tiptap/extension-image": "^3.27.2",
@@ -24,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "typescript": "^5"
