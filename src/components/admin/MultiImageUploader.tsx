@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { getFirebaseStorage } from "@/lib/firebase/client";
+import { resizeImageFile } from "@/lib/media/resizeImageFile";
 import styles from "./MultiImageUploader.module.css";
 
 type UploadingFile = { id: string; name: string; progress: number; error?: string };
@@ -33,11 +34,12 @@ export default function MultiImageUploader({
     valuesRef.current = values;
   }, [values]);
 
-  const uploadFile = (file: File) => {
+  const uploadFile = async (file: File) => {
     const id = `${Date.now()}-${file.name}`;
     setUploading((list) => [...list, { id, name: file.name, progress: 0 }]);
+    const upload = file.type.startsWith("image/") ? await resizeImageFile(file) : file;
     const path = `uploads/${folder}/${id}`;
-    const task = uploadBytesResumable(ref(getFirebaseStorage(), path), file);
+    const task = uploadBytesResumable(ref(getFirebaseStorage(), path), upload);
 
     task.on(
       "state_changed",

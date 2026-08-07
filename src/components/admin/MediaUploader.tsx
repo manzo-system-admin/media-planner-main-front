@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { getFirebaseStorage } from "@/lib/firebase/client";
+import { resizeImageFile } from "@/lib/media/resizeImageFile";
 import styles from "./MediaUploader.module.css";
 
 export default function MediaUploader({
@@ -24,11 +25,13 @@ export default function MediaUploader({
   const isVideo = /\.(mp4|webm|mov)$/i.test(value);
   const acceptsImage = accept.includes("image");
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     setError(null);
     setProgress(0);
-    const path = `uploads/${folder}/${Date.now()}-${file.name}`;
-    const task = uploadBytesResumable(ref(getFirebaseStorage(), path), file);
+    const isImage = accept.includes("image") && file.type.startsWith("image/");
+    const upload = isImage ? await resizeImageFile(file) : file;
+    const path = `uploads/${folder}/${Date.now()}-${upload.name}`;
+    const task = uploadBytesResumable(ref(getFirebaseStorage(), path), upload);
 
     task.on(
       "state_changed",
