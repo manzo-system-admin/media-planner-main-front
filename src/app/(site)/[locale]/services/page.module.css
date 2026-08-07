@@ -1,3 +1,14 @@
+.overview {
+  padding: 0 var(--shell-pad) 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.overviewImage {
+  width: 100%;
+  height: auto;
+}
+
 .row {
   padding: 64px var(--shell-pad);
   display: grid;

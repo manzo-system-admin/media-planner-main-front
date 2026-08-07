@@ -43,6 +43,18 @@ export default async function ServicesPage({
         title={services.listTitle}
       />
 
+      <div className={styles.overview}>
+        <Image
+          src="/images/services-overview.png"
+          alt={services.listTitle}
+          width={1536}
+          height={1024}
+          sizes="(max-width: 900px) 100vw, 900px"
+          className={styles.overviewImage}
+          priority
+        />
+      </div>
+
       {serviceList.map((service, index) => {
         const imageFirst = index % 2 === 1;
         return (
