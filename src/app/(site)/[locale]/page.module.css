@@ -293,7 +293,7 @@
   display: flex;
   width: max-content;
   gap: 16px;
-  animation: clientsScroll 32s linear infinite;
+  animation: clientsScroll 60s linear infinite;
 }
 
 .clientsRow:hover {
