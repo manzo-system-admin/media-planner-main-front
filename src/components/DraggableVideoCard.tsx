@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import styles from "./DraggableVideoCard.module.css";
 
 const CLICK_THRESHOLD_PX = 5;
@@ -8,10 +8,12 @@ const CLICK_THRESHOLD_PX = 5;
 export default function DraggableVideoCard({
   children,
   className,
+  style,
   onClick,
 }: {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
   onClick?: () => void;
 }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -49,7 +51,7 @@ export default function DraggableVideoCard({
   return (
     <div
       className={`${className ?? ""} ${styles.draggable} ${dragging ? styles.dragging : ""}`}
-      style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      style={{ ...style, transform: `translate(${offset.x}px, ${offset.y}px)` }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

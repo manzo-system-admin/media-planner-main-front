@@ -41,7 +41,11 @@ export default function VideoPopupCard({
 
   return (
     <>
-      <DraggableVideoCard className={className} onClick={() => videoSource && setOpen(true)}>
+      <DraggableVideoCard
+        className={className}
+        style={aspectRatio < 1 ? { width: "min(210px, 100%)", marginLeft: "auto", marginRight: "auto" } : undefined}
+        onClick={() => videoSource && setOpen(true)}
+      >
         <div
           className={styles.videoThumb}
           style={thumbRatio ? ({ "--thumb-ratio": thumbRatio } as CSSProperties) : undefined}
@@ -77,7 +81,7 @@ export default function VideoPopupCard({
       {open && videoSource && (
         <div className={styles.overlay} onClick={() => setOpen(false)}>
           <div
-            className={styles.modal}
+            className={`${styles.modal} ${aspectRatio < 1 ? styles.modalPortrait : ""}`}
             style={{ "--ratio": aspectRatio } as CSSProperties}
             onClick={(e) => e.stopPropagation()}
           >

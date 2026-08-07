@@ -5,6 +5,7 @@
   background: var(--surface-alt);
 }
 
+
 .playIcon {
   position: absolute;
   inset: 0;
@@ -56,6 +57,10 @@
   background: #000;
   border-radius: 12px;
   overflow: hidden;
+}
+
+.modalPortrait {
+  --max-h: 70vh;
 }
 
 .closeButton {
