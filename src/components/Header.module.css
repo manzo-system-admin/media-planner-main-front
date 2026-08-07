@@ -3,10 +3,11 @@
   top: 0;
   z-index: 40;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: 24px;
-  padding: 14px var(--shell-pad);
+  height: 72px;
+  padding: 0 var(--shell-pad);
 }
 
 .light {
@@ -29,7 +30,7 @@
 .nav {
   display: flex;
   align-items: stretch;
-  height: 44px;
+  align-self: stretch;
   gap: clamp(12px, 2vw, 28px);
 }
 
@@ -41,7 +42,6 @@
   font: 600 17px/1 var(--font-heading);
   white-space: nowrap;
   padding: 0 18px;
-  border-radius: 6px;
   color: var(--grad-blue);
   transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -53,7 +53,7 @@
 
 .navLinkActive {
   font-weight: 600;
-  background: rgba(46, 111, 186, 0.12);
+  background: #e6f0fb;
 }
 
 .menuToggle {
@@ -103,6 +103,7 @@
   .navLink {
     height: auto;
     width: 100%;
+    padding: 14px 16px;
     justify-content: flex-start;
   }
 
