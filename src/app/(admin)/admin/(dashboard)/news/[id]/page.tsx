@@ -34,6 +34,7 @@ const EMPTY: FormState = {
   title: "",
   image: "",
   body: "",
+  pinned: false,
 };
 
 export default function NewsFormPage() {
@@ -81,6 +82,7 @@ export default function NewsFormPage() {
           title: toText(data.title),
           image: data.image ?? "",
           body: toText(data.body),
+          pinned: data.pinned === true,
         });
       }
       setLoading(false);
@@ -168,6 +170,15 @@ export default function NewsFormPage() {
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
         </div>
+
+        <label className={styles.checkField}>
+          <input
+            type="checkbox"
+            checked={form.pinned === true}
+            onChange={(e) => setForm({ ...form, pinned: e.target.checked })}
+          />
+          <span>ปักหมุดข่าวนี้</span>
+        </label>
 
         <div className={styles.field}>
           <label className={styles.label}>เนื้อหาบทความ</label>

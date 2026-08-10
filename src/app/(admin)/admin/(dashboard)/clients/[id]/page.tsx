@@ -8,12 +8,13 @@ import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData"
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
-import type { ClientDoc } from "@/lib/cms/org";
+import { CLIENT_CATEGORIES } from "@/lib/cms/clientCategories";
+import type { ClientDoc } from "@/lib/cms/orgTypes";
 import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<ClientDoc, "id">;
 
-const EMPTY: FormState = { name: "", logoUrl: "", order: 0 };
+const EMPTY: FormState = { name: "", category: "pr", logoUrl: "", order: 0 };
 
 export default function ClientFormPage() {
   const params = useParams<{ id: string }>();
@@ -83,6 +84,21 @@ export default function ClientFormPage() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+        </div>
+
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>หมวดหมู่ลูกค้า</label>
+          <select
+            className={formStyles.input}
+            value={form.category ?? "pr"}
+            onChange={(e) => setForm({ ...form, category: e.target.value as FormState["category"] })}
+          >
+            {CLIENT_CATEGORIES.map((category) => (
+              <option key={category.key} value={category.key}>
+                {category.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={formStyles.field}>

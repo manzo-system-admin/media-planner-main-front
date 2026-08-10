@@ -31,6 +31,7 @@ export type NewsDoc = {
   title: string;
   image: string;
   body: string; // rich text editor HTML, sanitized before render
+  pinned?: boolean;
   createdAt?: number;
   deleted?: boolean;
 };
@@ -51,4 +52,5 @@ export type CmsNewsItem = {
   title: string;
   image: string;
   bodyHtml: string;
+  pinned: boolean;
 };

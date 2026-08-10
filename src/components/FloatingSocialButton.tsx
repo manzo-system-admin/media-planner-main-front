@@ -44,11 +44,14 @@ export default function FloatingSocialButton({ socialLinks }: { socialLinks: Soc
             <line x1="18" y1="6" x2="6" y2="18" />
           </svg>
         ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="6" cy="12" r="2.4" />
-            <circle cx="17.5" cy="5.5" r="2.4" />
-            <circle cx="17.5" cy="18.5" r="2.4" />
-            <path d="M8.1 10.9 15.4 6.9M8.1 13.1 15.4 17.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4.5 11.2c0-4.1 3.35-7.2 7.5-7.2s7.5 3.1 7.5 7.2-3.35 7.2-7.5 7.2c-.82 0-1.6-.12-2.33-.36L5.6 20.1c-.75.38-1.56-.36-1.25-1.14l1.23-3.06A7.05 7.05 0 0 1 4.5 11.2Z"
+              fill="currentColor"
+            />
+            <circle cx="9" cy="11.4" r="1.05" fill="var(--grad-blue)" />
+            <circle cx="12" cy="11.4" r="1.05" fill="var(--grad-blue)" />
+            <circle cx="15" cy="11.4" r="1.05" fill="var(--grad-blue)" />
           </svg>
         )}
       </button>

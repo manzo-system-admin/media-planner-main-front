@@ -9,7 +9,7 @@ import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAl
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
 import { toText } from "@/lib/cms/types";
-import type { TeamGalleryDoc } from "@/lib/cms/org";
+import type { TeamGalleryDoc } from "@/lib/cms/orgTypes";
 import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<TeamGalleryDoc, "id">;

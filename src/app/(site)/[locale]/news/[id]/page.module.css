@@ -1,14 +1,29 @@
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.pinBadge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #fff;
+  background: var(--navy);
+  font: 700 10px/1 var(--font-heading);
+  letter-spacing: 0.05em;
+}
+
 .category {
   display: inline-block;
-  margin-top: 12px;
-  margin-right: 10px;
   font: 600 12px var(--font-heading);
   color: var(--grad-blue);
 }
 
 .date {
   display: inline-block;
-  margin-top: 12px;
   font: 500 13px var(--font-heading);
   color: var(--text-muted);
 }
@@ -50,6 +65,36 @@
   max-width: 100%;
   border-radius: 10px;
   margin: 8px 0 18px;
+}
+
+.shareRow {
+  max-width: 760px;
+  margin: -28px auto 56px;
+  padding: 0 var(--shell-pad);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .body {
+    max-width: none;
+    font-size: 17px;
+    line-height: 2;
+  }
+
+  .body p {
+    margin-bottom: 20px;
+  }
+
+  .shareRow {
+    max-width: none;
+    margin-top: -22px;
+    justify-content: stretch;
+  }
+
+  .shareRow > button {
+    width: 100%;
+  }
 }
 
 .related {

@@ -7,8 +7,8 @@
 .overviewImage {
   width: 100%;
   height: auto;
-  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 85%);
-  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 85%, transparent 85%);
+  mask-image: radial-gradient(ellipse at center, #000 85%, transparent 85%);
 }
 
 .row {
@@ -52,9 +52,15 @@
 }
 
 .title {
+  align-self: flex-start;
   margin: 0;
-  font: 700 24px var(--font-heading);
+  border: 1px solid rgba(178, 119, 255, 0.28);
+  border-radius: 999px;
+  background: linear-gradient(105deg, #f1dcff 0%, #ffffff 48%, #ffe2f0 100%);
   color: var(--navy);
+  padding: 8px 16px;
+  font: 700 15px/1.35 var(--font-heading);
+  box-shadow: 0 10px 24px rgba(171, 96, 214, 0.16);
 }
 
 .desc {

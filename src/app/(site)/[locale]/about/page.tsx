@@ -50,7 +50,6 @@ export default async function AboutPage({
         ]}
         title={about.title}
       />
-
       <section className={styles.history}>
         <div className={styles.historyImage}>
           <Image

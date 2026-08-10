@@ -4,6 +4,14 @@
   gap: 9px;
 }
 
+.image {
+  width: auto;
+  height: auto;
+  max-width: var(--client-logo-image-max-width, 40px);
+  max-height: var(--client-logo-image-max-height, 28px);
+  object-fit: contain;
+}
+
 .name {
   font: 700 13.5px var(--font-heading);
   color: #4a5568;

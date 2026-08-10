@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "cross-env IS_WEBPACK_TEST=1 firebase deploy --only hosting"
+    "deploy": "cross-env IS_WEBPACK_TEST=1 firebase deploy --only hosting",
+    "clients:set-non-ipo-to-pr": "node scripts/set-non-ipo-clients-to-pr.js",
+    "clients:set-non-ipo-to-pr:dry-run": "node scripts/set-non-ipo-clients-to-pr.js --dry-run"
   },
   "dependencies": {
     "@tiptap/extension-image": "^3.27.2",

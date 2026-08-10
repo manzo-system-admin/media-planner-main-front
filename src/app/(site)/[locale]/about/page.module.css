@@ -1,5 +1,5 @@
 .history {
-  padding: 64px var(--shell-pad);
+  padding: 10px var(--shell-pad);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;

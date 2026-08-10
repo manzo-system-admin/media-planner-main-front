@@ -95,31 +95,156 @@
   border-top: 1px solid var(--border-soft);
 }
 
+.clientsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .clientsLabel {
   font: 600 12.5px var(--font-heading);
   color: var(--text-muted);
-  text-align: center;
-  margin-bottom: 24px;
   letter-spacing: 0.04em;
 }
 
+.clientsFilter {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.clientsCategoryButtons {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.clientsCategoryButton {
+  min-width: 58px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0 14px;
+  font: 600 12.5px var(--font-heading);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.clientsCategoryButton:hover {
+  color: var(--navy);
+  background: rgba(27, 42, 74, 0.06);
+}
+
+.clientsCategoryButtonActive {
+  color: #fff;
+  background: var(--navy);
+  box-shadow: 0 8px 18px rgba(27, 42, 74, 0.16);
+}
+
+.clientsFilterText {
+  font: 500 12px var(--font-heading);
+  color: var(--text-muted);
+}
+
+.clientsSelect {
+  min-width: 120px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--navy);
+  padding: 0 12px;
+  font: 600 13px var(--font-heading);
+  cursor: pointer;
+  outline: none;
+}
+
+.clientsSelect:focus {
+  border-color: var(--grad-blue);
+  box-shadow: 0 0 0 3px rgba(46, 111, 186, 0.12);
+}
+
 .clientsGrid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
   gap: 16px;
 }
 
 .clientLogo {
-  flex: 0 0 auto;
-  width: 150px;
-  height: 56px;
-  border-radius: 8px;
-  background: var(--surface);
+  --client-logo-image-max-width: min(100%, 132px);
+  --client-logo-image-max-height: 76px;
+
+  width: 100%;
+  height: 92px;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 12px;
+  padding: 0;
+}
+
+.clientLogo > span {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.clientLogo img,
+.clientLogo svg {
+  display: block;
+}
+
+@media (max-width: 960px) {
+  .clientsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .clientsHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .clientsCategoryButtons {
+    display: none;
+  }
+
+  .clientsFilter {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .clientsSelect {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .clientsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .clientLogo {
+    --client-logo-image-max-width: min(100%, 118px);
+    --client-logo-image-max-height: 64px;
+
+    height: 78px;
+  }
 }
 
 .empty {

@@ -41,10 +41,6 @@
   color: var(--text-body);
 }
 
-.description p {
-  margin: 0;
-}
-
 .highlightsTitle {
   margin: 0;
   font: 700 15px var(--font-heading);

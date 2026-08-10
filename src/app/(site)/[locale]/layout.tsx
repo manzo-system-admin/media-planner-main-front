@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Prompt } from "next/font/google";
+import { Kanit } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../../globals.css";
 import Header from "@/components/Header";
@@ -10,8 +10,8 @@ import { locales, isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/dictionaries";
 import { getSiteSettings } from "@/lib/cms/siteSettings";
 
-const prompt = Prompt({
-  variable: "--font-prompt",
+const kanit = Kanit({
+  variable: "--font-kanit",
   subsets: ["thai", "latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -45,7 +45,7 @@ export default async function LocaleLayout({
   const settings = await getSiteSettings();
 
   return (
-    <html lang={dict.meta.htmlLang} className={prompt.variable}>
+    <html lang={dict.meta.htmlLang} className={kanit.variable}>
       <body>
         <Header locale={locale} dict={dict} />
         <main>{children}</main>

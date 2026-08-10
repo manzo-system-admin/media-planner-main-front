@@ -22,18 +22,22 @@ function toCmsItem(id: string, data: FirebaseFirestore.DocumentData, locale: Loc
     title: toText(doc.title),
     image: doc.image,
     bodyHtml: toText(doc.body),
+    pinned: doc.pinned === true,
   };
 }
 
 export async function getNewsList(locale: Locale, max = 50): Promise<CmsNewsItem[]> {
+  const fetchLimit = Math.max(max, 50);
   const snapshot = await getAdminDb()
     .collection("news")
     .orderBy("date", "desc")
-    .limit(max)
+    .limit(fetchLimit)
     .get();
   return snapshot.docs
     .filter((doc) => !doc.data().deleted)
     .sort((a, b) => {
+      const pinnedDiff = Number(b.data().pinned === true) - Number(a.data().pinned === true);
+      if (pinnedDiff !== 0) return pinnedDiff;
       // Firestore's orderBy leaves same-date articles in an arbitrary order —
       // break ties by creation time (newest first) for a stable, predictable list.
       const dateDiff = (b.data().date ?? "").localeCompare(a.data().date ?? "");
@@ -42,6 +46,7 @@ export async function getNewsList(locale: Locale, max = 50): Promise<CmsNewsItem
       const bCreated = b.data().createdAt?.toMillis?.() ?? 0;
       return bCreated - aCreated;
     })
+    .slice(0, max)
     .map((doc) => toCmsItem(doc.id, doc.data(), locale));
 }
 

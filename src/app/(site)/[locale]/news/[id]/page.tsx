@@ -7,6 +7,7 @@ import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import NotFoundView from "@/components/NotFoundView";
 import NewsHeroImage from "@/components/NewsHeroImage";
+import ShareButton from "@/components/ShareButton";
 import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
@@ -73,8 +74,11 @@ export default async function NewsDetailPage({
         ]}
         title={item.title}
       >
-        {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
-        <span className={styles.date}>{item.date}</span>
+        <div className={styles.metaRow}>
+          {item.pinned && <span className={styles.pinBadge}>PINNED</span>}
+          {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
+          <span className={styles.date}>{item.date}</span>
+        </div>
       </PageIntro>
 
       <section className={styles.heroSection}>
@@ -87,6 +91,10 @@ export default async function NewsDetailPage({
         // not raw visitor input, but still passes through DOMPurify defensively.
         dangerouslySetInnerHTML={{ __html: safeBody }}
       />
+
+      <div className={styles.shareRow}>
+        <ShareButton title={item.title} />
+      </div>
 
       {related.length > 0 && (
         <section className={styles.related}>

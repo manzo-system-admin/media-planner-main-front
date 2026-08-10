@@ -31,7 +31,7 @@ export default function NewsListPage() {
             const data = d.data() as Omit<Row, "id">;
             return { id: d.id, ...data, title: toText(data.title) };
           })
-        )
+        ).sort((a, b) => Number(b.pinned === true) - Number(a.pinned === true))
       );
       setLoading(false);
     })();
@@ -56,7 +56,16 @@ export default function NewsListPage() {
         // eslint-disable-next-line @next/next/no-img-element
         item.image ? <img src={item.image} alt="" className={styles.thumb} /> : null,
     },
-    { key: "title", label: "หัวข้อ", render: (item) => item.title },
+    {
+      key: "title",
+      label: "หัวข้อ",
+      render: (item) => (
+        <span className={styles.titleCell}>
+          {item.pinned && <span className={styles.pinBadge}>PIN</span>}
+          {item.title}
+        </span>
+      ),
+    },
     { key: "category", label: "หมวดหมู่", render: (item) => item.category || "-" },
     { key: "date", label: "วันที่", render: (item) => item.date },
   ];

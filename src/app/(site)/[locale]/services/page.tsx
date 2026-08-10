@@ -13,6 +13,22 @@ import { getServiceList } from "@/lib/cms/services";
 
 export const dynamic = "force-dynamic";
 
+const DESCRIPTION_LIMIT = 200;
+
+function toPlainText(html: string): string {
+  return html
+    .replace(/&nbsp;/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&[#\w]+;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function truncateText(text: string, limit = DESCRIPTION_LIMIT): string {
+  if (text.length <= limit) return text;
+  return `${text.slice(0, limit).trimEnd()}...`;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -39,13 +55,16 @@ export default async function ServicesPage({
   return (
     <ContentSheet>
       <PageIntro
-        breadcrumb={[{ label: dict.common.home, href: `/${locale}` }, { label: services.listTitle }]}
+        breadcrumb={[
+          { label: dict.common.home, href: `/${locale}` },
+          { label: services.listTitle },
+        ]}
         title={services.listTitle}
       />
 
       <div className={styles.overview}>
         <Image
-          src="/images/services-overview.png"
+          src="/images/services-overview2.png"
           alt={services.listTitle}
           width={1536}
           height={1024}
@@ -59,14 +78,24 @@ export default async function ServicesPage({
         const imageFirst = index % 2 === 1;
         return (
           <section key={service.slug} className={styles.row}>
-            <div className={`${styles.textCol} ${imageFirst ? styles.textColReversed : ""}`}>
-              <ServiceIcon icon={service.icon} gradient={service.gradient} className={styles.icon} />
-              <h2 className={styles.title}>{service.title}</h2>
-              <div
-                className={styles.desc}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(service.description) }}
+            <div
+              className={`${styles.textCol} ${imageFirst ? styles.textColReversed : ""}`}
+            >
+              <ServiceIcon
+                icon={service.icon}
+                gradient={service.gradient}
+                className={styles.icon}
               />
-              <Link href={`/${locale}/services/${service.slug}`} className={styles.link}>
+              <h2 className={styles.title}>{service.title}</h2>
+              <p className={styles.desc}>
+                {truncateText(
+                  toPlainText(DOMPurify.sanitize(service.description)),
+                )}
+              </p>
+              <Link
+                href={`/${locale}/services/${service.slug}`}
+                className={styles.link}
+              >
                 {services.viewDetailLink}
               </Link>
             </div>

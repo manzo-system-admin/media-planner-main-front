@@ -149,6 +149,7 @@ export default function NewsTabs({
                   />
                 </div>
                 <div className={styles.articleBody}>
+                  {item.pinned && <span className={styles.pinBadge}>PINNED</span>}
                   {item.category && categoryLabels[item.category] && (
                     <span className={styles.articleCategory}>{categoryLabels[item.category]}</span>
                   )}
@@ -240,10 +241,10 @@ export default function NewsTabs({
 
       {openGalleryIndex !== null && (
         <div className={lightboxStyles.overlay} onClick={() => setOpenGalleryIndex(null)}>
-          <div className={styles.galleryModal} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.galleryModal} onClick={() => setOpenGalleryIndex(null)}>
             <button
               type="button"
-              className={lightboxStyles.closeButton}
+              className={`${lightboxStyles.closeButton} ${styles.galleryClose}`}
               onClick={() => setOpenGalleryIndex(null)}
             >
               ✕
@@ -253,20 +254,21 @@ export default function NewsTabs({
                 type="button"
                 className={`${styles.galleryNav} ${styles.galleryNavPrev}`}
                 aria-label="ก่อนหน้า"
-                onClick={() =>
-                  setOpenGalleryIndex((i) => ((i ?? 0) - 1 + eventGallery.length) % eventGallery.length)
-                }
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setOpenGalleryIndex((i) => ((i ?? 0) - 1 + eventGallery.length) % eventGallery.length);
+                }}
               >
                 ‹
               </button>
             )}
             <div className={styles.galleryModalImage}>
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={eventGallery[openGalleryIndex].image}
                 alt={eventGallery[openGalleryIndex].caption || news.galleryImageAlt}
-                fill
-                sizes="92vw"
-                style={{ objectFit: "contain" }}
+                className={styles.galleryModalImg}
+                onClick={(event) => event.stopPropagation()}
               />
             </div>
             {eventGallery.length > 1 && (
@@ -274,7 +276,10 @@ export default function NewsTabs({
                 type="button"
                 className={`${styles.galleryNav} ${styles.galleryNavNext}`}
                 aria-label="ถัดไป"
-                onClick={() => setOpenGalleryIndex((i) => ((i ?? 0) + 1) % eventGallery.length)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setOpenGalleryIndex((i) => ((i ?? 0) + 1) % eventGallery.length);
+                }}
               >
                 ›
               </button>

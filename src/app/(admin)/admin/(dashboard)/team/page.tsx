@@ -10,7 +10,7 @@ import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
 import { toText } from "@/lib/cms/types";
-import type { TeamGalleryDoc } from "@/lib/cms/org";
+import type { TeamGalleryDoc } from "@/lib/cms/orgTypes";
 import styles from "../news/page.module.css";
 
 type Row = TeamGalleryDoc;

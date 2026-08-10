@@ -12,7 +12,7 @@ import RichTextEditor from "@/components/admin/RichTextEditor";
 import SearchableSelect from "@/components/admin/SearchableSelect";
 import { toText } from "@/lib/cms/types";
 import type { PortfolioDoc, PortfolioStatDoc } from "@/lib/cms/portfolio";
-import type { ClientDoc } from "@/lib/cms/org";
+import type { ClientDoc } from "@/lib/cms/orgTypes";
 
 import formStyles from "../../news/[id]/page.module.css";
 

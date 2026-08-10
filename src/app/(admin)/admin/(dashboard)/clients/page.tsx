@@ -2,16 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { excludeDeleted, reorderCollection, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
-import type { ClientDoc } from "@/lib/cms/org";
+import { CLIENT_CATEGORIES } from "@/lib/cms/clientCategories";
+import type { ClientCategory } from "@/lib/cms/clientCategories";
+import type { ClientDoc } from "@/lib/cms/orgTypes";
 import styles from "./page.module.css";
 
 type Row = ClientDoc;
+
+const CATEGORY_LABELS = Object.fromEntries(
+  CLIENT_CATEGORIES.map((category) => [category.key, category.label])
+);
 
 export default function ClientsListPage() {
   const router = useRouter();
@@ -22,6 +28,7 @@ export default function ClientsListPage() {
   const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [savingCategoryId, setSavingCategoryId] = useState<string | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
 
@@ -56,6 +63,22 @@ export default function ClientsListPage() {
   };
 
   const moveBy = (index: number, delta: number) => applyReorder(index, index + delta);
+
+  const updateCategory = async (id: string, category: ClientCategory) => {
+    const previous = items;
+    setSavingCategoryId(id);
+    setSaveStatus("saving");
+    setItems((list) => list.map((item) => (item.id === id ? { ...item, category } : item)));
+    try {
+      await updateDoc(doc(getFirebaseDb(), "clients", id), { category });
+      setSaveStatus("saved");
+    } catch {
+      setItems(previous);
+      setSaveStatus("error");
+    } finally {
+      setSavingCategoryId(null);
+    }
+  };
 
   const dragEnabled = search.trim().length === 0;
 
@@ -98,7 +121,11 @@ export default function ClientsListPage() {
   };
 
   const filtered = search.trim()
-    ? items.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()))
+    ? items.filter((item) =>
+        `${item.name} ${item.category ? CATEGORY_LABELS[item.category] : ""}`
+          .toLowerCase()
+          .includes(search.trim().toLowerCase())
+      )
     : items;
 
   return (
@@ -150,6 +177,8 @@ export default function ClientsListPage() {
                 onDragEnd={onDragEnd}
                 onMoveUp={() => moveBy(index, -1)}
                 onMoveDown={() => moveBy(index, 1)}
+                onCategoryChange={(category) => updateCategory(item.id, category)}
+                categorySaving={savingCategoryId === item.id}
                 onDelete={() => setConfirmId(item.id)}
               />
             ))}
@@ -183,6 +212,8 @@ function ClientRow({
   onDragEnd,
   onMoveUp,
   onMoveDown,
+  onCategoryChange,
+  categorySaving,
   onDelete,
 }: {
   item: Row;
@@ -197,6 +228,8 @@ function ClientRow({
   onDragEnd: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onCategoryChange: (category: ClientCategory) => void;
+  categorySaving: boolean;
   onDelete: () => void;
 }) {
   return (
@@ -248,6 +281,24 @@ function ClientRow({
       )}
 
       <span className={styles.name}>{item.name}</span>
+
+      <label className={styles.categoryControl}>
+        <span className={styles.categoryLabel}>หมวดหมู่</span>
+        <select
+          className={styles.categorySelect}
+          value={item.category ?? "pr"}
+          disabled={categorySaving}
+          onMouseDown={(event) => event.stopPropagation()}
+          onPointerDown={(event) => event.stopPropagation()}
+          onChange={(event) => onCategoryChange(event.target.value as ClientCategory)}
+        >
+          {CLIENT_CATEGORIES.map((category) => (
+            <option key={category.key} value={category.key}>
+              {CATEGORY_LABELS[category.key]}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <RowActionsMenu editHref={`/admin/clients/${item.id}`} onDelete={onDelete} />
     </div>

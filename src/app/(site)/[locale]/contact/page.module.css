@@ -1,5 +1,5 @@
 .grid {
-  padding: 64px var(--shell-pad);
+  padding: 5px var(--shell-pad);
   display: grid;
   grid-template-columns: 0.9fr 1.4fr;
   gap: 40px;

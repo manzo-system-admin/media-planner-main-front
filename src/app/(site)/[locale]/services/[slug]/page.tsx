@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import DOMPurify from "isomorphic-dompurify";
 import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import NotFoundView from "@/components/NotFoundView";
@@ -14,6 +13,15 @@ import { getServiceBySlug, getServiceList } from "@/lib/cms/services";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
+
+function toPlainText(html: string): string {
+  return html
+    .replace(/&nbsp;/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&[#\w]+;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 export async function generateMetadata({
   params,
@@ -52,6 +60,7 @@ export default async function ServiceDetailPage({
   }
 
   const otherServices = (await getServiceList()).filter((item) => item.slug !== slug);
+  const descriptionText = toPlainText(service.description);
 
   return (
     <ContentSheet>
@@ -76,10 +85,7 @@ export default async function ServiceDetailPage({
         </div>
         <div className={styles.detailBody}>
           <ServiceIcon icon={service.icon} gradient={service.gradient} className={styles.icon} size={24} />
-          <div
-            className={styles.description}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(service.description) }}
-          />
+          <p className={styles.description}>{descriptionText}</p>
           <h2 className={styles.highlightsTitle}>{services.highlightsTitle}</h2>
           <ul className={styles.highlights}>
             {service.highlights.map((highlight) => (
