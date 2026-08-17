@@ -12,6 +12,7 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { logActivity, softDeleteDoc } from "@/lib/admin/adminData";
@@ -23,6 +24,7 @@ import { toText, type NewsCategoryDoc, type NewsDoc } from "@/lib/cms/types";
 import styles from "./page.module.css";
 
 type FormState = Omit<NewsDoc, "id" | "createdAt">;
+type PinConflict = { id: string; title: string };
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -51,6 +53,49 @@ export default function NewsFormPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [categories, setCategories] = useState<{ key: string; label: string }[]>([]);
+  const [pinConflict, setPinConflict] = useState<PinConflict | null>(null);
+  const [replacingPin, setReplacingPin] = useState(false);
+
+  const findPinnedConflict = async (): Promise<PinConflict | null> => {
+    const snapshot = await getDocs(
+      query(collection(getFirebaseDb(), "news"), where("pinned", "==", true))
+    );
+    const conflict = snapshot.docs.find((item) => {
+      const data = item.data() as Omit<NewsDoc, "id">;
+      return item.id !== params.id && data.deleted !== true;
+    });
+    if (!conflict) return null;
+    const data = conflict.data() as Omit<NewsDoc, "id">;
+    return { id: conflict.id, title: toText(data.title) || conflict.id };
+  };
+
+  const requestPinReplace = async () => {
+    const conflict = await findPinnedConflict();
+    if (conflict) {
+      setPinConflict(conflict);
+      setForm((current) => ({ ...current, pinned: false }));
+      return;
+    }
+    setForm((current) => ({ ...current, pinned: true }));
+  };
+
+  const confirmPinReplace = async () => {
+    if (!pinConflict) return;
+    setReplacingPin(true);
+    try {
+      await updateDoc(doc(getFirebaseDb(), "news", pinConflict.id), { pinned: false });
+      setForm((current) => ({ ...current, pinned: true }));
+      setPinConflict(null);
+      setAlert({ message: "เปลี่ยนข่าวปักหมุดแล้ว", tone: "success" });
+    } catch (err) {
+      setAlert({
+        message: err instanceof Error ? err.message : "เปลี่ยนข่าวปักหมุดไม่สำเร็จ",
+        tone: "error",
+      });
+    } finally {
+      setReplacingPin(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -92,6 +137,13 @@ export default function NewsFormPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      if (form.pinned) {
+        const conflict = await findPinnedConflict();
+        if (conflict) {
+          setPinConflict(conflict);
+          return;
+        }
+      }
       if (isNew) {
         await addDoc(collection(getFirebaseDb(), "news"), {
           ...form,
@@ -175,7 +227,14 @@ export default function NewsFormPage() {
           <input
             type="checkbox"
             checked={form.pinned === true}
-            onChange={(e) => setForm({ ...form, pinned: e.target.checked })}
+            onChange={async (e) => {
+              const checked = e.target.checked;
+              if (!checked) {
+                setForm({ ...form, pinned: false });
+                return;
+              }
+              await requestPinReplace();
+            }}
           />
           <span>ปักหมุดข่าวนี้</span>
         </label>
@@ -201,14 +260,27 @@ export default function NewsFormPage() {
         open={confirmOpen}
         message="ลบข่าวนี้ใช่หรือไม่?"
         busy={deleting}
+        busyLabel="กำลังลบ..."
         onConfirm={confirmDelete}
         onCancel={() => setConfirmOpen(false)}
+      />
+
+      <AdminConfirmModal
+        open={!!pinConflict}
+        message={`มีข่าวที่ปักหมุดอยู่แล้ว: ${pinConflict?.title ?? ""} ต้องการปลดปักหมุดข่าวเก่าและใช้ข่าวนี้แทนใช่หรือไม่?`}
+        tone="info"
+        confirmLabel="ยืนยัน"
+        busyLabel="กำลังเปลี่ยน..."
+        busy={replacingPin}
+        onConfirm={confirmPinReplace}
+        onCancel={() => setPinConflict(null)}
       />
 
       <AdminAlertModal
         open={!!alert}
         message={alert?.message ?? ""}
         tone={alert?.tone}
+        autoCloseMs={alert?.tone === "error" ? 3600 : 1400}
         onClose={() => {
           const shouldRedirect = alert?.redirect;
           setAlert(null);

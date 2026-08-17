@@ -75,7 +75,11 @@ export default async function NewsDetailPage({
         title={item.title}
       >
         <div className={styles.metaRow}>
-          {item.pinned && <span className={styles.pinBadge}>PINNED</span>}
+          {item.pinned && (
+            <span className={styles.pinBadge}>
+              Pin
+            </span>
+          )}
           {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
           <span className={styles.date}>{item.date}</span>
         </div>

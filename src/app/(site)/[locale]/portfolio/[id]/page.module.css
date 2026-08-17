@@ -86,6 +86,26 @@
   margin: 8px 0 18px;
 }
 
+.shareRow {
+  max-width: 760px;
+  margin: -20px auto 56px;
+  padding: 0 var(--shell-pad);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .shareRow {
+    max-width: none;
+    margin-top: -14px;
+    justify-content: stretch;
+  }
+
+  .shareRow > button {
+    width: 100%;
+  }
+}
+
 .related {
   padding: 40px var(--shell-pad) 64px;
   border-top: 1px solid var(--border-soft);

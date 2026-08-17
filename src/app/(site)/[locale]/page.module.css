@@ -25,9 +25,9 @@
 
 .heroTitle {
   margin: 0;
-  font: 700 clamp(30px, 4.4vw, 52px) / 1.25 var(--font-heading);
+  font: 450 clamp(30px, 4.4vw, 52px) / 1.25 var(--font-heading);
   color: #fff;
-  max-width: 760px;
+  max-width: 500px;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -35,7 +35,7 @@
   margin: 0;
   font: 400 16px/1.7 var(--font-body);
   color: rgba(255, 255, 255, 0.9);
-  max-width: 560px;
+  max-width: 700px;
 }
 
 .heroActions {
@@ -108,18 +108,16 @@
 }
 
 .serviceGrid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
 }
 
 .serviceCard {
   position: relative;
-  flex: 1 1 240px;
-  max-width: calc(25% - 15px);
+  min-width: 0;
   border-radius: 14px;
-  padding: 30px 24px 26px;
+  padding: clamp(22px, 2.2vw, 30px) clamp(16px, 1.8vw, 24px) 26px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -129,15 +127,15 @@
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
-@media (max-width: 900px) {
-  .serviceCard {
-    max-width: calc(50% - 10px);
+@media (max-width: 820px) {
+  .serviceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 560px) {
-  .serviceCard {
-    max-width: 100%;
+  .serviceGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -293,7 +291,7 @@
   display: flex;
   width: max-content;
   gap: 16px;
-  animation: clientsScroll 60s linear infinite;
+  animation: clientsScroll 120s linear infinite;
 }
 
 .clientsRow:hover {

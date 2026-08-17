@@ -18,8 +18,7 @@ type ClientCategoryFilter = ClientCategory | "all";
 
 const CLIENT_CATEGORY_FILTERS: { key: ClientCategoryFilter; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "pr", label: "PR" },
-  { key: "ir", label: "IR" },
+  { key: "pr", label: "PR/IR" },
   { key: "ipo", label: "IPO" },
 ];
 

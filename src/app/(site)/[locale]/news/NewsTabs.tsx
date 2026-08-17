@@ -19,6 +19,16 @@ const PAGE_SIZE = 6;
 const DEFAULT_LANDSCAPE_RATIO = 16 / 9;
 const TIKTOK_PORTRAIT_RATIO = 9 / 16;
 
+function toExcerpt(html: string, limit = 150) {
+  const text = html
+    .replace(/&nbsp;/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&[#\w]+;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length > limit ? `${text.slice(0, limit).trimEnd()}...` : text;
+}
+
 export default function NewsTabs({
   locale,
   homeLabel,
@@ -75,8 +85,12 @@ export default function NewsTabs({
   const filteredNewsItems = newsItems
     .filter((item) => activeCategory === "ALL" || item.category === activeCategory)
     .filter((item) => !searchQuery || item.title.toLowerCase().includes(searchQuery));
-  const articlesTotalPages = Math.max(1, Math.ceil(filteredNewsItems.length / PAGE_SIZE));
-  const pagedNewsItems = filteredNewsItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const featuredNewsItem = filteredNewsItems.find((item) => item.pinned);
+  const listedNewsItems = featuredNewsItem
+    ? filteredNewsItems.filter((item) => item.id !== featuredNewsItem.id)
+    : filteredNewsItems;
+  const articlesTotalPages = Math.max(1, Math.ceil(listedNewsItems.length / PAGE_SIZE));
+  const pagedNewsItems = listedNewsItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const videosTotalPages = Math.max(1, Math.ceil(videoLibrary.length / PAGE_SIZE));
   const pagedVideoLibrary = videoLibrary.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -136,30 +150,68 @@ export default function NewsTabs({
             </div>
           )}
           {filteredNewsItems.length === 0 && <p className={styles.searchEmpty}>{news.searchEmpty}</p>}
-          <div className={styles.articleGrid}>
-            {pagedNewsItems.map((item) => (
-              <Link key={item.id} href={`/${locale}/news/${item.id}`} className={styles.articleCard}>
-                <div className={styles.articleThumb}>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className={styles.articleBody}>
-                  {item.pinned && <span className={styles.pinBadge}>PINNED</span>}
-                  {item.category && categoryLabels[item.category] && (
-                    <span className={styles.articleCategory}>{categoryLabels[item.category]}</span>
-                  )}
-                  <span className={styles.articleDate}>{item.date}</span>
-                  <span className={styles.articleTitle}>{item.title}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <Pagination page={page} totalPages={articlesTotalPages} onChange={setPage} />
+          {featuredNewsItem && (
+            <Link href={`/${locale}/news/${featuredNewsItem.id}`} className={styles.featuredNews}>
+              <div className={styles.featuredImage}>
+                <Image
+                  src={featuredNewsItem.image}
+                  alt={featuredNewsItem.title}
+                  fill
+                  sizes="(max-width: 760px) 100vw, 54vw"
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+                <span className={styles.featuredFlag}>
+                  ไฮไลท์ข่าว
+                </span>
+              </div>
+              <div className={styles.featuredBody}>
+                <span className={styles.featuredEyebrow}>ข่าวแนะนำ</span>
+                {featuredNewsItem.category && categoryLabels[featuredNewsItem.category] && (
+                  <span className={styles.featuredCategory}>{categoryLabels[featuredNewsItem.category]}</span>
+                )}
+                <span className={styles.featuredTitle}>{featuredNewsItem.title}</span>
+                <span className={styles.featuredExcerpt}>{toExcerpt(featuredNewsItem.bodyHtml)}</span>
+                <span className={styles.featuredDate}>{featuredNewsItem.date}</span>
+              </div>
+            </Link>
+          )}
+          {pagedNewsItems.length > 0 && (
+            <div className={styles.articleGrid}>
+              {pagedNewsItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/${locale}/news/${item.id}`}
+                  className={`${styles.articleCard} ${item.pinned ? styles.articleCardPinned : ""}`}
+                >
+                  <div className={styles.articleThumb}>
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                    {item.pinned && (
+                      <span className={styles.pinRibbon}>
+                        Pin
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.articleBody}>
+                    {item.category && categoryLabels[item.category] && (
+                      <span className={styles.articleCategory}>{categoryLabels[item.category]}</span>
+                    )}
+                    <span className={styles.articleDate}>{item.date}</span>
+                    <span className={styles.articleTitle}>{item.title}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+          {(listedNewsItems.length > PAGE_SIZE || page > 1) && (
+            <Pagination page={page} totalPages={articlesTotalPages} onChange={setPage} />
+          )}
         </section>
       )}
 

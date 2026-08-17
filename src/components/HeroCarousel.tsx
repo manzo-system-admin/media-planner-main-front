@@ -24,6 +24,7 @@ export default function HeroCarousel({
   // Video slides advance on their own "ended" event instead of the timer,
   // so a long video is never cut off mid-play.
   const activeIsVideo = slides[active]?.type === "video";
+  const singleVideoSlide = slides.length === 1 && activeIsVideo;
 
   useEffect(() => {
     if (paused || activeIsVideo || slides.length < 2) return;
@@ -53,9 +54,10 @@ export default function HeroCarousel({
                   src={slide.src}
                   poster={slide.poster}
                   autoPlay
+                  loop={singleVideoSlide}
                   muted
                   playsInline
-                  onEnded={() => goTo(active + 1)}
+                  onEnded={singleVideoSlide ? undefined : () => goTo(active + 1)}
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -87,18 +89,20 @@ export default function HeroCarousel({
         ›
       </button> */}
 
-      <div className={styles.dots}>
-        {slides.map((slide, index) => (
-          <button
-            key={slide.src}
-            type="button"
-            className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
-            aria-label={`${labels.goToLabel} ${index + 1}`}
-            aria-current={index === active}
-            onClick={() => goTo(index)}
-          />
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className={styles.dots}>
+          {slides.map((slide, index) => (
+            <button
+              key={slide.src}
+              type="button"
+              className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
+              aria-label={`${labels.goToLabel} ${index + 1}`}
+              aria-current={index === active}
+              onClick={() => goTo(index)}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }

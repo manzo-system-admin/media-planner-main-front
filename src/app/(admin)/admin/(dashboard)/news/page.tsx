@@ -61,7 +61,11 @@ export default function NewsListPage() {
       label: "หัวข้อ",
       render: (item) => (
         <span className={styles.titleCell}>
-          {item.pinned && <span className={styles.pinBadge}>PIN</span>}
+          {item.pinned && (
+            <span className={styles.pinBadge}>
+              Pin
+            </span>
+          )}
           {item.title}
         </span>
       ),

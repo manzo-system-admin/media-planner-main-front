@@ -43,6 +43,7 @@
   --icon-red: #ff6b6b;
 
   --container-max: 1280px;
+  --site-content-width: 80%;
   --shell-pad: clamp(20px, 5vw, 56px);
 
   --font-heading: var(--font-kanit), "Noto Sans Thai", sans-serif;
@@ -115,4 +116,16 @@ h3 {
     radial-gradient(480px circle at 100% 82%, rgba(244, 196, 48, 0.23), transparent 65%),
     radial-gradient(440px circle at 0% 100%, rgba(242, 137, 46, 0.23), transparent 65%),
     radial-gradient(380px circle at 100% 100%, rgba(230, 57, 70, 0.2), transparent 65%);
+}
+
+.contentSheet > * {
+  width: var(--site-content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 720px) {
+  .contentSheet > * {
+    width: 100%;
+  }
 }

@@ -34,6 +34,10 @@
   background: var(--grad-red, #ef4444);
 }
 
+.modalInfo .iconWrap {
+  background: var(--grad-blue, #2e6fba);
+}
+
 .message {
   font: 600 14.5px var(--font-admin);
   color: var(--text-body);
@@ -68,6 +72,14 @@
   color: #fff;
   background: var(--grad-red, #ef4444);
   cursor: pointer;
+}
+
+.modalInfo .confirmButton {
+  background: var(--grad-blue, #2e6fba);
+}
+
+.modalInfo .confirmButton:hover {
+  background: #225f9f;
 }
 
 .confirmButton:disabled,

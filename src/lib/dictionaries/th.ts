@@ -5,7 +5,7 @@ const th: Dictionary = {
     htmlLang: "th",
     title: "Media Planner Consultant Co., Ltd.",
     description:
-      "พันธมิตรด้านสื่อและครีเอทีฟ ที่ช่วยธุรกิจคุณเติบโต — วางแผนสื่อ ผลิตครีเอทีฟ และดูแลคอนเทนต์ครบวงจร",
+      "ให้เรา “Media Planner PR Agency” เป็นสะพานเชื่อมทุกมิติธุรกิจของคุณ สู่สื่อมวลชน นักลงทุน และคู่ค้าเราพร้อมเป็นพาร์ทเนอร์ร่วมวางแผนและขับเคลื่อนกลยุทธ์ด้านการประชาสัมพันธ์ไปพร้อมกับคุณ",
   },
   nav: {
     links: [
@@ -30,9 +30,8 @@ const th: Dictionary = {
   },
   home: {
     badge: "MEDIA PLANNING & CREATIVE CONSULTANT",
-    title: "พันธมิตรด้านสื่อและครีเอทีฟ ที่ช่วยธุรกิจคุณเติบโต",
-    subtitle:
-      "วางแผนสื่อ ผลิตครีเอทีฟ และดูแลคอนเทนต์ครบวงจร โดยทีมที่เข้าใจแบรนด์และผู้บริโภคไทย",
+    title: `"เรา" เป็นส่วนหนึ่งของเบื้องหลังความสำเร็จ`,
+    subtitle: `ให้เรา "Media Planner PR Agency" เป็นสะพานเชื่อมทุกมิติธุรกิจของคุณ สู่สื่อมวลชน นักลงทุน และคู่ค้าเราพร้อมเป็นพาร์ทเนอร์ร่วมวางแผนและขับเคลื่อนกลยุทธ์ด้านการประชาสัมพันธ์ไปพร้อมกับคุณ`,
     ctaPrimary: "ดูผลงานของเรา",
     ctaSecondary: "ติดต่อทีมงาน",
     videoAlt: "วิดีโอแนะนำบริษัท",
@@ -318,7 +317,9 @@ const th: Dictionary = {
         clientId: "",
         title: "งานเปิดตัวแบรนด์ — ธุรกิจอสังหาริมทรัพย์",
         image: "https://picsum.photos/seed/portfolio-realestate-launch/500/375",
-        images: ["https://picsum.photos/seed/portfolio-realestate-launch/500/375"],
+        images: [
+          "https://picsum.photos/seed/portfolio-realestate-launch/500/375",
+        ],
         client: "ธุรกิจอสังหาริมทรัพย์",
         stats: [
           { label: "สื่อมวลชนเข้าร่วม", value: "40+ ราย" },
@@ -331,7 +332,9 @@ const th: Dictionary = {
         clientId: "",
         title: "แผนสื่อประจำปี — ธุรกิจยานยนต์",
         image: "https://picsum.photos/seed/portfolio-automotive-plan/500/375",
-        images: ["https://picsum.photos/seed/portfolio-automotive-plan/500/375"],
+        images: [
+          "https://picsum.photos/seed/portfolio-automotive-plan/500/375",
+        ],
         client: "ธุรกิจยานยนต์",
         stats: [
           { label: "งบประมาณที่บริหาร", value: "120M+ บาท" },
@@ -362,10 +365,26 @@ const th: Dictionary = {
       "Metro Living",
     ],
     teamGallery: [
-      { id: "team-1", image: "https://picsum.photos/seed/team-office-1/480/480", caption: "" },
-      { id: "team-2", image: "https://picsum.photos/seed/team-office-2/480/480", caption: "" },
-      { id: "team-3", image: "https://picsum.photos/seed/team-office-3/480/480", caption: "" },
-      { id: "team-4", image: "https://picsum.photos/seed/team-office-4/480/480", caption: "" },
+      {
+        id: "team-1",
+        image: "https://picsum.photos/seed/team-office-1/480/480",
+        caption: "",
+      },
+      {
+        id: "team-2",
+        image: "https://picsum.photos/seed/team-office-2/480/480",
+        caption: "",
+      },
+      {
+        id: "team-3",
+        image: "https://picsum.photos/seed/team-office-3/480/480",
+        caption: "",
+      },
+      {
+        id: "team-4",
+        image: "https://picsum.photos/seed/team-office-4/480/480",
+        caption: "",
+      },
     ],
     contactInfo: {
       address:

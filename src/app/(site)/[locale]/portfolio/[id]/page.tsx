@@ -7,6 +7,7 @@ import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import NotFoundView from "@/components/NotFoundView";
 import PortfolioGallery from "@/components/PortfolioGallery";
+import ShareButton from "@/components/ShareButton";
 import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
@@ -100,6 +101,10 @@ export default async function PortfolioDetailPage({
           dangerouslySetInnerHTML={{ __html: safeDescription }}
         />
       )}
+
+      <div className={styles.shareRow}>
+        <ShareButton title={item.title} label="แชร์ผลงาน" />
+      </div>
 
       {related.length > 0 && (
         <section className={styles.related}>

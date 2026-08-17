@@ -22,7 +22,7 @@
 }
 
 .logo {
-  height: 44px;
+  height: clamp(54px, 4.6vw, 62px);
   width: auto;
   border-radius: 6px;
 }
@@ -111,6 +111,10 @@
 
   .menuToggle {
     display: flex;
+  }
+
+  .logo {
+    height: 54px;
   }
 
   .backdrop {

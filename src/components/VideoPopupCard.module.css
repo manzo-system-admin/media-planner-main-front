@@ -39,6 +39,9 @@
 .overlay {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  max-width: none;
+  margin: 0;
   background: rgba(10, 16, 32, 0.85);
   z-index: 200;
   display: flex;

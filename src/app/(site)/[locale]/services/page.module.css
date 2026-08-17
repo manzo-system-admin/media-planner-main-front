@@ -2,6 +2,8 @@
   padding: 0 var(--shell-pad) 24px;
   display: flex;
   justify-content: center;
+  width: var(--site-content-width);
+  margin: 0 auto;
 }
 
 .overviewImage {
@@ -11,12 +13,19 @@
   mask-image: radial-gradient(ellipse at center, #000 85%, transparent 85%);
 }
 
+.overview picture {
+  display: block;
+  width: 100%;
+}
+
 .row {
-  padding: 64px var(--shell-pad);
+  padding: clamp(52px, 6vw, 76px) var(--shell-pad);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 40px);
   align-items: center;
+  margin: 0 auto;
+  width: var(--site-content-width);
 }
 
 .row:not(:last-child) {
@@ -24,12 +33,22 @@
 }
 
 @media (max-width: 720px) {
+  .overview {
+    width: 100%;
+  }
+
   .row {
     grid-template-columns: 1fr;
+    gap: 28px;
+    width: 100%;
+  }
+  .textCol {
+    grid-column: auto;
   }
 }
 
 .textCol {
+  grid-column: span 2;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -39,6 +58,13 @@
   .textColReversed {
     order: 2;
   }
+}
+
+.serviceHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
 }
 
 .icon {
@@ -52,8 +78,8 @@
 }
 
 .title {
-  align-self: flex-start;
   margin: 0;
+  min-width: 0;
   border: 1px solid rgba(178, 119, 255, 0.28);
   border-radius: 999px;
   background: linear-gradient(105deg, #f1dcff 0%, #ffffff 48%, #ffe2f0 100%);
@@ -80,7 +106,21 @@
 
 .imageCol {
   position: relative;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  justify-self: end;
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 18px 42px rgba(27, 42, 74, 0.14);
+}
+
+.imageColFirst {
+  justify-self: start;
+}
+
+@media (max-width: 720px) {
+  .imageCol {
+    aspect-ratio: 4 / 3;
+    justify-self: stretch;
+  }
 }

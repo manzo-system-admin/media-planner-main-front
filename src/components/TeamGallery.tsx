@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./TeamGallery.module.css";
 import type { TeamGalleryPhoto } from "@/lib/dictionaries/types";
@@ -35,6 +35,7 @@ export default function TeamGallery({
   altFallback: string;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const pointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
   const columnCount = useColumnCount();
 
   const close = useCallback(() => setOpenIndex(null), []);
@@ -57,6 +58,66 @@ export default function TeamGallery({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [openIndex, close, showPrev, showNext]);
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (photos.length < 2) return;
+      pointerStart.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    [photos.length]
+  );
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      const start = pointerStart.current;
+      if (!start || start.id !== e.pointerId) return;
+      pointerStart.current = null;
+
+      const deltaX = e.clientX - start.x;
+      const deltaY = e.clientY - start.y;
+      const horizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
+
+      if (!horizontalSwipe) return;
+      if (deltaX > 0) showPrev();
+      else showNext();
+    },
+    [showPrev, showNext]
+  );
+
+  const handlePointerCancel = useCallback(() => {
+    pointerStart.current = null;
+  }, []);
+
+  const handleLightboxClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const image = e.currentTarget.querySelector("img");
+      if (!image || image.naturalWidth === 0 || image.naturalHeight === 0) {
+        close();
+        return;
+      }
+
+      const rect = image.getBoundingClientRect();
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const boxRatio = rect.width / rect.height;
+      const renderedWidth = imageRatio > boxRatio ? rect.width : rect.height * imageRatio;
+      const renderedHeight = imageRatio > boxRatio ? rect.width / imageRatio : rect.height;
+      const renderedLeft = rect.left + (rect.width - renderedWidth) / 2;
+      const renderedTop = rect.top + (rect.height - renderedHeight) / 2;
+      const insideRenderedImage =
+        e.clientX >= renderedLeft &&
+        e.clientX <= renderedLeft + renderedWidth &&
+        e.clientY >= renderedTop &&
+        e.clientY <= renderedTop + renderedHeight;
+
+      if (insideRenderedImage) {
+        e.stopPropagation();
+        return;
+      }
+      close();
+    },
+    [close]
+  );
 
   // Distribute photos into columns greedily by running height, so every
   // column bottoms out at roughly the same point instead of the ragged edge
@@ -146,7 +207,20 @@ export default function TeamGallery({
             </>
           )}
 
-          <div className={styles.lightboxImage} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.lightboxImage}
+            onClick={handleLightboxClick}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
+          >
+            {photos.length > 1 && (
+              <div className={styles.swipeHint} aria-hidden="true">
+                <span className={`${styles.swipeTrack} ${styles.swipeTrackLeft}`} />
+                <span className={styles.swipeText}>ปัดเพื่อดูรูปถัดไป</span>
+                <span className={`${styles.swipeTrack} ${styles.swipeTrackRight}`} />
+              </div>
+            )}
             <Image
               src={active.image}
               alt={active.caption || altFallback}

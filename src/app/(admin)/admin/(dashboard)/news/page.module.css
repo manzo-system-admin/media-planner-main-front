@@ -19,12 +19,16 @@
 
 .pinBadge {
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border-radius: 999px;
-  padding: 3px 8px;
-  color: #fff;
-  background: var(--navy);
-  font: 700 10px/1 var(--font-admin);
-  letter-spacing: 0.04em;
+  padding: 5px 9px;
+  color: var(--navy);
+  background: linear-gradient(105deg, #f1dcff 0%, #fff 48%, #ffe2f0 100%);
+  border: 1px solid rgba(178, 119, 255, 0.26);
+  box-shadow: 0 6px 14px rgba(171, 96, 214, 0.12);
+  font: 700 11px/1 var(--font-admin);
 }
 
 .editLink {

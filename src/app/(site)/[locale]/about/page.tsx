@@ -56,7 +56,7 @@ export default async function AboutPage({
             src={historyImage}
             alt={about.historyImageAlt}
             fill
-            sizes="(max-width: 720px) 100vw, 50vw"
+            sizes="(max-width: 720px) 100vw, 27vw"
             style={{ objectFit: "cover" }}
           />
         </div>

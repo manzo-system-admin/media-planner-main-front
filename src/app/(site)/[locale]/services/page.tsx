@@ -63,15 +63,15 @@ export default async function ServicesPage({
       />
 
       <div className={styles.overview}>
-        <Image
-          src="/images/services-overview2.png"
-          alt={services.listTitle}
-          width={1536}
-          height={1024}
-          sizes="(max-width: 900px) 100vw, 900px"
-          className={styles.overviewImage}
-          priority
-        />
+        <picture>
+          <source media="(min-width: 721px)" srcSet="/images/services-overview5.png" />
+          <img
+            src="/images/services-overview4.png"
+            alt={services.listTitle}
+            className={styles.overviewImage}
+            loading="eager"
+          />
+        </picture>
       </div>
 
       {serviceList.map((service, index) => {
@@ -81,12 +81,14 @@ export default async function ServicesPage({
             <div
               className={`${styles.textCol} ${imageFirst ? styles.textColReversed : ""}`}
             >
-              <ServiceIcon
-                icon={service.icon}
-                gradient={service.gradient}
-                className={styles.icon}
-              />
-              <h2 className={styles.title}>{service.title}</h2>
+              <div className={styles.serviceHead}>
+                <ServiceIcon
+                  icon={service.icon}
+                  gradient={service.gradient}
+                  className={styles.icon}
+                />
+                <h2 className={styles.title}>{service.title}</h2>
+              </div>
               <p className={styles.desc}>
                 {truncateText(
                   toPlainText(DOMPurify.sanitize(service.description)),
@@ -99,12 +101,12 @@ export default async function ServicesPage({
                 {services.viewDetailLink}
               </Link>
             </div>
-            <div className={styles.imageCol}>
+            <div className={`${styles.imageCol} ${imageFirst ? styles.imageColFirst : ""}`}>
               <Image
                 src={service.image}
                 alt={service.title}
                 fill
-                sizes="(max-width: 720px) 100vw, 50vw"
+                sizes="(max-width: 720px) 100vw, 420px"
                 style={{ objectFit: "cover" }}
               />
             </div>

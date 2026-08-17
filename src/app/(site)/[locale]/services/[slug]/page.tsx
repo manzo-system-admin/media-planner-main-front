@@ -86,15 +86,19 @@ export default async function ServiceDetailPage({
         <div className={styles.detailBody}>
           <ServiceIcon icon={service.icon} gradient={service.gradient} className={styles.icon} size={24} />
           <p className={styles.description}>{descriptionText}</p>
-          <h2 className={styles.highlightsTitle}>{services.highlightsTitle}</h2>
-          <ul className={styles.highlights}>
-            {service.highlights.map((highlight) => (
-              <li key={highlight} className={styles.highlightItem}>
-                <span className={styles.highlightDot} />
-                <span>{highlight}</span>
-              </li>
-            ))}
-          </ul>
+          {service.highlights.length > 0 && (
+            <>
+              <h2 className={styles.highlightsTitle}>{services.highlightsTitle}</h2>
+              <ul className={styles.highlights}>
+                {service.highlights.map((highlight) => (
+                  <li key={highlight} className={styles.highlightItem}>
+                    <span className={styles.highlightDot} />
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           <div className={styles.ctaRow}>
             <Link href={`/${locale}/contact`} className={styles.ctaButton}>
               {services.ctaButton}

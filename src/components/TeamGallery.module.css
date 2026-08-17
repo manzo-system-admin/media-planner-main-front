@@ -133,6 +133,106 @@
   position: relative;
   width: min(90vw, 1100px);
   height: min(80vh, 760px);
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.lightboxImage:active {
+  cursor: grabbing;
+}
+
+.swipeHint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(18px, 8vh, 70px);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: swipeHintOut 4.8s ease forwards;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
+.swipeTrack {
+  position: relative;
+  width: 66px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--grad-purple), var(--grad-blue), var(--grad-cyan));
+  box-shadow: 0 0 16px rgba(35, 166, 213, 0.42);
+}
+
+.swipeTrackLeft {
+  background: linear-gradient(90deg, var(--grad-cyan), var(--grad-blue), var(--grad-purple));
+}
+
+.swipeTrackRight {
+  background: linear-gradient(90deg, var(--grad-purple), var(--grad-blue), var(--grad-cyan));
+}
+
+.swipeTrack::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 4px solid currentColor;
+  border-left: 4px solid currentColor;
+}
+
+.swipeTrack::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-top: 4px solid var(--grad-yellow);
+  border-left: 4px solid var(--grad-yellow);
+  filter: drop-shadow(0 0 8px rgba(244, 196, 48, 0.46));
+}
+
+.swipeTrackLeft::before {
+  left: -3px;
+  color: var(--grad-cyan);
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+.swipeTrackLeft::after {
+  left: -16px;
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+.swipeTrackRight::before {
+  right: -3px;
+  color: var(--grad-cyan);
+  transform: translateY(-50%) rotate(135deg);
+}
+
+.swipeTrackRight::after {
+  right: -16px;
+  transform: translateY(-50%) rotate(135deg);
+}
+
+.swipeText {
+  font: 700 13px/1 var(--font-heading);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+@keyframes swipeHintOut {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .lightboxCaption {
@@ -208,5 +308,8 @@
   }
   .navNext {
     right: 8px;
+  }
+  .swipeHint {
+    bottom: 64px;
   }
 }
