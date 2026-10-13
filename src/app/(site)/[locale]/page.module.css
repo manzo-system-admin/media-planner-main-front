@@ -318,3 +318,33 @@
   justify-content: center;
   padding: 0 12px;
 }
+
+@media (min-width: 901px) {
+  .clients {
+    padding: 68px var(--shell-pad);
+  }
+
+  .clientsLabel {
+    margin-bottom: 34px;
+    font-size: 20px;
+    line-height: 1.35;
+    color: var(--navy);
+  }
+
+  .clientsRow {
+    gap: 24px;
+  }
+
+  .clientLogo {
+    width: 220px;
+    height: 86px;
+    padding: 0 22px;
+    --client-logo-image-max-width: 130px;
+    --client-logo-image-max-height: 54px;
+  }
+
+  .clientLogo svg {
+    width: 32px;
+    height: 32px;
+  }
+}

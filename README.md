@@ -69,7 +69,7 @@ Optional:
 - `/th/news`
 - `/th/news/[id]`
 - `/th/contact`
-- `/admin/login` - admin sign-in
+- `/admin/login` - backoffice sign-in
 - `/admin` - protected backoffice
 
 ## Admin Setup
@@ -77,8 +77,8 @@ Optional:
 See [ADMIN_SETUP.md](./ADMIN_SETUP.md) for the Firebase one-time setup:
 
 - Enable Firebase Auth providers.
-- Create the first admin user.
-- Grant the `admin: true` custom claim.
+- Create the first backoffice user.
+- Sign in with email and password; no custom claim is required.
 - Deploy Firestore rules.
 - Seed starting CMS content.
 - Configure optional Google Maps support.

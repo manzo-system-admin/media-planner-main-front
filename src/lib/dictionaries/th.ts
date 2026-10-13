@@ -38,7 +38,7 @@ const th: Dictionary = {
     videoCaption: "วิดีโอแนะนำบริษัท",
     servicesTitle: "บริการของเรา",
     servicesSubtitle: "บริการหลักครบวงจรสำหรับแบรนด์ของคุณ",
-    newsTitle: "ข่าวสาร/กิจกรรมล่าสุด",
+    newsTitle: "ข่าวสาร/บทความล่าสุด",
     clientsLabel: "ลูกค้า/พันธมิตรของเรา",
     carousel: {
       prevLabel: "สไลด์ก่อนหน้า",
@@ -58,7 +58,7 @@ const th: Dictionary = {
     historyTitle: "ประวัติบริษัท",
     historyBody:
       "Media Planner Consultant ก่อตั้งขึ้นจากความตั้งใจให้ธุรกิจไทยเข้าถึงงานวางแผนสื่อและครีเอทีฟระดับมืออาชีพ ตลอดหลายปีที่ผ่านมาเราเติบโตพร้อมลูกค้าในหลากหลายอุตสาหกรรม ด้วยทีมงานที่เชี่ยวชาญเฉพาะด้าน",
-    historyImageAlt: "บรรยากาศออฟฟิศ Media Planner Consultant",
+    historyImageAlt: "โลโก้ Media Planner Consultant",
     teamTitle: "แกลเลอรีภาพทีมงาน/บรรยากาศการทำงาน",
   },
   services: {

@@ -14,7 +14,12 @@ import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<EventGalleryDoc, "id">;
 
-const EMPTY: FormState = { image: "", caption: "", order: 0 };
+function todayIso(): string {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+}
+
+const EMPTY: FormState = { image: "", caption: "", date: todayIso(), order: 0 };
 
 export default function EventGalleryFormPage() {
   const params = useParams<{ id: string }>();
@@ -42,13 +47,17 @@ export default function EventGalleryFormPage() {
       const snapshot = await getDoc(doc(getFirebaseDb(), "eventGallery", params.id));
       if (snapshot.exists()) {
         const data = snapshot.data();
-        setForm({ ...EMPTY, ...data, caption: toText(data.caption) });
+        setForm({ ...EMPTY, ...data, date: data.date ?? "", caption: toText(data.caption) });
       }
       setLoading(false);
     })();
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.date) {
+      setAlert({ message: "กรุณาระบุวันที่", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       if (isNew) {
@@ -81,7 +90,17 @@ export default function EventGalleryFormPage() {
       <h1 className={formStyles.title}>{isNew ? "เพิ่มภาพกิจกรรม" : "แก้ไขภาพกิจกรรม"}</h1>
       <div className={formStyles.form}>
         <div className={formStyles.field}>
-          <label className={formStyles.label}>ลำดับ</label>
+          <label className={formStyles.label}>วันที่</label>
+          <input
+            type="date"
+            className={formStyles.input}
+            value={form.date ?? ""}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+          />
+        </div>
+
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ลำดับเมื่อวันที่ตรงกัน</label>
           <input
             type="number"
             className={formStyles.input}
@@ -102,7 +121,7 @@ export default function EventGalleryFormPage() {
         </div>
 
         <div className={formStyles.field}>
-          <label className={formStyles.label}>คำอธิบาย (ไม่บังคับ)</label>
+          <label className={formStyles.label}>ชื่อภาพกิจกรรม (ไม่บังคับ)</label>
           <input
             className={formStyles.input}
             value={form.caption ?? ""}

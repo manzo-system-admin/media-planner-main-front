@@ -9,8 +9,7 @@ import styles from "./AdminShell.module.css";
 
 const NAV_GROUPS: {
   label: string;
-  adminOnly?: boolean;
-  links: { href: string; label: string; adminOnly?: boolean }[];
+  links: { href: string; label: string }[];
 }[] = [
   {
     label: "หน้าแรก",
@@ -21,8 +20,8 @@ const NAV_GROUPS: {
     links: [
       { href: "/admin/banners", label: "แบนเนอร์" },
       { href: "/admin/video-popup", label: "วิดีโอป๊อปอัป" },
-      { href: "/admin/about", label: "หน้าเกี่ยวกับเรา", adminOnly: true },
-      { href: "/admin/contact", label: "ข้อมูลติดต่อ", adminOnly: true },
+      { href: "/admin/about", label: "หน้าเกี่ยวกับเรา" },
+      { href: "/admin/contact", label: "ข้อมูลติดต่อ" },
     ],
   },
   {
@@ -47,27 +46,20 @@ const NAV_GROUPS: {
     label: "ระบบ",
     links: [
       { href: "/admin/logs", label: "บันทึกกิจกรรม" },
-      { href: "/admin/users", label: "ผู้ใช้งาน", adminOnly: true },
+      { href: "/admin/users", label: "ผู้ใช้งาน" },
     ],
   },
 ];
 
 export default function AdminShell({
   email,
-  role,
   children,
 }: {
   email: string;
-  role: "admin" | "staff";
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const visibleGroups = NAV_GROUPS.filter((group) => !group.adminOnly || role === "admin")
-    .map((group) => ({
-      ...group,
-      links: group.links.filter((link) => !link.adminOnly || role === "admin"),
-    }));
 
   const handleLogout = async () => {
     await fetch("/api/auth/session", { method: "DELETE" });
@@ -95,7 +87,7 @@ export default function AdminShell({
           </span>
         </div>
         <nav className={styles.nav}>
-          {visibleGroups.map((group) => (
+          {NAV_GROUPS.map((group) => (
             <div key={group.label}>
               <div className={styles.navGroupLabel}>{group.label}</div>
               {group.links.map((link) => {
@@ -118,11 +110,7 @@ export default function AdminShell({
 
       <div className={styles.main}>
         <header className={styles.topbar}>
-          {email && (
-            <span className={styles.email}>
-              {email} · {role === "admin" ? "Admin" : "Staff"}
-            </span>
-          )}
+          {email && <span className={styles.email}>{email}</span>}
           <button type="button" className={styles.logout} onClick={handleLogout}>
             ออกจากระบบ
           </button>

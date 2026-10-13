@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
-import MediaUploader from "@/components/admin/MediaUploader";
 import { logActivity } from "@/lib/admin/adminData";
 import { toText } from "@/lib/cms/types";
 import type { AboutContentDoc } from "@/lib/cms/about";
@@ -12,13 +11,12 @@ import formStyles from "../news/[id]/page.module.css";
 
 const DOC_ID = "config";
 
-type FormState = AboutContentDoc;
+type FormState = Pick<AboutContentDoc, "visionBody" | "missionBody" | "historyBody">;
 
 const EMPTY: FormState = {
   visionBody: "",
   missionBody: "",
   historyBody: "",
-  historyImage: "",
 };
 
 export default function AboutContentAdminPage() {
@@ -36,7 +34,6 @@ export default function AboutContentAdminPage() {
           visionBody: toText(data.visionBody),
           missionBody: toText(data.missionBody),
           historyBody: toText(data.historyBody),
-          historyImage: data.historyImage ?? "",
         });
       }
       setLoading(false);
@@ -46,7 +43,7 @@ export default function AboutContentAdminPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await setDoc(doc(getFirebaseDb(), "aboutContent", DOC_ID), form);
+      await setDoc(doc(getFirebaseDb(), "aboutContent", DOC_ID), form, { merge: true });
       await logActivity("update", "หน้าเกี่ยวกับเรา", "ข้อมูลหน้าเกี่ยวกับเรา");
       setAlert({ message: "บันทึกสำเร็จ", tone: "success" });
     } catch (err) {
@@ -84,17 +81,6 @@ export default function AboutContentAdminPage() {
             rows={4}
             value={form.missionBody}
             onChange={(e) => setForm({ ...form, missionBody: e.target.value })}
-          />
-        </div>
-
-        <div className={formStyles.field}>
-          <label className={formStyles.label}>รูปภาพประวัติบริษัท</label>
-          <MediaUploader
-            value={form.historyImage}
-            onChange={(url) => setForm({ ...form, historyImage: url })}
-            folder="about"
-            accept="image/*"
-            label="อัปโหลดรูปภาพ"
           />
         </div>
 

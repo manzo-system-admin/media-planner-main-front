@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -56,6 +56,7 @@ export default function NewsTabs({
   const [openVideo, setOpenVideo] = useState<CmsVideoItem | null>(null);
   const [uploadRatio, setUploadRatio] = useState<number | null>(null);
   const [openGalleryIndex, setOpenGalleryIndex] = useState<number | null>(null);
+  const galleryPointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
   const [page, setPage] = useState(1);
 
   const openVideoRatio =
@@ -81,6 +82,57 @@ export default function NewsTabs({
     setPage(1);
   };
 
+  const closeGallery = useCallback(() => setOpenGalleryIndex(null), []);
+  const showPrevGallery = useCallback(
+    () => setOpenGalleryIndex((i) => (i === null ? null : (i - 1 + eventGallery.length) % eventGallery.length)),
+    [eventGallery.length]
+  );
+  const showNextGallery = useCallback(
+    () => setOpenGalleryIndex((i) => (i === null ? null : (i + 1) % eventGallery.length)),
+    [eventGallery.length]
+  );
+
+  useEffect(() => {
+    if (openGalleryIndex === null) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeGallery();
+      if (event.key === "ArrowLeft") showPrevGallery();
+      if (event.key === "ArrowRight") showNextGallery();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openGalleryIndex, closeGallery, showPrevGallery, showNextGallery]);
+
+  const handleGalleryPointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (eventGallery.length < 2) return;
+      galleryPointerStart.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [eventGallery.length]
+  );
+
+  const handleGalleryPointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const start = galleryPointerStart.current;
+      if (!start || start.id !== event.pointerId) return;
+      galleryPointerStart.current = null;
+
+      const deltaX = event.clientX - start.x;
+      const deltaY = event.clientY - start.y;
+      const horizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
+
+      if (!horizontalSwipe) return;
+      if (deltaX > 0) showPrevGallery();
+      else showNextGallery();
+    },
+    [showPrevGallery, showNextGallery]
+  );
+
+  const handleGalleryPointerCancel = useCallback(() => {
+    galleryPointerStart.current = null;
+  }, []);
+
   const searchQuery = search.trim().toLowerCase();
   const filteredNewsItems = newsItems
     .filter((item) => activeCategory === "ALL" || item.category === activeCategory)
@@ -97,6 +149,7 @@ export default function NewsTabs({
 
   const galleryTotalPages = Math.max(1, Math.ceil(eventGallery.length / PAGE_SIZE));
   const pagedEventGallery = eventGallery.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const activeGalleryItem = openGalleryIndex !== null ? eventGallery[openGalleryIndex] : null;
 
   return (
     <>
@@ -228,14 +281,17 @@ export default function NewsTabs({
                   setOpenVideo(video);
                 }}
               >
-                <Image
-                  src={video.thumbnail}
-                  alt={video.title}
-                  fill
-                  sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-                  style={{ objectFit: "cover" }}
-                />
-                <span className={styles.playIcon} />
+                <span className={styles.videoPoster}>
+                  <Image
+                    src={video.thumbnail}
+                    alt={video.title}
+                    fill
+                    sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+                    style={{ objectFit: "cover" }}
+                  />
+                  <span className={styles.playIcon} />
+                </span>
+                <span className={styles.videoTitle}>{video.title}</span>
               </button>
             ))}
           </div>
@@ -253,13 +309,16 @@ export default function NewsTabs({
                 className={styles.galleryImage}
                 onClick={() => setOpenGalleryIndex((page - 1) * PAGE_SIZE + localIndex)}
               >
-                <Image
-                  src={item.image}
-                  alt={item.caption || news.galleryImageAlt}
-                  fill
-                  sizes="(max-width: 2000px) 50vw, 25vw"
-                  style={{ objectFit: "cover" }}
-                />
+                <span className={styles.galleryThumb}>
+                  <Image
+                    src={item.image}
+                    alt={item.caption || news.galleryImageAlt}
+                    fill
+                    sizes="(max-width: 2000px) 50vw, 25vw"
+                    style={{ objectFit: "cover" }}
+                  />
+                </span>
+                {item.caption && <span className={styles.galleryCaption}>{item.caption}</span>}
               </button>
             ))}
           </div>
@@ -269,35 +328,37 @@ export default function NewsTabs({
 
       {openVideo && (
         <div className={lightboxStyles.overlay} onClick={() => setOpenVideo(null)}>
-          <div
-            className={lightboxStyles.modal}
-            style={{ "--ratio": openVideoRatio } as CSSProperties}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className={lightboxStyles.closeButton}
-              onClick={() => setOpenVideo(null)}
+          <div className={styles.videoModalContent} onClick={(e) => e.stopPropagation()}>
+            <div
+              className={lightboxStyles.modal}
+              style={{ "--ratio": openVideoRatio, "--max-h": "75vh" } as CSSProperties}
             >
-              ✕
-            </button>
-            <VideoEmbed
-              source={openVideo.videoSource}
-              autoPlay
-              title={openVideo.title}
-              onAspectRatio={setUploadRatio}
-            />
+              <button
+                type="button"
+                className={lightboxStyles.closeButton}
+                onClick={() => setOpenVideo(null)}
+              >
+                ✕
+              </button>
+              <VideoEmbed
+                source={openVideo.videoSource}
+                autoPlay
+                title={openVideo.title}
+                onAspectRatio={setUploadRatio}
+              />
+            </div>
+            <p className={styles.videoModalTitle}>{openVideo.title}</p>
           </div>
         </div>
       )}
 
-      {openGalleryIndex !== null && (
-        <div className={lightboxStyles.overlay} onClick={() => setOpenGalleryIndex(null)}>
-          <div className={styles.galleryModal} onClick={() => setOpenGalleryIndex(null)}>
+      {activeGalleryItem && (
+        <div className={lightboxStyles.overlay} onClick={closeGallery}>
+          <div className={styles.galleryModal} onClick={closeGallery}>
             <button
               type="button"
               className={`${lightboxStyles.closeButton} ${styles.galleryClose}`}
-              onClick={() => setOpenGalleryIndex(null)}
+              onClick={closeGallery}
             >
               ✕
             </button>
@@ -308,20 +369,35 @@ export default function NewsTabs({
                 aria-label="ก่อนหน้า"
                 onClick={(event) => {
                   event.stopPropagation();
-                  setOpenGalleryIndex((i) => ((i ?? 0) - 1 + eventGallery.length) % eventGallery.length);
+                  showPrevGallery();
                 }}
               >
                 ‹
               </button>
             )}
-            <div className={styles.galleryModalImage}>
+            <div
+              className={`${styles.galleryModalImage} ${activeGalleryItem.caption ? styles.galleryModalImageWithCaption : ""}`}
+              onPointerDown={handleGalleryPointerDown}
+              onPointerUp={handleGalleryPointerUp}
+              onPointerCancel={handleGalleryPointerCancel}
+            >
+              {eventGallery.length > 1 && (
+                <div className={styles.gallerySwipeHint} aria-hidden="true">
+                  <span className={`${styles.gallerySwipeTrack} ${styles.gallerySwipeTrackLeft}`} />
+                  <span className={styles.gallerySwipeText}>ปัดเพื่อดูรูปถัดไป</span>
+                  <span className={`${styles.gallerySwipeTrack} ${styles.gallerySwipeTrackRight}`} />
+                </div>
+              )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={eventGallery[openGalleryIndex].image}
-                alt={eventGallery[openGalleryIndex].caption || news.galleryImageAlt}
+                src={activeGalleryItem.image}
+                alt={activeGalleryItem.caption || news.galleryImageAlt}
                 className={styles.galleryModalImg}
                 onClick={(event) => event.stopPropagation()}
               />
+              {activeGalleryItem.caption && (
+                <p className={styles.galleryModalCaption}>{activeGalleryItem.caption}</p>
+              )}
             </div>
             {eventGallery.length > 1 && (
               <button
@@ -330,7 +406,7 @@ export default function NewsTabs({
                 aria-label="ถัดไป"
                 onClick={(event) => {
                   event.stopPropagation();
-                  setOpenGalleryIndex((i) => ((i ?? 0) + 1) % eventGallery.length);
+                  showNextGallery();
                 }}
               >
                 ›

@@ -38,8 +38,6 @@ export default async function AboutPage({
   const visionBody = content?.visionBody || about.visionBody;
   const missionBody = content?.missionBody || about.missionBody;
   const historyBody = content?.historyBody || about.historyBody;
-  const historyImage =
-    content?.historyImage || "https://picsum.photos/seed/about-office/640/480";
 
   return (
     <ContentSheet>
@@ -53,11 +51,11 @@ export default async function AboutPage({
       <section className={styles.history}>
         <div className={styles.historyImage}>
           <Image
-            src={historyImage}
+            src="/images/logo.jpg"
             alt={about.historyImageAlt}
             fill
             sizes="(max-width: 720px) 100vw, 27vw"
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "contain" }}
           />
         </div>
         <div className={styles.historyText}>
@@ -68,6 +66,32 @@ export default async function AboutPage({
 
           <h3 className={styles.subheading}>{about.missionTitle}</h3>
           <p className={styles.historyBody}>{missionBody}</p>
+        </div>
+      </section>
+
+      <section className={styles.promise} aria-labelledby="about-promise-title">
+        <div className={styles.promiseHeading}>
+          <h2 id="about-promise-title" className={styles.promiseTitle}>
+            “เปลี่ยน” ความเงียบให้เป็น ความน่าเชื่อถือ ที่ยั่งยืน
+          </h2>
+        </div>
+        <ul className={styles.promiseList}>
+          <li>
+            <span className={styles.promiseNumber} aria-hidden="true">01</span>
+            <p><strong>จะดีกว่าไหม...</strong> ถ้าแบรนด์ของคุณยังคง <strong>“โดดเด่น”</strong> ในหน้าสื่อโดยไม่มีวันถูกกลืนหายไป</p>
+          </li>
+          <li>
+            <span className={styles.promiseNumber} aria-hidden="true">02</span>
+            <p><strong>จะดีกว่าไหม...</strong> ถ้ามี <strong>“ผู้ช่วยมืออาชีพ”</strong> เป็นตัวกลางคอยรันกระแสข่าวให้อย่างต่อเนื่อง</p>
+          </li>
+          <li>
+            <span className={styles.promiseNumber} aria-hidden="true">03</span>
+            <p><strong>จะดีกว่าไหม...</strong> ถ้าธุรกิจของคุณ <strong>“ติดเทรนด์”</strong> และอยู่ในสายตากลุ่มเป้าหมายตลอดเวลา</p>
+          </li>
+        </ul>
+        <div className={styles.promiseClosing}>
+          <p>ให้เรา <strong>“Media Planner PR Agency”</strong> เป็นสะพานเชื่อมทุกมิติธุรกิจของคุณ สู่สื่อมวลชน นักลงทุน และคู่ค้า</p>
+          <p>เราพร้อมเป็นพาร์ทเนอร์ร่วมวางแผนและขับเคลื่อนกลยุทธ์ด้านการประชาสัมพันธ์ไปพร้อมกับคุณ</p>
         </div>
       </section>
 

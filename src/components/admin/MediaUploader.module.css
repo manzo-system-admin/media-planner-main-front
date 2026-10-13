@@ -36,6 +36,11 @@
   background: #000;
 }
 
+.preview:has(video) {
+  aspect-ratio: 16 / 9;
+  max-width: 320px;
+}
+
 .previewImage {
   width: 100%;
   display: block;

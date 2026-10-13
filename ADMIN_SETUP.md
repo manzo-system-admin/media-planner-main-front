@@ -6,37 +6,13 @@ One-time setup after the Firebase project is connected (`.env.local` filled in f
 
 Firebase Console → Authentication → Sign-in method → enable **Email/Password** (for admin login) and **Anonymous** (used by the public live chat widget to identify visitors without requiring them to sign up).
 
-## 1. Create the first admin user
+## 1. Create the first backoffice user
 
 Firebase Console → Authentication → Users → Add user. Set an email + password — this is what you'll use to sign in at `/admin/login`.
 
-## 2. Grant admin access
+## 2. Backoffice access
 
-Signing in alone is not enough — Firestore security rules only allow writes from users with an `admin: true` custom claim. Run this once (locally, with `.env.local` populated) for each admin account:
-
-```bash
-node -e "
-require('dotenv').config({ path: '.env.local' });
-const { initializeApp } = require('firebase-admin/app');
-const { cert } = require('firebase-admin/app');
-const { getAuth } = require('firebase-admin/auth');
-
-const app = initializeApp({
-  credential: cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\\\n/g, '\n'),
-  }),
-});
-
-getAuth(app)
-  .getUserByEmail('YOUR_ADMIN_EMAIL_HERE')
-  .then((user) => getAuth(app).setCustomUserClaims(user.uid, { admin: true }))
-  .then(() => console.log('Admin claim set.'));
-"
-```
-
-Replace `YOUR_ADMIN_EMAIL_HERE` with the email from step 1. The user must sign out and back in for the claim to take effect on their session cookie.
+Backoffice access only requires a Firebase Auth user that can sign in with email and password. No custom claim setup is required.
 
 ## 3. Deploy Firestore rules
 

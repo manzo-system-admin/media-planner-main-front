@@ -4,60 +4,46 @@ rules_version = '2';
 // (or paste into Firebase Console > Firestore Database > Rules)
 //
 // Design notes:
-// - All server-side reads (the public site's SSR pages, the admin session
+// - All server-side reads (the public site's SSR pages, the backoffice session
 //   check, the /api/admin/users route) go through firebase-admin, which
 //   bypasses these rules entirely. These rules only govern requests made
-//   directly from the browser: the Backoffice app (signed-in admin/staff).
-// - Backoffice access is granted via a custom claim `role: "admin" | "staff"`
-//   on the Firebase Auth user (legacy accounts may instead carry
-//   `admin: true`, treated as role "admin" for backward compatibility).
-//   Roles are managed from /admin/users (admin-only) — see
-//   src/app/api/admin/users/route.ts. Claim changes only take effect on the
-//   user's *next* login (new ID token / session cookie).
-// - Role split: "staff" can manage day-to-day content; "admin"-only
-//   collections are the site-wide settings (siteSettings, aboutContent) and
-//   anything touching other users' access.
+//   directly from the browser: the Backoffice app.
+// - Backoffice access only requires a signed-in Firebase Auth user.
 
-function isAdmin() {
-  return request.auth != null &&
-    (request.auth.token.role == 'admin' || request.auth.token.admin == true);
-}
-
-function isStaff() {
-  return request.auth != null &&
-    (request.auth.token.role == 'staff' || request.auth.token.role == 'admin' || request.auth.token.admin == true);
+function isSignedIn() {
+  return request.auth != null;
 }
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Content collections editable by staff and admin alike.
+    // Content collections editable by any signed-in backoffice user.
     match /{collection}/{docId} {
       allow read: if collection in [
         'banners', 'videoPopup', 'services', 'portfolio',
         'news', 'newsCategories', 'videoLibrary', 'eventGallery',
         'team', 'clients'
       ];
-      allow write: if isStaff() && collection in [
+      allow write: if isSignedIn() && collection in [
         'banners', 'videoPopup', 'services', 'portfolio',
         'news', 'newsCategories', 'videoLibrary', 'eventGallery',
         'team', 'clients'
       ];
     }
 
-    // Site-wide settings: admin-only write (still publicly readable, same
+    // Site-wide settings: signed-in write (still publicly readable, same
     // as the rest of the content collections above).
     match /{collection}/{docId} {
       allow read: if collection in ['siteSettings', 'aboutContent'];
-      allow write: if isAdmin() && collection in ['siteSettings', 'aboutContent'];
+      allow write: if isSignedIn() && collection in ['siteSettings', 'aboutContent'];
     }
 
     // Activity log: append-only audit trail of content changes made from the
-    // Backoffice. Staff/admin can read and create entries; nothing may be
+    // Backoffice. Signed-in users can read and create entries; nothing may be
     // edited or deleted once written.
     match /activityLogs/{logId} {
-      allow read: if isStaff();
-      allow create: if isStaff();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
     }
   }
 }

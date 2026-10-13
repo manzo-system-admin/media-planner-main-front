@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { getFirebaseStorage } from "@/lib/firebase/client";
@@ -12,12 +13,14 @@ export default function MediaUploader({
   folder,
   accept = "image/*,video/*",
   label = "อัปโหลดรูปภาพหรือวิดีโอ",
+  renderPreview,
 }: {
   value: string;
   onChange: (url: string) => void;
   folder: string;
   accept?: string;
   label?: string;
+  renderPreview?: (url: string) => ReactNode;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
@@ -57,7 +60,9 @@ export default function MediaUploader({
       )}
       {value ? (
         <div className={styles.preview}>
-          {isVideo ? (
+          {renderPreview ? (
+            renderPreview(value)
+          ) : isVideo ? (
             <video src={value} className={styles.previewImage} controls />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element

@@ -15,10 +15,16 @@ import formStyles from "../../news/[id]/page.module.css";
 
 type FormState = Omit<VideoLibraryDoc, "id">;
 
+function todayIso(): string {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+}
+
 const EMPTY: FormState = {
   title: "",
   thumbnail: "",
   videoSource: { kind: "upload", url: "" },
+  date: todayIso(),
   order: 0,
 };
 
@@ -48,13 +54,17 @@ export default function VideoLibraryFormPage() {
       const snapshot = await getDoc(doc(getFirebaseDb(), "videoLibrary", params.id));
       if (snapshot.exists()) {
         const data = snapshot.data();
-        setForm({ ...EMPTY, ...data, title: toText(data.title) });
+        setForm({ ...EMPTY, ...data, date: data.date ?? "", title: toText(data.title) });
       }
       setLoading(false);
     })();
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.date) {
+      setAlert({ message: "กรุณาระบุวันที่", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       if (isNew) {
@@ -87,7 +97,17 @@ export default function VideoLibraryFormPage() {
       <h1 className={formStyles.title}>{isNew ? "เพิ่มวิดีโอ" : "แก้ไขวิดีโอ"}</h1>
       <div className={formStyles.form}>
         <div className={formStyles.field}>
-          <label className={formStyles.label}>ลำดับ</label>
+          <label className={formStyles.label}>วันที่</label>
+          <input
+            type="date"
+            className={formStyles.input}
+            value={form.date ?? ""}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+          />
+        </div>
+
+        <div className={formStyles.field}>
+          <label className={formStyles.label}>ลำดับเมื่อวันที่ตรงกัน</label>
           <input
             type="number"
             className={formStyles.input}

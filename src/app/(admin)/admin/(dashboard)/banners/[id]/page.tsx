@@ -8,6 +8,7 @@ import { getNextOrder, logActivity, softDeleteDoc } from "@/lib/admin/adminData"
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
 import MediaUploader from "@/components/admin/MediaUploader";
+import VideoEmbed from "@/components/VideoEmbed";
 import { toText } from "@/lib/cms/types";
 import type { BannerDoc } from "@/lib/cms/homepage";
 import formStyles from "../../news/[id]/page.module.css";
@@ -117,6 +118,11 @@ export default function BannerFormPage() {
             folder="banners"
             accept={form.type === "video" ? "video/*" : "image/*"}
             label={form.type === "video" ? "อัปโหลดไฟล์วิดีโอ" : "อัปโหลดรูปภาพ"}
+            renderPreview={
+              form.type === "video"
+                ? (url) => <VideoEmbed source={{ kind: "upload", url }} title={form.alt || "banner video"} />
+                : undefined
+            }
           />
         </div>
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { excludeDeleted, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal from "@/components/admin/AdminAlertModal";
@@ -11,6 +11,7 @@ import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import RowActionsMenu from "@/components/admin/RowActionsMenu";
 import { toText } from "@/lib/cms/types";
 import type { VideoLibraryDoc } from "@/lib/cms/media";
+import { sortMediaByDate } from "@/lib/cms/mediaSort";
 import styles from "../news/page.module.css";
 
 type Row = VideoLibraryDoc;
@@ -25,17 +26,12 @@ export default function VideoLibraryListPage() {
 
   useEffect(() => {
     (async () => {
-      const snapshot = await getDocs(
-        query(collection(getFirebaseDb(), "videoLibrary"), orderBy("order", "asc"))
-      );
-      setItems(
-        excludeDeleted(
-          snapshot.docs.map((d) => {
-            const data = d.data() as Omit<Row, "id">;
-            return { id: d.id, ...data, title: toText(data.title) };
-          })
-        )
-      );
+      const snapshot = await getDocs(collection(getFirebaseDb(), "videoLibrary"));
+      const rows = snapshot.docs.map((d) => {
+        const data = d.data() as Omit<Row, "id">;
+        return { id: d.id, ...data, title: toText(data.title) };
+      });
+      setItems(sortMediaByDate(excludeDeleted(rows)));
       setLoading(false);
     })();
   }, []);
@@ -60,7 +56,8 @@ export default function VideoLibraryListPage() {
         item.thumbnail ? <img src={item.thumbnail} alt="" className={styles.thumb} /> : null,
     },
     { key: "title", label: "ชื่อวิดีโอ", render: (item) => item.title },
-    { key: "order", label: "ลำดับ", render: (item) => item.order ?? "-" },
+    { key: "date", label: "วันที่", render: (item) => item.date || "-" },
+    { key: "order", label: "ลำดับเมื่อวันที่ตรงกัน", render: (item) => item.order ?? "-" },
   ];
 
   return (
