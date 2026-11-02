@@ -38,7 +38,13 @@ yarn-error.log*
 
 # firebase
 .firebase
+firebase-debug.log
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local build and working artifacts
+/tmp/
+/.codex-finalizer/
+/manual-server*.log

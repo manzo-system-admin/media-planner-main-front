@@ -31,7 +31,7 @@ export default function NewsListPage() {
             const data = d.data() as Omit<Row, "id">;
             return { id: d.id, ...data, title: toText(data.title) };
           })
-        ).sort((a, b) => Number(b.pinned === true) - Number(a.pinned === true))
+        ).sort((a, b) => String(b.date ?? "").localeCompare(String(a.date ?? "")))
       );
       setLoading(false);
     })();
