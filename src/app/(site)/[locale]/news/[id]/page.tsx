@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
-import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import NotFoundView from "@/components/NotFoundView";
 import NewsHeroImage from "@/components/NewsHeroImage";
@@ -66,14 +65,9 @@ export default async function NewsDetailPage({
 
   return (
     <ContentSheet>
-      <PageIntro
-        breadcrumb={[
-          { label: dict.common.home, href: `/${locale}` },
-          { label: news.title, href: `/${locale}/news` },
-          { label: item.title },
-        ]}
-        title={item.title}
-      >
+      <header className={styles.articleHeader}>
+        <nav aria-label="Breadcrumb"><Link href={`/${locale}`}>{dict.common.home}</Link><span>/</span><Link href={`/${locale}/news`}>{news.title}</Link></nav>
+        <h1>{item.title}</h1>
         <div className={styles.metaRow}>
           {item.pinned && (
             <span className={styles.pinBadge}>
@@ -83,7 +77,7 @@ export default async function NewsDetailPage({
           {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
           <span className={styles.date}>{item.date}</span>
         </div>
-      </PageIntro>
+      </header>
 
       <section className={styles.heroSection}>
         <NewsHeroImage src={item.image} alt={item.title} />

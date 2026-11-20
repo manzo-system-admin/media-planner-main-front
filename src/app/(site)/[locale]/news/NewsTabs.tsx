@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Breadcrumb from "@/components/Breadcrumb";
 import Pagination from "@/components/Pagination";
 import styles from "./page.module.css";
 import lightboxStyles from "@/components/VideoPopupCard.module.css";
@@ -31,7 +30,6 @@ function toExcerpt(html: string, limit = 150) {
 
 export default function NewsTabs({
   locale,
-  homeLabel,
   news,
   allLabel,
   newsItems,
@@ -41,7 +39,6 @@ export default function NewsTabs({
   categoryLabels,
 }: {
   locale: Locale;
-  homeLabel: string;
   news: Dictionary["news"];
   allLabel: string;
   newsItems: CmsNewsItem[];
@@ -154,15 +151,13 @@ export default function NewsTabs({
   return (
     <>
       <div className={styles.intro}>
-        <div className={styles.breadcrumb}>
-          <Breadcrumb items={[{ label: homeLabel, href: `/${locale}` }, { label: news.title }]} />
-        </div>
-        <h1 className={styles.title}>{news.title}</h1>
-        <div className={styles.tabs}>
+        <div className={styles.tabs} role="tablist" aria-label={news.title}>
           {news.tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
+              role="tab"
+              aria-selected={active === tab.key}
               onClick={() => handleTabClick(tab.key)}
               className={`${styles.tab} ${active === tab.key ? styles.tabActive : ""}`}
             >
@@ -204,7 +199,7 @@ export default function NewsTabs({
           )}
           {filteredNewsItems.length === 0 && <p className={styles.searchEmpty}>{news.searchEmpty}</p>}
           {featuredNewsItem && (
-            <Link href={`/${locale}/news/${featuredNewsItem.id}`} className={styles.featuredNews}>
+            <Link href={`/${locale}/news/${featuredNewsItem.id}`} className={styles.featuredNews} data-reveal>
               <div className={styles.featuredImage}>
                 <Image
                   src={featuredNewsItem.image}
@@ -229,6 +224,7 @@ export default function NewsTabs({
               </div>
             </Link>
           )}
+          {pagedNewsItems.length > 0 && <h2 className={styles.moreHeading}>{news.relatedTitle}</h2>}
           {pagedNewsItems.length > 0 && (
             <div className={styles.articleGrid}>
               {pagedNewsItems.map((item) => (
@@ -236,6 +232,7 @@ export default function NewsTabs({
                   key={item.id}
                   href={`/${locale}/news/${item.id}`}
                   className={`${styles.articleCard} ${item.pinned ? styles.articleCardPinned : ""}`}
+                  data-reveal
                 >
                   <div className={styles.articleThumb}>
                     <Image
@@ -263,66 +260,75 @@ export default function NewsTabs({
             </div>
           )}
           {(listedNewsItems.length > PAGE_SIZE || page > 1) && (
-            <Pagination page={page} totalPages={articlesTotalPages} onChange={setPage} />
+            <Pagination page={page} totalPages={articlesTotalPages} onChange={setPage} className={styles.newsPagination} />
           )}
         </section>
       )}
 
       {active === "videos" && (
         <section className={styles.section}>
-          <div className={styles.articleGrid}>
-            {pagedVideoLibrary.map((video) => (
-              <button
-                key={video.id}
-                type="button"
-                className={styles.videoThumb}
-                onClick={() => {
-                  setUploadRatio(null);
-                  setOpenVideo(video);
-                }}
-              >
-                <span className={styles.videoPoster}>
-                  <Image
-                    src={video.thumbnail}
-                    alt={video.title}
-                    fill
-                    sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                  <span className={styles.playIcon} />
-                </span>
-                <span className={styles.videoTitle}>{video.title}</span>
-              </button>
-            ))}
-          </div>
-          <Pagination page={page} totalPages={videosTotalPages} onChange={setPage} />
+          {pagedVideoLibrary.length > 0 ? (
+            <div className={`${styles.articleGrid} ${styles.videoGrid}`}>
+              {pagedVideoLibrary.map((video) => (
+                <button
+                  key={video.id}
+                  type="button"
+                  className={styles.videoThumb}
+                  onClick={() => {
+                    setUploadRatio(null);
+                    setOpenVideo(video);
+                  }}
+                >
+                  <span className={styles.videoPoster}>
+                    <Image
+                      src={video.thumbnail}
+                      alt={video.title}
+                      fill
+                      sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <span className={styles.playIcon} />
+                  </span>
+                  <span className={styles.videoTitle}>{video.title}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.searchEmpty}>{news.searchEmpty}</p>
+          )}
+          <Pagination page={page} totalPages={videosTotalPages} onChange={setPage} className={styles.newsPagination} />
         </section>
       )}
 
       {active === "gallery" && (
         <section className={styles.section}>
-          <div className={styles.galleryGrid}>
-            {pagedEventGallery.map((item, localIndex) => (
-              <button
-                key={item.id}
-                type="button"
-                className={styles.galleryImage}
-                onClick={() => setOpenGalleryIndex((page - 1) * PAGE_SIZE + localIndex)}
-              >
-                <span className={styles.galleryThumb}>
-                  <Image
-                    src={item.image}
-                    alt={item.caption || news.galleryImageAlt}
-                    fill
-                    sizes="(max-width: 2000px) 50vw, 25vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                </span>
-                {item.caption && <span className={styles.galleryCaption}>{item.caption}</span>}
-              </button>
-            ))}
-          </div>
-          <Pagination page={page} totalPages={galleryTotalPages} onChange={setPage} />
+          {pagedEventGallery.length > 0 ? (
+            <div className={styles.galleryGrid}>
+              {pagedEventGallery.map((item, localIndex) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={styles.galleryImage}
+                  data-reveal
+                  onClick={() => setOpenGalleryIndex((page - 1) * PAGE_SIZE + localIndex)}
+                >
+                  <span className={styles.galleryThumb}>
+                    <Image
+                      src={item.image}
+                      alt={item.caption || news.galleryImageAlt}
+                      fill
+                      sizes="(max-width: 2000px) 50vw, 25vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </span>
+                  {item.caption && <span className={styles.galleryCaption}>{item.caption}</span>}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.searchEmpty}>{news.searchEmpty}</p>
+          )}
+          <Pagination page={page} totalPages={galleryTotalPages} onChange={setPage} className={styles.newsPagination} />
         </section>
       )}
 

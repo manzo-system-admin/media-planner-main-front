@@ -248,7 +248,7 @@ function ClientTile({
 }) {
   if (linkToPortfolio && locale) {
     return (
-      <Link href={`/${locale}/portfolio?client=${client.id}`} className={className}>
+      <Link href={`/${locale}/portfolio?client=${client.id}`} className={className} aria-label={client.name}>
         <ClientLogo name={client.name} index={index} logoUrl={client.logoUrl} />
       </Link>
     );
@@ -260,6 +260,7 @@ function ClientTile({
         type="button"
         className={className}
         style={{ border: "none", font: "inherit", cursor: "pointer" }}
+        aria-label={client.name}
         aria-expanded={active}
         onClick={() => onToggle(client)}
       >

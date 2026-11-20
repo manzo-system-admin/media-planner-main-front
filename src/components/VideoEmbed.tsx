@@ -74,7 +74,7 @@ export default function VideoEmbed({
           target="_blank"
           rel="noopener noreferrer"
         >
-          เปิดดูใน Facebook ↗
+          เปิดดูใน Facebook
         </a>
       </div>
     );

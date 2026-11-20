@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
-import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import NotFoundView from "@/components/NotFoundView";
 import PortfolioGallery from "@/components/PortfolioGallery";
@@ -63,20 +62,11 @@ export default async function PortfolioDetailPage({
 
   return (
     <ContentSheet>
-      <PageIntro
-        breadcrumb={[
-          { label: dict.common.home, href: `/${locale}` },
-          { label: portfolio.title, href: `/${locale}/portfolio` },
-          { label: item.title },
-        ]}
-        title={item.title}
-      >
-        {item.client && (
-          <div className={styles.metaRow}>
-            <span className={styles.clientBadge}>{item.client}</span>
-          </div>
-        )}
-      </PageIntro>
+      <header className={styles.caseHeader}>
+        <nav><Link href={`/${locale}`}>{dict.common.home}</Link><span>/</span><Link href={`/${locale}/portfolio`}>{portfolio.title}</Link></nav>
+        <h1>{item.title}</h1>
+        {item.client && <div className={styles.metaRow}><span className={styles.clientBadge}>{item.client}</span></div>}
+      </header>
 
       <section className={styles.heroSection}>
         <PortfolioGallery images={item.images.length > 0 ? item.images : [item.image]} alt={item.title} />

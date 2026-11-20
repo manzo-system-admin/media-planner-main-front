@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import ContentSheet from "@/components/ContentSheet";
 import NewsTabs from "./NewsTabs";
+import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getNewsCategories, getNewsCategoryLabels, getNewsList } from "@/lib/cms/news";
@@ -37,17 +39,22 @@ export default async function NewsPage({
 
   return (
     <ContentSheet>
-      <NewsTabs
-        locale={locale}
-        homeLabel={dict.common.home}
-        news={dict.news}
-        allLabel={dict.common.all}
-        newsItems={newsItems}
-        videoLibrary={videoLibrary}
-        eventGallery={eventGallery}
-        categories={categories}
-        categoryLabels={categoryLabels}
-      />
+      <div className={styles.newsPage}>
+        <header className={styles.pageHeading}>
+          <nav aria-label="Breadcrumb"><Link href={`/${locale}`}>{dict.common.home}</Link><span>/</span><span>{dict.news.title}</span></nav>
+          <h1>{dict.news.title}</h1>
+        </header>
+        <NewsTabs
+          locale={locale}
+          news={dict.news}
+          allLabel={dict.common.all}
+          newsItems={newsItems}
+          videoLibrary={videoLibrary}
+          eventGallery={eventGallery}
+          categories={categories}
+          categoryLabels={categoryLabels}
+        />
+      </div>
     </ContentSheet>
   );
 }

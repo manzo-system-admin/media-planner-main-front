@@ -1,62 +1,43 @@
 .footer {
-  background-color: var(--grad-blue);
-  color: #fff;
-  padding: 36px var(--shell-pad) 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 92px;
+  margin: 0;
+  padding: 8px clamp(28px, 4vw, 42px) 9px;
+  color: #c5cbc8;
+  background: #000;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 0;
+  box-shadow: none;
 }
-
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+.topRow { display: flex; min-height: 43px; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: inline-flex; min-width: 0; align-items: center; color: #f8f8f5; }
+.brand img { display: block; width: 54px; height: 38px; object-fit: fill; }
+.brand span { margin: 8px 0 0 -5px; font: 400 10px/1 var(--font-heading); letter-spacing: .015em; white-space: nowrap; }
+.bottom { display: flex; min-height: 28px; align-items: flex-end; justify-content: space-between; gap: 24px; color: #a8adaa; font: 400 8px/1.5 var(--font-heading); }
+.links { display: flex; align-items: center; gap: 18px; white-space: nowrap; }
+.links a, .companyMeta span { transition: color .2s ease; }
+.links a:hover { color: #fff; }
+.companyMeta { display: flex; align-items: center; justify-content: flex-end; gap: 18px; white-space: nowrap; }
+.socials { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.socialIcon { width: 27px; height: 27px; box-sizing: border-box; display: grid; place-items: center; color: #f8f8f5; border: 1px solid rgba(255,255,255,.78); border-radius: 50%; transition: color .2s ease, background-color .2s ease, border-color .2s ease, transform .2s ease; }
+.socialIcon:hover { color: #071923; background: #fff; border-color: #fff; transform: translateY(-2px); }
+.socialIcon svg { width: 12px; height: 12px; }
+@media(max-width: 720px) {
+  .footer { min-height: auto; padding: 12px 22px 15px; }
+  .topRow { min-height: 42px; }
+  .bottom { align-items: flex-start; flex-direction: column; gap: 10px; padding-top: 7px; font-size: 10px; }
+  .companyMeta { justify-content: flex-start; flex-wrap: wrap; gap: 5px 14px; white-space: normal; }
 }
-
-.logo {
-  height: 36px;
-  width: auto;
-  border-radius: 6px;
+@media(max-width: 380px) {
+  .footer { padding-inline: 16px; }
+  .brand img { width: 48px; height: 34px; }
+  .brand span { font-size: 9px; }
+  .socials { gap: 6px; }
+  .socialIcon { width: 25px; height: 25px; }
 }
-
-.socials {
-  display: flex;
-  gap: 12px;
-}
-
-.socialIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease;
-}
-
-.socialIcon:hover {
-  background: rgba(255, 255, 255, 0.28);
-}
-
-.divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.bottom {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  font: 400 12px var(--font-heading);
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.links {
-  display: flex;
-  gap: 20px;
-}
+@media(prefers-reduced-motion: reduce) { .socialIcon, .links a { transition: none; } }

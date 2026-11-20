@@ -32,9 +32,9 @@
 
 .filterPillActive {
   font-weight: 600;
-  color: #fff;
-  background: var(--navy);
-  border-color: var(--navy);
+  color: #001625;
+  background: var(--brand-green);
+  border-color: var(--brand-green);
 }
 
 .grid {
@@ -253,4 +253,145 @@
   color: var(--text-muted);
   font: 400 14px var(--font-body);
   grid-column: 1 / -1;
+}
+
+/* Editorial portfolio layout */
+.intro { padding: 56px var(--shell-pad) 30px; }
+.breadcrumb { color: var(--brand-green); font: 600 12px var(--font-heading); letter-spacing: .12em; margin-bottom: 20px; }
+.title { font: 500 clamp(52px, 7vw, 105px)/1.1 var(--font-heading); letter-spacing: -.055em; margin-bottom: 35px; }
+.filters { gap: 9px; }
+.filterPill { border-radius: 100px; padding: 10px 22px; }
+.grid { padding-top: 15px; gap: 55px 22px; }
+.card { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.cardImage { aspect-ratio: 4/5; overflow: hidden; background: #ded8cc; }
+.cardImage img { transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+.card:hover .cardImage img { transform: scale(1.07); }
+.card:hover { box-shadow: none; transform: none; }
+.cardBody { padding: 16px 0 0; }
+.cardClient { color: var(--brand-green); font: 600 12px var(--font-heading); letter-spacing: .08em; text-transform: uppercase; }
+.cardTitle { font: 500 24px/1.35 var(--font-heading); }
+.clients { margin-top: 90px; border-top: 1px solid var(--border); padding: 55px 0; }
+.clientsLabel { font: 500 clamp(25px, 3vw, 42px)/1.3 var(--font-heading); letter-spacing: -.025em; color: var(--navy); }
+.clientLogo { filter: grayscale(1); opacity: .8; transition: filter .3s, opacity .3s; }
+.clientLogo:hover { filter: none; opacity: 1; }
+@media (max-width: 560px) { .intro { padding: 38px 20px 30px; } .grid { padding: 15px 20px; } .clients { margin-top: 50px; } .cardImage { aspect-ratio: 5/4; } }
+@media (prefers-reduced-motion: reduce) { .cardImage img, .clientLogo { transition: none; } }
+.pageHeading { padding:112px var(--shell-pad) 10px; }
+.pageHeading nav { display:flex; gap:12px; color:#bac7c9; font:500 12px var(--font-heading); }
+.pageHeading nav a { color:var(--brand-green); }
+.pageHeading h1 { margin:18px 0 0; color:#f8f4eb; font:600 clamp(30px,4vw,52px)/1.15 var(--font-heading); }
+.intro { padding-top:30px; }
+@media(max-width:560px) { .pageHeading { padding:92px 20px 8px; } }
+
+/* Client and portfolio page, based on the client-logo Figma frame. */
+:global(.contentSheet) > .portfolioPage { width: 100%; margin: 0; }
+.portfolioPage {
+  width: 100%;
+  min-height: 100%;
+  padding-bottom: 36px;
+  color: #f8f4eb;
+  background:
+    radial-gradient(ellipse at 30% 44%, rgba(106, 117, 151, .11), transparent 30%),
+    radial-gradient(ellipse at 68% 45%, rgba(161, 190, 61, .10), transparent 31%),
+    #000;
+}
+.pageHeading {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 112px 0 24px;
+  border-bottom: 1px solid rgba(248, 244, 235, .2);
+}
+.pageHeading h1 {
+  margin: 0;
+  color: #f8f4eb;
+  font: 700 clamp(34px, 4vw, 52px)/1.15 var(--font-heading);
+  letter-spacing: .01em;
+}
+.clients {
+  width: min(1024px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 24px 0 70px;
+  border: 0;
+}
+.clientsHeader {
+  margin-bottom: 38px;
+  gap: 24px;
+}
+.clientsLabel {
+  color: #858585;
+  font: 600 clamp(21px, 2.2vw, 30px)/1.25 var(--font-heading);
+  letter-spacing: .015em;
+}
+.clientsCategoryButtons {
+  flex: none;
+  gap: 2px;
+  padding: 3px;
+  border-color: rgba(248, 244, 235, .2);
+  background: rgba(255, 255, 255, .12);
+}
+.clientsCategoryButton {
+  min-width: 64px;
+  height: 31px;
+  padding-inline: 14px;
+  color: #f8f4eb;
+  font: 600 14px/1 var(--font-heading);
+}
+.clientsCategoryButton:hover { color: #fff; background: rgba(255, 255, 255, .1); }
+.clientsCategoryButtonActive {
+  color: #fff;
+  background: var(--brand-gradient);
+  box-shadow: none;
+}
+.clientsCategoryButtonActive:hover { color: #fff; background: var(--brand-gradient); }
+.clientsFilter { display: none; }
+.clientsGrid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  gap: 10px 20px;
+  min-height: 550px;
+  padding: 32px clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 38px;
+  background: linear-gradient(135deg, rgba(235, 235, 235, .24), rgba(255, 255, 255, .19));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+  backdrop-filter: blur(18px);
+}
+.clientLogo {
+  --client-logo-image-max-width: min(100%, 148px);
+  --client-logo-image-max-height: 76px;
+  height: clamp(68px, 6vw, 92px);
+  border-radius: 8px;
+  filter: grayscale(1);
+  opacity: .78;
+  transition: filter .28s ease, opacity .28s ease, transform .28s ease;
+}
+.clientLogo:hover,
+.clientLogo:focus-visible {
+  filter: grayscale(0);
+  opacity: 1;
+  transform: scale(1.06);
+}
+.clientLogo:focus-visible { outline: 2px solid var(--brand-green-light); outline-offset: 2px; }
+@media (max-width: 900px) {
+  .clients { width: min(100% - 48px, 760px); }
+  .clientsGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); min-height: 0; padding: 30px 28px; }
+}
+@media (max-width: 560px) {
+  .portfolioPage { padding-bottom: 12px; }
+  .pageHeading { width: calc(100% - 36px); padding: 94px 0 18px; }
+  .pageHeading h1 { font-size: 31px; }
+  .clients { width: calc(100% - 36px); padding: 20px 0 48px; }
+  .clientsHeader { align-items: center; flex-direction: row; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+  .clientsLabel { font-size: 19px; }
+  .clientsCategoryButtons { display: inline-flex; max-width: 100%; }
+  .clientsCategoryButton { min-width: 0; height: 29px; padding-inline: 10px; font-size: 12px; }
+  .clientsFilter { display: none; }
+  .clientsGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 10px; padding: 20px 12px; border-radius: 22px; }
+  .clientLogo { --client-logo-image-max-width: min(100%, 100px); --client-logo-image-max-height: 54px; height: 64px; }
+}
+@media (max-width: 360px) {
+  .clientsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .clientLogo { transition: none; }
 }

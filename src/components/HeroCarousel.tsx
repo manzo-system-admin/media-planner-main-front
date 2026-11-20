@@ -1,10 +1,38 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./HeroCarousel.module.css";
 import type { Dictionary, HeroSlide } from "@/lib/dictionaries/types";
 
 const AUTOPLAY_MS = 6000;
+
+function HeroVideo({ src, poster, single, onEnded }: { src: string; poster: string; single: boolean; onEnded?: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    const update = () => {
+      if (visible && !motion.matches) void video.play().catch(() => {});
+      else video.pause();
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      update();
+    }, { threshold: .15 });
+    observer.observe(video);
+    motion.addEventListener("change", update);
+    return () => {
+      observer.disconnect();
+      motion.removeEventListener("change", update);
+      video.pause();
+    };
+  }, []);
+
+  return <video ref={ref} className={styles.slideMedia} src={src} poster={poster} loop={single} muted playsInline preload="metadata" onEnded={onEnded} />;
+}
 
 export default function HeroCarousel({
   slides,
@@ -27,7 +55,8 @@ export default function HeroCarousel({
   const singleVideoSlide = slides.length === 1 && activeIsVideo;
 
   useEffect(() => {
-    if (paused || activeIsVideo || slides.length < 2) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (paused || activeIsVideo || slides.length < 2 || motion.matches) return;
     const timer = setInterval(() => {
       setActive((current) => (current + 1) % slides.length);
     }, AUTOPLAY_MS);
@@ -49,16 +78,7 @@ export default function HeroCarousel({
           >
             {slide.type === "video" ? (
               index === active ? (
-                <video
-                  className={styles.slideMedia}
-                  src={slide.src}
-                  poster={slide.poster}
-                  autoPlay
-                  loop={singleVideoSlide}
-                  muted
-                  playsInline
-                  onEnded={singleVideoSlide ? undefined : () => goTo(active + 1)}
-                />
+                <HeroVideo src={slide.src} poster={slide.poster} single={singleVideoSlide} onEnded={singleVideoSlide ? undefined : () => goTo(active + 1)} />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className={styles.slideMedia} src={slide.poster} alt="" />

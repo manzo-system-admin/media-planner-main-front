@@ -1,33 +1,69 @@
 .pagination {
+  --pagination-size: 38px;
+  --pagination-gap: 4px;
+  --pagination-padding: 8px;
+  --pagination-border: var(--border);
+  --pagination-surface: var(--surface);
+  --pagination-active: var(--brand-green, #409d48);
+  --pagination-active-foreground: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 32px;
-  flex-wrap: wrap;
+  gap: var(--pagination-gap);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 48px auto 0;
+  padding: var(--pagination-padding);
+  border: 1px solid var(--pagination-border);
+  border-radius: 999px;
+  background: var(--pagination-surface);
 }
+
+.pageGroup { display: contents; }
 
 .navButton,
 .pageButton {
-  font: 500 13px var(--font-heading);
-  color: var(--navy);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  min-width: 36px;
-  height: 36px;
-  padding: 0 8px;
-  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--pagination-size);
+  height: var(--pagination-size);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--pagination-text, var(--navy));
+  font: 600 13px var(--font-heading);
   cursor: pointer;
+  transition: background .2s ease, color .2s ease;
 }
 
-.navButton:disabled {
-  opacity: 0.4;
-  cursor: default;
+.navButton { font-size: 23px; font-weight: 400; line-height: 1; }
+.navButton:hover:not(:disabled),
+.pageButton:hover:not(.pageButtonActive) { background: #eae7dd; }
+.navButton:disabled { color: #a8aaa3; cursor: default; }
+.pageButtonActive { background: var(--pagination-active); color: var(--pagination-active-foreground); }
+.navButton:focus-visible,
+.pageButton:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+.ellipsis {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 23px;
+  height: 38px;
+  color: #858a82;
+  font: 600 16px var(--font-heading);
+  user-select: none;
 }
 
-.pageButtonActive {
-  font-weight: 700;
-  color: #fff;
-  background: var(--gradient-cta);
-  border-color: transparent;
+@media (max-width: 560px) {
+  .pagination { gap: 2px; padding: 6px; margin-top: 36px; }
+  .navButton, .pageButton { width: min(var(--pagination-size), 30px); height: min(var(--pagination-size), 30px); font-size: 11px; }
+  .navButton { font-size: 20px; }
+  .ellipsis { width: 16px; height: 30px; font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navButton, .pageButton { transition: none; }
 }

@@ -9,34 +9,59 @@ import type { TeamGalleryPhoto } from "@/lib/dictionaries/types";
 // source images' actual dimensions (uploads aren't guaranteed to share a
 // ratio, and we don't store intrinsic width/height per photo).
 const RATIOS = ["4 / 5", "1 / 1", "3 / 4", "1 / 1", "4 / 5", "5 / 4"];
+const SHOWCASE_RATIOS = ["16 / 10", "4 / 3", "3 / 2", "5 / 4", "1 / 1", "16 / 10"];
 
 function ratioHeightUnit(ratio: string): number {
   const [w, h] = ratio.split("/").map((n) => parseFloat(n.trim()));
   return h / w;
 }
 
-function useColumnCount(): number {
-  const [count, setCount] = useState(4);
+function useColumnCount(maxColumns = 4): number {
+  const [count, setCount] = useState(maxColumns);
   useEffect(() => {
     const queries = [window.matchMedia("(max-width: 640px)"), window.matchMedia("(max-width: 960px)")];
-    const update = () => setCount(queries[0].matches ? 2 : queries[1].matches ? 3 : 4);
+    const update = () => setCount(queries[0].matches ? 2 : Math.min(maxColumns, queries[1].matches ? 3 : 4));
     update();
     queries.forEach((q) => q.addEventListener("change", update));
     return () => queries.forEach((q) => q.removeEventListener("change", update));
-  }, []);
+  }, [maxColumns]);
   return count;
 }
 
 export default function TeamGallery({
   photos,
   altFallback,
+  variant = "masonry",
+  revealOnScroll = false,
 }: {
   photos: TeamGalleryPhoto[];
   altFallback: string;
+  variant?: "masonry" | "showcase";
+  revealOnScroll?: boolean;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const pointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
-  const columnCount = useColumnCount();
+  const gridRef = useRef<HTMLDivElement>(null);
+  const columnCount = useColumnCount(variant === "showcase" ? 3 : 4);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!revealOnScroll || !grid || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!("IntersectionObserver" in window)) return;
+
+    grid.dataset.scrollRevealReady = "true";
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle(styles.revealed, entry.isIntersecting);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+
+    grid.querySelectorAll<HTMLElement>("[data-gallery-reveal]").forEach((tile) => observer.observe(tile));
+    return () => {
+      observer.disconnect();
+      delete grid.dataset.scrollRevealReady;
+    };
+  }, [columnCount, photos.length, revealOnScroll]);
 
   const close = useCallback(() => setOpenIndex(null), []);
   const showPrev = useCallback(
@@ -128,14 +153,15 @@ export default function TeamGallery({
       () => []
     );
     const heights = new Array(columnCount).fill(0);
+    const ratios = variant === "showcase" ? SHOWCASE_RATIOS : RATIOS;
     photos.forEach((photo, index) => {
-      const ratio = RATIOS[index % RATIOS.length];
+      const ratio = ratios[index % ratios.length];
       const shortest = heights.indexOf(Math.min(...heights));
       cols[shortest].push({ photo, index, ratio });
       heights[shortest] += ratioHeightUnit(ratio);
     });
     return cols;
-  }, [photos, columnCount]);
+  }, [photos, columnCount, variant]);
 
   if (photos.length === 0) return null;
 
@@ -143,7 +169,7 @@ export default function TeamGallery({
 
   return (
     <>
-      <div className={styles.grid}>
+      <div ref={gridRef} className={`${styles.grid} ${variant === "showcase" ? styles.showcaseGrid : ""}`}>
         {columns.map((column, columnIndex) => (
           <div key={columnIndex} className={styles.column}>
             {column.map(({ photo, index, ratio }) => (
@@ -151,6 +177,7 @@ export default function TeamGallery({
                 key={photo.id}
                 type="button"
                 className={styles.tile}
+                data-gallery-reveal={revealOnScroll ? "" : undefined}
                 style={{ "--ratio": ratio, "--stagger": `${(index % 8) * 50}ms` } as React.CSSProperties}
                 onClick={() => setOpenIndex(index)}
               >
@@ -161,6 +188,18 @@ export default function TeamGallery({
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   style={{ objectFit: "cover" }}
                 />
+                {variant === "showcase" && (
+                  <Image
+                    src={photo.image}
+                    alt=""
+                    aria-hidden="true"
+                    width={1}
+                    height={1}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className={styles.reflection}
+                    style={{ objectFit: "cover" }}
+                  />
+                )}
                 <span className={styles.veil} />
                 {photo.caption && <span className={styles.caption}>{photo.caption}</span>}
                 <span className={styles.expandIcon} aria-hidden="true">

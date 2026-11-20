@@ -10,7 +10,7 @@ const sharp = require("sharp");
 const sourceDir = process.argv[2];
 const apply = process.argv.includes("--apply");
 const collectionName = "eventGallery";
-const importName = "archive-2026";
+const importName = "event-gallery-2026-11-02";
 
 if (!sourceDir) {
   console.error("Usage: node scripts/import-event-gallery-folder.cjs <folder> [--apply]");
@@ -34,10 +34,9 @@ async function listFiles(dir) {
 
 function parseFile(filePath) {
   const name = path.basename(filePath);
-  const match = /^(\d{3})\s*-\s*(\d{2})\.(\d{2})\.(\d{4})\s+(.+)\.(jpe?g|png|webp)$/i.exec(name);
+  const match = /^(?:(\d{3})\s*-\s*)?(\d{2})\.(\d{2})\.(\d{4})\s+(.+)\.(jpe?g|png|webp)$/i.exec(name);
   if (!match) throw new Error(`Unexpected filename: ${name}`);
 
-  const order = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
   const year = Number(match[4]) - 543;
@@ -53,11 +52,10 @@ function parseFile(filePath) {
   return {
     filePath,
     name,
-    order,
+    sourceOrder: match[1] ? Number(match[1]) : null,
     date: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
     caption: match[5].replace(/_+$/, "").trim(),
     extension: match[6].toLowerCase().replace("jpeg", "jpg"),
-    id: `${importName}-${match[1]}`,
   };
 }
 
@@ -97,11 +95,17 @@ async function main() {
   const bucket = getStorage(app).bucket();
 
   const files = await listFiles(sourceDir);
-  const items = files.map(parseFile).sort((a, b) => a.order - b.order);
+  console.log(`Found ${files.length} files; validating names...`);
+  const items = files.map(parseFile).sort((a, b) =>
+    a.date.localeCompare(b.date) || a.name.localeCompare(b.name, "th")
+  );
   if (items.length === 0) throw new Error("No images found");
-  for (let index = 0; index < items.length; index++) {
-    if (items[index].order !== index + 1) throw new Error("File sequence must be unique and continuous");
-  }
+  items.forEach((item, index) => {
+    item.order = item.sourceOrder ?? index + 1;
+    item.id = item.sourceOrder
+      ? `archive-2026-${String(item.sourceOrder).padStart(3, "0")}`
+      : `${importName}-${String(index + 1).padStart(3, "0")}`;
+  });
 
   const snapshot = await db.collection(collectionName).get();
   const existing = new Map(snapshot.docs.map((doc) => [doc.id, doc.data()]));
@@ -125,7 +129,7 @@ async function main() {
 
   for (const [index, item] of pending.entries()) {
     const image = await prepareImage(item);
-    const objectPath = `uploads/event-gallery/${importName}/${String(item.order).padStart(3, "0")}.${image.extension}`;
+    const objectPath = `uploads/event-gallery/${importName}/${item.id}.${image.extension}`;
     const token = randomUUID();
     await bucket.file(objectPath).save(image.bytes, {
       resumable: false,

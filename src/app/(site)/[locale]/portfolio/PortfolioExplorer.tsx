@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Breadcrumb from "@/components/Breadcrumb";
 import Pagination from "@/components/Pagination";
 import styles from "./page.module.css";
 import type { Dictionary, PortfolioFilter, PortfolioItem } from "@/lib/dictionaries/types";
@@ -13,13 +12,11 @@ const PAGE_SIZE = 6;
 
 export default function PortfolioExplorer({
   locale,
-  homeLabel,
   portfolio,
   filters,
   items: allItems,
 }: {
   locale: Locale;
-  homeLabel: string;
   portfolio: Dictionary["portfolio"];
   filters: PortfolioFilter[];
   items: PortfolioItem[];
@@ -39,10 +36,6 @@ export default function PortfolioExplorer({
   return (
     <>
       <div className={styles.intro}>
-        <div className={styles.breadcrumb}>
-          <Breadcrumb items={[{ label: homeLabel, href: `/${locale}` }, { label: portfolio.title }]} />
-        </div>
-        <h1 className={styles.title}>{portfolio.title}</h1>
         <div className={styles.filters}>
           {filters.map((filter) => (
             <button
@@ -60,7 +53,7 @@ export default function PortfolioExplorer({
       <div className={styles.grid}>
         {items.length === 0 && <p className={styles.empty}>{portfolio.empty}</p>}
         {items.map((item) => (
-          <Link key={item.id} href={`/${locale}/portfolio/${item.id}`} className={styles.card}>
+          <Link key={item.id} href={`/${locale}/portfolio/${item.id}`} className={styles.card} data-reveal>
             <div className={styles.cardImage}>
               <Image
                 src={item.image}

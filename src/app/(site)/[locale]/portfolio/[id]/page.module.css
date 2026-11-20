@@ -162,3 +162,8 @@
   font: 600 14px var(--font-heading);
   color: var(--navy);
 }
+.caseHeader { padding:112px var(--shell-pad) 32px; text-align:center; }
+.caseHeader nav { display:flex; justify-content:center; gap:12px; color:#bac7c9; font:500 12px var(--font-heading); }
+.caseHeader nav a { color:var(--brand-green); }
+.caseHeader h1 { margin:24px auto 14px; max-width:1000px; color:#f8f4eb; font:600 clamp(30px,4.5vw,62px)/1.2 var(--font-heading); }
+@media(max-width:640px) { .caseHeader { padding:94px 20px 24px; } }

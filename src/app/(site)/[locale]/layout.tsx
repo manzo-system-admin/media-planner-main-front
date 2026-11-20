@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingSocialButton from "@/components/FloatingSocialButton";
 import CookieConsent from "@/components/CookieConsent";
+import MotionObserver from "@/components/MotionObserver";
+import MotionParallax from "@/components/MotionParallax";
 import { locales, isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/dictionaries";
 import { getSiteSettings } from "@/lib/cms/siteSettings";
@@ -47,6 +49,8 @@ export default async function LocaleLayout({
   return (
     <html lang={dict.meta.htmlLang} className={kanit.variable}>
       <body>
+        <MotionObserver />
+        <MotionParallax />
         <Header locale={locale} dict={dict} />
         <main>{children}</main>
         <Footer dict={dict} socialLinks={settings?.socialLinks} />

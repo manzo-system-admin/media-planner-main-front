@@ -1,134 +1,120 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ContentSheet from "@/components/ContentSheet";
-import ServiceIcon from "@/components/ServiceIcon";
-import VideoPopupCard from "@/components/VideoPopupCard";
-import HeroCarousel from "@/components/HeroCarousel";
 import ClientsSection from "@/components/ClientsSection";
+import TeamGallery from "@/components/TeamGallery";
 import styles from "./page.module.css";
 import { getDictionary } from "@/lib/dictionaries";
-import { GRADIENTS } from "@/lib/dictionaries/types";
 import { isLocale, type Locale } from "@/lib/i18n/config";
-import { getNewsList } from "@/lib/cms/news";
 import { getServiceList } from "@/lib/cms/services";
-import { getClients } from "@/lib/cms/org";
-import { getHeroSlides, getVideoPopup } from "@/lib/cms/homepage";
+import { getClients, getTeamGallery } from "@/lib/cms/org";
+import ServiceIcon from "@/components/ServiceIcon";
+import HeroCarousel from "@/components/HeroCarousel";
+import HomeScrollTransition from "@/components/HomeScrollTransition";
+import { getHeroSlides } from "@/lib/cms/homepage";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+const HOME_SERVICE_ICONS: Record<string, string> = {
+  "ipo-service": "/images/service-icons/deployed_code_account.png",
+  "pr-consultant": "/images/service-icons/support_agent.png",
+  "website-service": "/images/service-icons/language.png",
+  "vdo-corporate": "/images/service-icons/play_circle.png",
+  "ir-services": "/images/service-icons/android_cell_4_bar.png",
+  "portrait-photography": "/images/service-icons/photo_camera_back.png",
+};
+
+const HOME_SERVICE_POSITIONS: Record<string, string> = {
+  "ipo-service": styles.serviceNodeIpo,
+  "ir-services": styles.serviceNodeIr,
+  "vdo-corporate": styles.serviceNodeVideo,
+  "website-service": styles.serviceNodeWebsite,
+  "portrait-photography": styles.serviceNodePortrait,
+  "pr-consultant": styles.serviceNodePr,
+};
+
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) notFound();
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
-  const { home, common } = dict;
-  const newsItems = await getNewsList(locale, 3);
-  const services = await getServiceList();
-  const clients = await getClients();
-  const fetchedSlides = await getHeroSlides();
-  const heroSlides = fetchedSlides.length > 0 ? fetchedSlides : dict.data.heroSlides;
-  const videoPopup = await getVideoPopup();
+  const { home } = dict;
+  const portfolioIntroCopy = home.subtitle.replace(/\s*ไปพร้อมกับคุณ\s*$/, "");
+  const [services, clients, heroSlides, teamGallery] = await Promise.all([
+    getServiceList(),
+    getClients(),
+    getHeroSlides(),
+    getTeamGallery(),
+  ]);
 
-  return (
-    <>
-      <section className={styles.hero}>
-        <HeroCarousel slides={heroSlides} labels={home.carousel} />
-        <div className={styles.heroInner}>
-          <span className={styles.badge}>{home.badge}</span>
-          <h1 className={styles.heroTitle}>{home.title}</h1>
-          <p className={styles.heroSubtitle}>{home.subtitle}</p>
-          <div className={styles.heroActions}>
-            <Link href={`/${locale}/portfolio`} className={styles.heroButtonPrimary}>
-              {home.ctaPrimary}
-            </Link>
-            <Link href={`/${locale}/contact`} className={styles.heroButtonSecondary}>
-              {home.ctaSecondary}
-            </Link>
+  return <div className={styles.home} data-home-page data-home-scroll-root>
+    {heroSlides.length > 0 && <HeroCarousel slides={heroSlides} labels={home.carousel} />}
+    <HomeScrollTransition />
+    <section className={styles.hero} id="top" data-page-hero>
+      <div className={styles.heroCollapse} data-home-collapse>
+      <div className={styles.heroContent}>
+        <Image src="/images/brand-mark.png" alt="Media Planner" width={546} height={328} className={styles.heroLogo} priority />
+        <h1 className={styles.heroTitle}><span><strong>เรา</strong> เป็นส่วนหนึ่ง</span><span>ของเบื้องหลังความสำเร็จ</span></h1>
+        <p className={styles.heroSummary}>{home.subtitle}</p>
+        <Link className={styles.portfolioIntroCta} href={`/${locale}/services`}>
+          การบริการ
+        </Link>
+      </div>
+      </div>
+    </section>
+    <section className={styles.portfolioIntro} aria-labelledby="home-portfolio-title" data-home-next-section>
+      <div className={styles.portfolioIntroContent} data-home-next>
+        <p className={styles.portfolioIntroEyebrow}>{dict.portfolio.title}</p>
+        <h2 id="home-portfolio-title" className={styles.portfolioIntroTitle}>Media Planner PR Agency</h2>
+        <p className={styles.portfolioIntroCopy}>{portfolioIntroCopy}</p>
+        <Link className={styles.portfolioIntroCta} href={`/${locale}/portfolio`}>
+          {locale === "th" ? "ไปพร้อมกับคุณ" : "Let’s grow together"}
+        </Link>
+      </div>
+      {clients.length > 0 && (
+        <div className={styles.portfolioClients} data-home-next-clients>
+          <div className={styles.clientBand}>
+            <ClientsSection label={home.clientsLabel} clients={clients} styles={styles} locale={locale} linkToPortfolio />
           </div>
         </div>
-
-        <VideoPopupCard
-          className={styles.videoCard}
-          thumbnail={videoPopup?.thumbnail || "https://picsum.photos/seed/hero-company-video/680/380"}
-          caption={videoPopup?.caption || home.videoCaption}
-          videoAlt={home.videoAlt}
-          videoSource={videoPopup?.videoSource ?? null}
-          orientation={videoPopup?.orientation}
+      )}
+    </section>
+    <section className={styles.serviceOverview} aria-labelledby="home-services-title" data-home-third-section>
+      <div className={styles.serviceOverviewContent} data-home-third-content>
+        <div className={styles.serviceOrbitCenter}>
+          <Image src="/images/brand-mark.png" alt="" aria-hidden="true" width={546} height={328} className={styles.serviceOrbitLogo} />
+          <h2 id="home-services-title" className={styles.serviceOverviewTitle}>{home.servicesTitle}</h2>
+        </div>
+        <nav className={styles.serviceOrbitNodes} aria-label={home.servicesTitle}>
+          {services.slice(0, 6).map((service) => {
+            const slug = service.slug.toLowerCase();
+            const iconSrc = HOME_SERVICE_ICONS[slug];
+            return (
+              <Link key={service.slug} className={`${styles.serviceOrbitNode} ${HOME_SERVICE_POSITIONS[slug] ?? ""}`} href={`/${locale}/services/${service.slug}`}>
+                <span className={styles.serviceOrbitIcon}>
+                  {iconSrc ? (
+                    <Image src={iconSrc} alt="" aria-hidden="true" width={30} height={30} />
+                  ) : (
+                    <ServiceIcon icon={service.icon} gradient={service.gradient} size={28} />
+                  )}
+                </span>
+                <span>{service.title}</span>
+              </Link>
+            );
+          })}
+        </nav>
+        <p className={styles.serviceOverviewCopy}>{home.subtitle}</p>
+      </div>
+    </section>
+    {teamGallery.length > 0 && (
+      <section className={styles.finalGallery} aria-label={dict.about.teamTitle}>
+        <TeamGallery
+          photos={teamGallery.slice(0, 12)}
+          altFallback={dict.about.teamTitle}
+          variant="showcase"
+          revealOnScroll
         />
       </section>
-
-      <ContentSheet>
-        <section className={styles.services}>
-          <div className={styles.sectionHeadCenter}>
-            <h2 className={styles.sectionTitle}>{home.servicesTitle}</h2>
-            <p className={styles.sectionSubtitle}>{home.servicesSubtitle}</p>
-          </div>
-          <div className={styles.serviceGrid}>
-            {services.map((service) => (
-              <Link
-                key={service.slug}
-                href={`/${locale}/services/${service.slug}`}
-                className={styles.serviceCard}
-              >
-                <span
-                  className={styles.serviceCardGlow}
-                  style={{ background: GRADIENTS[service.gradient] }}
-                />
-                <ServiceIcon
-                  icon={service.icon}
-                  gradient={service.gradient}
-                  size={26}
-                  className={styles.serviceIcon}
-                />
-                <div className={styles.serviceTitle}>{service.title}</div>
-                <div className={styles.serviceDesc}>{service.summary}</div>
-                <span className={styles.serviceMore}>{dict.services.viewDetailLink}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.news}>
-          <div className={styles.sectionHeadRow}>
-            <h2 className={styles.sectionTitle}>{home.newsTitle}</h2>
-            <Link href={`/${locale}/news`} className={styles.viewAllLink}>
-              {common.viewAll}
-            </Link>
-          </div>
-          <div className={styles.newsGrid}>
-            {newsItems.map((item) => (
-              <Link key={item.id} href={`/${locale}/news/${item.id}`} className={styles.newsCard}>
-                <div className={styles.newsThumb}>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className={styles.newsBody}>
-                  <span className={styles.newsDate}>{item.date}</span>
-                  <span className={styles.newsTitle}>{item.title}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <ClientsSection
-          label={home.clientsLabel}
-          clients={clients}
-          styles={styles}
-          locale={locale}
-          linkToPortfolio
-        />
-      </ContentSheet>
-    </>
-  );
+    )}
+  </div>;
 }

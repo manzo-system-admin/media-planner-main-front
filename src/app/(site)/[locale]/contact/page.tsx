@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PageIntro from "@/components/PageIntro";
 import ContentSheet from "@/components/ContentSheet";
 import SocialIcon from "@/components/SocialIcon";
 import styles from "./page.module.css";
@@ -83,71 +82,72 @@ export default async function ContactPage({
 
   return (
     <ContentSheet>
-      <PageIntro
-        breadcrumb={[{ label: dict.common.home, href: `/${locale}` }, { label: contact.title }]}
-        title={contact.title}
-      />
+      <div className={styles.page}>
+        <header className={styles.pageHeading} data-reveal data-reveal-repeat>
+          <p className={styles.breadcrumb}>{contact.breadcrumb}</p>
+          <h1>{contact.title}</h1>
+        </header>
 
-      <section className={styles.grid}>
-        <div className={styles.info}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>
-              <ContactGlyph type="address" />
-              {contact.addressLabel}
-            </span>
-            <span className={styles.fieldValueThai}>{contactInfo.address}</span>
-          </div>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>
-              <ContactGlyph type="phone" />
-              {contact.phoneLabel}
-            </span>
-            <a className={styles.fieldValue} href={`tel:${contactInfo.phone.replace(/-/g, "")}`}>
-              {contactInfo.phone}
-            </a>
-          </div>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>
-              <ContactGlyph type="email" />
-              {contact.emailLabel}
-            </span>
-            <a className={styles.fieldValue} href={`mailto:${contactInfo.email}`}>
-              {contactInfo.email}
-            </a>
-          </div>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>
-              <ContactGlyph type="social" />
-              {contact.socialLabel}
-            </span>
-            <div className={styles.socialRow}>
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className={styles.socialIcon}
-                  aria-label={social.name}
-                >
-                  <SocialIcon name={social.name} size={18} />
+        <section className={styles.grid}>
+          <div className={styles.info}>
+            <div className={styles.detailsCard}>
+              <div className={styles.field} data-reveal data-reveal-repeat>
+                <span className={styles.fieldLabel}>
+                  <ContactGlyph type="address" />
+                  {contact.addressLabel}
+                </span>
+                <span className={styles.fieldValueThai}>{contactInfo.address}</span>
+              </div>
+              <div className={styles.field} data-reveal data-reveal-repeat>
+                <span className={styles.fieldLabel}>
+                  <ContactGlyph type="email" />
+                  {contact.emailLabel}
+                </span>
+                <a className={styles.fieldValue} href={`mailto:${contactInfo.email}`}>
+                  {contactInfo.email}
                 </a>
-              ))}
+              </div>
+              <div className={styles.field} data-reveal data-reveal-repeat>
+                <span className={styles.fieldLabel}>
+                  <ContactGlyph type="phone" />
+                  {contact.phoneLabel}
+                </span>
+                <a className={styles.fieldValue} href={`tel:${contactInfo.phone.replace(/-/g, "")}`}>
+                  {contactInfo.phone}
+                </a>
+              </div>
+            </div>
+            <div className={styles.socialSection} data-reveal data-reveal-repeat>
+              <h2>{contact.socialLabel}</h2>
+              <div className={styles.socialRow}>
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    className={styles.socialIcon}
+                    aria-label={social.name}
+                  >
+                    <SocialIcon name={social.name} size={18} />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={styles.mapWrap}>
-          <iframe
-            className={styles.map}
-            title={contact.mapLabel}
-            src={mapSrc}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-          <a className={styles.mapLink} href={mapLink} target="_blank" rel="noopener noreferrer">
-            {contact.mapLabel}
-          </a>
-        </div>
-      </section>
+          <div className={styles.mapWrap} data-reveal data-reveal-repeat>
+            <iframe
+              className={styles.map}
+              title={contact.mapLabel}
+              src={mapSrc}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <a className={styles.mapLink} href={mapLink} target="_blank" rel="noopener noreferrer">
+              {contact.mapLabel}
+            </a>
+          </div>
+        </section>
+      </div>
     </ContentSheet>
   );
 }

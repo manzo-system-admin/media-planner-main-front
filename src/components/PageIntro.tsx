@@ -1,23 +1,21 @@
 import type { ReactNode } from "react";
-import Breadcrumb, { type BreadcrumbItem } from "./Breadcrumb";
-import styles from "./PageIntro.module.css";
+import type { BreadcrumbItem } from "./Breadcrumb";
+import PageHero from "./PageHero";
 
 export default function PageIntro({
   breadcrumb,
   title,
+  image,
   children,
 }: {
   breadcrumb: BreadcrumbItem[];
   title: string;
+  image?: string;
   children?: ReactNode;
 }) {
   return (
-    <div className={styles.wrap}>
-      <div className={styles.breadcrumb}>
-        <Breadcrumb items={breadcrumb} />
-      </div>
-      <h1 className={styles.title}>{title}</h1>
+    <PageHero title={title} image={image} breadcrumb={breadcrumb} compact dense={title.length > 55}>
       {children}
-    </div>
+    </PageHero>
   );
 }

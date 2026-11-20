@@ -25,13 +25,13 @@ const th: Dictionary = {
   },
   common: {
     home: "หน้าหลัก",
-    viewAll: "ดูทั้งหมด →",
+    viewAll: "ดูทั้งหมด",
     all: "ทั้งหมด",
   },
   home: {
     badge: "MEDIA PLANNING & CREATIVE CONSULTANT",
-    title: `"เรา" เป็นส่วนหนึ่งของเบื้องหลังความสำเร็จ`,
-    subtitle: `ให้เรา "Media Planner PR Agency" เป็นสะพานเชื่อมทุกมิติธุรกิจของคุณ สู่สื่อมวลชน นักลงทุน และคู่ค้าเราพร้อมเป็นพาร์ทเนอร์ร่วมวางแผนและขับเคลื่อนกลยุทธ์ด้านการประชาสัมพันธ์ไปพร้อมกับคุณ`,
+    title: `เราเป็นส่วนหนึ่งของเบื้องหลังความสำเร็จ`,
+    subtitle: `ให้เราเป็นสะพานเชื่อมทุกมิติธุรกิจของคุณ สู่สื่อมวลชน นักลงทุนและคู่ค้า\nเราพร้อมเป็นพาร์ทเนอร์ร่วมวางแผนและขับเคลื่อนกลยุทธ์ด้านการประชาสัมพันธ์ไปพร้อมกับคุณ`,
     ctaPrimary: "ดูผลงานของเรา",
     ctaSecondary: "ติดต่อทีมงาน",
     videoAlt: "วิดีโอแนะนำบริษัท",
@@ -64,7 +64,7 @@ const th: Dictionary = {
   services: {
     listBreadcrumb: "หน้าหลัก / บริการของเรา",
     listTitle: "บริการของเรา",
-    viewDetailLink: "ดูรายละเอียดบริการ →",
+    viewDetailLink: "ดูรายละเอียดบริการ",
     detailBreadcrumbPrefix: "หน้าหลัก / บริการของเรา",
     highlightsTitle: "สิ่งที่คุณจะได้รับ",
     ctaButton: "ปรึกษาทีมงาน",
@@ -77,7 +77,7 @@ const th: Dictionary = {
     empty: "ยังไม่มีผลงานในหมวดนี้",
     relatedTitle: "ผลงานอื่นๆ ที่คุณอาจสนใจ",
     clientsLabel: "ลูกค้า/พันธมิตรของเรา",
-    viewCaseStudy: "ดูรายละเอียดผลงาน →",
+    viewCaseStudy: "ดูรายละเอียดผลงาน",
     clientDrawerEmpty: "ยังไม่มีผลงานที่เชื่อมโยงกับลูกค้ารายนี้",
     closeLabel: "ปิด",
   },
@@ -103,7 +103,7 @@ const th: Dictionary = {
     addressLabel: "ที่อยู่",
     phoneLabel: "โทรศัพท์",
     emailLabel: "อีเมล",
-    socialLabel: "โซเชียล",
+    socialLabel: "ช่องทางโซเชียลมีเดีย",
     mapLabel: "Google Map",
   },
   notFound: {

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import ContentSheet from "@/components/ContentSheet";
 import ClientsSection from "@/components/ClientsSection";
 import styles from "./page.module.css";
-// import PortfolioExplorer from "./PortfolioExplorer";
 import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getPortfolioList } from "@/lib/cms/portfolio";
@@ -37,22 +36,13 @@ export default async function PortfolioPage({
   const { portfolio } = dict;
   const items = await getPortfolioList();
   const clients = await getClients();
-  // const filters =
-  //   clients.length > 0
-  //     ? [{ key: "ALL", label: dict.common.all }, ...clients.map((c) => ({ key: c.id, label: c.name }))]
-  //     : portfolio.filters;
 
   return (
     <ContentSheet>
-      {/* <PortfolioExplorer
-        locale={locale}
-        homeLabel={dict.common.home}
-        portfolio={portfolio}
-        filters={filters}
-        items={items}
-      /> */}
-      <div className={styles.intro}>
-        <h1 className={styles.title}>{portfolio.title}</h1>
+      <main className={styles.portfolioPage}>
+        <header className={styles.pageHeading}>
+          <h1>ผลงานลูกค้า</h1>
+        </header>
         <ClientsSection
           label={portfolio.clientsLabel}
           clients={clients}
@@ -67,7 +57,7 @@ export default async function PortfolioPage({
           scroll={false}
           initialClientId={initialClientId}
         />
-      </div>
+      </main>
     </ContentSheet>
   );
 }
