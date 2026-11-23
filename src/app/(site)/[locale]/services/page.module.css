@@ -88,7 +88,7 @@
 .list { position: relative; width: min(100% - 56px, 1040px); margin: 0 auto; padding: 48px 0 32px; border-top: 1px solid rgba(238, 243, 239, .2); }
 .list::after { position: absolute; top: 128px; bottom: 30px; left: 50%; width: 1px; background: rgba(238, 243, 239, .12); content: ""; pointer-events: none; }
 .listHeading { margin: 0 auto 30px; text-align: center; }
-.listHeading h2 { margin: 0; color: var(--service-accent); font: 700 clamp(34px, 4.1vw, 54px)/1.2 var(--font-heading); letter-spacing: .02em; }
+.listHeading h2 { margin: 0; color: transparent; background: var(--brand-text-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font: 700 clamp(34px, 4.1vw, 54px)/1.2 var(--font-heading); letter-spacing: .02em; }
 .serviceGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 30px; }
 .serviceCard {
   box-sizing: border-box;

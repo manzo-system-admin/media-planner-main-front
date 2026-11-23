@@ -133,6 +133,14 @@ export default function ServiceFormPage() {
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.title?.trim()) {
+      setAlert({ message: "กรุณาระบุชื่อบริการ", tone: "error" });
+      return;
+    }
+    if (!form.slug?.trim()) {
+      setAlert({ message: "กรุณาระบุ URL บริการ", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       if (isNew) {
@@ -152,10 +160,15 @@ export default function ServiceFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
+    try {
     await softDeleteDoc("services", params.id, "บริการ", form.title);
-    setDeleting(false);
-    setConfirmOpen(false);
-    setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+      setConfirmOpen(false);
+      setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    } catch (err) {
+      setAlert({ message: err instanceof Error ? err.message : "ลบไม่สำเร็จ กรุณาลองใหม่", tone: "error" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) return <p>กำลังโหลด...</p>;

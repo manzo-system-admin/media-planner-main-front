@@ -7,6 +7,110 @@ const clamp = (value: number) => Math.max(0, Math.min(1, value));
 export default function HomeScrollTransition() {
   useEffect(() => {
     const root = document.querySelector<HTMLElement>("[data-home-scroll-root]");
+    const sections = Array.from(root?.querySelectorAll<HTMLElement>("[data-home-snap-section]") ?? []);
+    if (sections.length < 2) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const header = document.querySelector<HTMLElement>("header");
+    let locked = false;
+    let unlockTimer = 0;
+    let touchStart: { x: number; y: number } | null = null;
+    let touchDirection: -1 | 1 | null = null;
+
+    const snapTop = (section: HTMLElement) => {
+      const headerOffset = header?.getBoundingClientRect().height ?? 0;
+      return Math.max(0, section.getBoundingClientRect().top + window.scrollY - headerOffset);
+    };
+
+    const currentSectionIndex = () => {
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      sections.forEach((section, index) => {
+        const distance = Math.abs(window.scrollY - snapTop(section));
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      return closestIndex;
+    };
+
+    const canAdvance = (direction: -1 | 1, index: number) => {
+      if (index < 0 || index >= sections.length) return false;
+      // Let the final, tall gallery scroll naturally once its top has passed.
+      if (index === sections.length - 1 && direction > 0) return false;
+      if (index === sections.length - 1 && direction < 0 && window.scrollY > snapTop(sections[index]) + 96) return false;
+      return true;
+    };
+
+    const advance = (direction: -1 | 1) => {
+      if (locked) return;
+      const index = currentSectionIndex();
+      const next = index + direction;
+      if (next < 0 || next >= sections.length) return;
+
+      locked = true;
+      sections[next].scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "start" });
+      window.clearTimeout(unlockTimer);
+      unlockTimer = window.setTimeout(() => {
+        locked = false;
+      }, reducedMotion.matches ? 220 : 900);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || Math.abs(event.deltaY) < Math.abs(event.deltaX) * 1.2 || Math.abs(event.deltaY) < 18) return;
+      const direction: -1 | 1 = event.deltaY > 0 ? 1 : -1;
+      const index = currentSectionIndex();
+      if (!canAdvance(direction, index)) return;
+      event.preventDefault();
+      if (!locked) advance(direction);
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      touchStart = { x: touch.clientX, y: touch.clientY };
+      touchDirection = null;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (!touchStart) return;
+      const touch = event.touches[0];
+      if (!touch) return;
+      const deltaY = touch.clientY - touchStart.y;
+      const deltaX = touch.clientX - touchStart.x;
+      if (Math.abs(deltaY) < 12 || Math.abs(deltaY) < Math.abs(deltaX) * 1.2) return;
+
+      const direction: -1 | 1 = deltaY < 0 ? 1 : -1;
+      if (!canAdvance(direction, currentSectionIndex())) return;
+      touchDirection = direction;
+      if (event.cancelable) event.preventDefault();
+    };
+
+    const onTouchEnd = () => {
+      if (touchDirection !== null) advance(touchDirection);
+      touchStart = null;
+      touchDirection = null;
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    return () => {
+      window.clearTimeout(unlockTimer);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, []);
+
+  useEffect(() => {
+    const root = document.querySelector<HTMLElement>("[data-home-scroll-root]");
     const hero = root?.querySelector<HTMLElement>("[data-home-collapse]");
     const nextSection = root?.querySelector<HTMLElement>("[data-home-next-section]");
     const nextContent = root?.querySelector<HTMLElement>("[data-home-next]");

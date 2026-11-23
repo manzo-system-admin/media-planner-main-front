@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import { logActivity } from "@/lib/admin/adminData";
+import { useAdminLoad } from "@/lib/admin/useAdminLoad";
 import { toText } from "@/lib/cms/types";
 import type { AboutContentDoc } from "@/lib/cms/about";
 import formStyles from "../news/[id]/page.module.css";
@@ -21,24 +22,20 @@ const EMPTY: FormState = {
 
 export default function AboutContentAdminPage() {
   const [form, setForm] = useState<FormState>(EMPTY);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState<{ message: string; tone: AdminAlertTone } | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const snapshot = await getDoc(doc(getFirebaseDb(), "aboutContent", DOC_ID));
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setForm({
-          visionBody: toText(data.visionBody),
-          missionBody: toText(data.missionBody),
-          historyBody: toText(data.historyBody),
-        });
-      }
-      setLoading(false);
-    })();
-  }, []);
+  const { loading, loadError, retry } = useAdminLoad(async () => {
+    const snapshot = await getDoc(doc(getFirebaseDb(), "aboutContent", DOC_ID));
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      setForm({
+        visionBody: toText(data.visionBody),
+        missionBody: toText(data.missionBody),
+        historyBody: toText(data.historyBody),
+      });
+    }
+  });
 
   const handleSave = async () => {
     setSaving(true);
@@ -53,7 +50,8 @@ export default function AboutContentAdminPage() {
     }
   };
 
-  if (loading) return <p>กำลังโหลด...</p>;
+  if (loading) return <p role="status">กำลังโหลด...</p>;
+  if (loadError) return <div role="alert">โหลดข้อมูลไม่สำเร็จ: {loadError} <button type="button" onClick={retry}>ลองใหม่</button></div>;
 
   return (
     <div>

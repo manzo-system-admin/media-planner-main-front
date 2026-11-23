@@ -50,7 +50,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return <div className={styles.home} data-home-page data-home-scroll-root>
     {heroSlides.length > 0 && <HeroCarousel slides={heroSlides} labels={home.carousel} />}
     <HomeScrollTransition />
-    <section className={styles.hero} id="top" data-page-hero>
+    <section className={styles.hero} id="top" data-page-hero data-home-snap-section>
       <div className={styles.heroCollapse} data-home-collapse>
       <div className={styles.heroContent}>
         <Image src="/images/brand-mark.png" alt="Media Planner" width={546} height={328} className={styles.heroLogo} priority />
@@ -62,7 +62,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </div>
       </div>
     </section>
-    <section className={styles.portfolioIntro} aria-labelledby="home-portfolio-title" data-home-next-section>
+    <section className={styles.portfolioIntro} aria-labelledby="home-portfolio-title" data-home-next-section data-home-snap-section>
       <div className={styles.portfolioIntroContent} data-home-next>
         <p className={styles.portfolioIntroEyebrow}>{dict.portfolio.title}</p>
         <h2 id="home-portfolio-title" className={styles.portfolioIntroTitle}>Media Planner PR Agency</h2>
@@ -79,7 +79,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       )}
     </section>
-    <section className={styles.serviceOverview} aria-labelledby="home-services-title" data-home-third-section>
+    <section className={styles.serviceOverview} aria-labelledby="home-services-title" data-home-third-section data-home-snap-section>
       <div className={styles.serviceOverviewContent} data-home-third-content>
         <div className={styles.serviceOrbitCenter}>
           <Image src="/images/brand-mark.png" alt="" aria-hidden="true" width={546} height={328} className={styles.serviceOrbitLogo} />
@@ -107,7 +107,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </div>
     </section>
     {teamGallery.length > 0 && (
-      <section className={styles.finalGallery} aria-label={dict.about.teamTitle}>
+      <section className={styles.finalGallery} aria-label={dict.about.teamTitle} data-home-snap-section>
         <TeamGallery
           photos={teamGallery.slice(0, 12)}
           altFallback={dict.about.teamTitle}

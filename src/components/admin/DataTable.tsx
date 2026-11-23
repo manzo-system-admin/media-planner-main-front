@@ -27,6 +27,8 @@ export default function DataTable<T>({
   newLabel = "+ เพิ่มใหม่",
   renderActions,
   loading = false,
+  loadError = null,
+  onRetry,
 }: {
   columns: DataTableColumn<T>[];
   items: T[];
@@ -37,6 +39,8 @@ export default function DataTable<T>({
   newLabel?: string;
   renderActions?: (item: T) => ReactNode;
   loading?: boolean;
+  loadError?: string | null;
+  onRetry?: () => void;
 }) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -56,6 +60,7 @@ export default function DataTable<T>({
       <div className={styles.toolbar}>
         <input
           type="text"
+          aria-label="ค้นหารายการ"
           className={styles.search}
           placeholder={searchPlaceholder}
           value={query}
@@ -71,6 +76,7 @@ export default function DataTable<T>({
         )}
       </div>
 
+      {!loading && !loadError && <div className={styles.tableScroll} role="region" aria-label="รายการข้อมูล" tabIndex={0}>
       <table className={styles.table}>
         <thead>
           <tr>
@@ -91,9 +97,11 @@ export default function DataTable<T>({
           ))}
         </tbody>
       </table>
+      </div>}
 
-      {!loading && filtered.length === 0 && <div className={styles.empty}>ไม่พบข้อมูล</div>}
-      {loading && <div className={styles.empty}>กำลังโหลด...</div>}
+      {loadError ? <div className={styles.empty} role="alert">โหลดข้อมูลไม่สำเร็จ: {loadError} {onRetry && <button type="button" className={styles.retryButton} onClick={onRetry}>ลองใหม่</button>}</div> : null}
+      {!loading && !loadError && filtered.length === 0 && <div className={styles.empty}>ไม่พบข้อมูล</div>}
+      {loading && !loadError && <div className={styles.empty} role="status">กำลังโหลด...</div>}
 
       {pageCount > 1 && (
         <div className={styles.pagination}>

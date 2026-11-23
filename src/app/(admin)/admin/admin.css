@@ -8,14 +8,16 @@
   --border: rgba(27, 42, 74, 0.12);
   --border-soft: rgba(27, 42, 74, 0.08);
 
-  --grad-purple: #8e3b96;
-  --grad-blue: #2e6fba;
-  --grad-cyan: #23a6d5;
-  --grad-green: #4caf50;
-  --grad-orange: #f2892e;
+  --admin-green-light: #a2c443;
+  --admin-green: #409d48;
+  --grad-purple: var(--admin-green);
+  --grad-blue: var(--admin-green);
+  --grad-cyan: var(--admin-green-light);
+  --grad-green: var(--admin-green);
+  --grad-orange: var(--admin-green-light);
   --grad-red: #e63946;
 
-  --gradient-cta: linear-gradient(90deg, var(--grad-purple), var(--grad-blue), var(--grad-cyan));
+  --gradient-cta: linear-gradient(105deg, var(--admin-green-light), var(--admin-green));
   --font-admin: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", Roboto, sans-serif;
 }
 
@@ -52,4 +54,9 @@ input,
 textarea,
 select {
   font-family: inherit;
+}
+
+:is(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--admin-green-light);
+  outline-offset: 3px;
 }

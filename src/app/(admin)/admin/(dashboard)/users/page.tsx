@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAdminLoad } from "@/lib/admin/useAdminLoad";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import DataTable, { type DataTableColumn } from "@/components/admin/DataTable";
 import formStyles from "../news/[id]/page.module.css";
@@ -9,7 +10,6 @@ type UserRow = { uid: string; email: string; disabled: boolean };
 
 export default function UsersAdminPage() {
   const [users, setUsers] = useState<UserRow[]>([]);
-  const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState<{ message: string; tone: AdminAlertTone } | null>(null);
   const [busyUid, setBusyUid] = useState<string | null>(null);
 
@@ -19,18 +19,12 @@ export default function UsersAdminPage() {
   const [creating, setCreating] = useState(false);
 
   const loadUsers = async () => {
-    setLoading(true);
     const res = await fetch("/api/admin/users");
     const data = await res.json();
-    if (res.ok) setUsers(data.users);
-    setLoading(false);
+    if (!res.ok) throw new Error(data.error || "โหลดผู้ใช้งานไม่สำเร็จ");
+    setUsers(data.users);
   };
-
-  useEffect(() => {
-    (async () => {
-      await loadUsers();
-    })();
-  }, []);
+  const { loading, loadError, retry } = useAdminLoad(loadUsers);
 
   const handleCreate = async () => {
     setCreating(true);
@@ -129,6 +123,8 @@ export default function UsersAdminPage() {
         onNewClick={() => setShowForm(true)}
         newLabel="+ เพิ่มผู้ใช้งาน"
         loading={loading}
+        loadError={loadError}
+        onRetry={retry}
         renderActions={(u) => (
           <div style={{ display: "flex", gap: 8 }}>
             <button

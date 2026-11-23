@@ -1,13 +1,16 @@
 .title {
-  margin: 0 0 18px;
-  font: 700 20px var(--font-admin);
+  margin: 0 0 22px;
+  color: var(--navy);
+  font: 750 24px/1.25 var(--font-admin);
+  letter-spacing: -0.025em;
 }
 
 .wrap {
   background: var(--surface);
-  border-radius: 12px;
-  border: 1px solid var(--border-soft);
+  border-radius: 15px;
+  border: 1px solid rgba(27, 42, 74, 0.1);
   overflow: hidden;
+  box-shadow: 0 8px 26px rgba(27, 42, 74, 0.055);
 }
 
 .toolbar {
@@ -15,7 +18,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 17px 20px;
   border-bottom: 1px solid var(--border-soft);
   flex-wrap: wrap;
 }
@@ -44,7 +47,11 @@
   background: var(--gradient-cta);
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(64, 157, 72, 0.16);
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
+
+.newButton:hover { transform: translateY(-1px); box-shadow: 0 7px 15px rgba(64, 157, 72, 0.22); }
 
 .hint {
   padding: 10px 16px;
@@ -72,7 +79,10 @@
   padding: 10px 16px;
   border-bottom: 1px solid var(--border-soft);
   background: var(--surface);
+  transition: background-color 140ms ease;
 }
+
+.row:hover { background: #fbfcf8; }
 
 .row:last-child {
   border-bottom: none;
@@ -206,6 +216,8 @@
 }
 
 @media (max-width: 720px) {
+  .toolbar { padding: 14px; }
+  .toolbar > * { max-width: none; width: 100%; }
   .row {
     gap: 9px;
     padding: 10px 12px;

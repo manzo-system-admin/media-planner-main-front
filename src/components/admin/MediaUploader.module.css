@@ -5,6 +5,7 @@
 }
 
 .dropzone {
+  width: 100%;
   border: 1.5px dashed var(--border);
   border-radius: 10px;
   padding: 18px;
@@ -14,7 +15,7 @@
 }
 
 .dropzone:hover {
-  border-color: var(--grad-blue);
+  border-color: var(--admin-green);
 }
 
 .hint {

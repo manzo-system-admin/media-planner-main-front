@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { signOut } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import styles from "./AdminShell.module.css";
@@ -19,7 +20,6 @@ const NAV_GROUPS: {
     label: "หน้าเว็บไซต์",
     links: [
       { href: "/admin/banners", label: "แบนเนอร์" },
-      { href: "/admin/video-popup", label: "วิดีโอป๊อปอัป" },
       { href: "/admin/about", label: "หน้าเกี่ยวกับเรา" },
       { href: "/admin/contact", label: "ข้อมูลติดต่อ" },
     ],
@@ -60,6 +60,34 @@ export default function AdminShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const links = sidebarRef.current?.querySelectorAll<HTMLElement>("a[href]");
+    links?.[0]?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuToggleRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab" || !links?.length) return;
+      const first = links[0];
+      const last = links[links.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/session", { method: "DELETE" });
@@ -70,19 +98,14 @@ export default function AdminShell({
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
+      {menuOpen && <button type="button" className={styles.menuBackdrop} aria-label="ปิดเมนู" onClick={() => setMenuOpen(false)} />}
+      <aside ref={sidebarRef} className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} id="admin-navigation">
         <div className={styles.brand}>
           <span className={styles.logoBadge}>
-            <Image
-              src="/images/logo.jpg"
-              alt="Media Planner Consultant"
-              width={40}
-              height={40}
-              className={styles.logoImg}
-            />
+            <Image src="/images/site-wordmark-white.png" alt="Media" width={142} height={98} className={styles.logoImg} />
           </span>
           <span className={styles.brandText}>
-            <span className={styles.brandName}>Media Planner</span>
+            <span className={styles.brandName}>PLANNER</span>
             <span className={styles.brandSub}>Backoffice</span>
           </span>
         </div>
@@ -98,6 +121,7 @@ export default function AdminShell({
                     key={link.href}
                     href={link.href}
                     className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
+                    onClick={() => setMenuOpen(false)}
                   >
                     {link.label}
                   </Link>
@@ -110,6 +134,7 @@ export default function AdminShell({
 
       <div className={styles.main}>
         <header className={styles.topbar}>
+          <button ref={menuToggleRef} type="button" className={styles.menuToggle} aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"} aria-expanded={menuOpen} aria-controls="admin-navigation" onClick={() => setMenuOpen((value) => !value)}>☰</button>
           {email && <span className={styles.email}>{email}</span>}
           <button type="button" className={styles.logout} onClick={handleLogout}>
             ออกจากระบบ

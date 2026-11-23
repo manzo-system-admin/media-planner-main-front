@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   collection,
   getDocs,
@@ -10,6 +10,7 @@ import {
   where,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
+import { useAdminLoad } from "@/lib/admin/useAdminLoad";
 import type { ActivityAction } from "@/lib/admin/adminData";
 import styles from "../news/page.module.css";
 import logStyles from "./page.module.css";
@@ -45,10 +46,7 @@ const ACTION_BADGE_CLASS: Record<ActivityAction, string> = {
 
 export default function ActivityLogsPage() {
   const [logs, setLogs] = useState<LogRow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
+  const { loading, loadError, retry } = useAdminLoad(async () => {
       const sevenDaysAgo = Timestamp.fromMillis(
         Date.now() - 7 * 24 * 60 * 60 * 1000,
       );
@@ -72,9 +70,7 @@ export default function ActivityLogsPage() {
           };
         }),
       );
-      setLoading(false);
-    })();
-  }, []);
+  });
 
   return (
     <div>
@@ -91,12 +87,13 @@ export default function ActivityLogsPage() {
 
       <div className={logStyles.wrap}>
         {loading && <div className={logStyles.empty}>กำลังโหลด...</div>}
-        {!loading && logs.length === 0 && (
+        {loadError && <div className={logStyles.empty} role="alert">โหลดข้อมูลไม่สำเร็จ: {loadError} <button type="button" onClick={retry}>ลองใหม่</button></div>}
+        {!loading && !loadError && logs.length === 0 && (
           <div className={logStyles.empty}>
             ไม่มีกิจกรรมในช่วง 7 วันที่ผ่านมา
           </div>
         )}
-        {!loading && logs.length > 0 && (
+        {!loading && !loadError && logs.length > 0 && (
           <table className={logStyles.table}>
             <thead>
               <tr>

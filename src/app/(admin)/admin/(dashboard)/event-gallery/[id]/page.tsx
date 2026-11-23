@@ -54,6 +54,10 @@ export default function EventGalleryFormPage() {
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.image?.trim()) {
+      setAlert({ message: "กรุณาอัปโหลดรูปกิจกรรม", tone: "error" });
+      return;
+    }
     if (!form.date) {
       setAlert({ message: "กรุณาระบุวันที่", tone: "error" });
       return;
@@ -77,10 +81,15 @@ export default function EventGalleryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
+    try {
     await softDeleteDoc("eventGallery", params.id, "คลังภาพกิจกรรม", form.caption || "รูปกิจกรรม");
-    setDeleting(false);
-    setConfirmOpen(false);
-    setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+      setConfirmOpen(false);
+      setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    } catch (err) {
+      setAlert({ message: err instanceof Error ? err.message : "ลบไม่สำเร็จ กรุณาลองใหม่", tone: "error" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) return <p>กำลังโหลด...</p>;

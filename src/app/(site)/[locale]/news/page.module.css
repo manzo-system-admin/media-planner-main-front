@@ -736,8 +736,30 @@
 .galleryThumb img { transition: transform .42s cubic-bezier(.2, .7, .2, 1); }
 .videoThumb:hover .videoPoster img { transform: scale(1.045); }
 .videoTitle { color: #f8f4eb; font: 600 15px/1.5 var(--font-heading); }
-.playIcon::before { width: 48px; height: 48px; border: 1px solid rgba(255, 255, 255, .9); border-radius: 50%; background: rgba(0, 0, 0, .28); }
-.playIcon::after { content: ""; width: 0; height: 0; margin-left: 4px; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 10px solid #fff; filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .4)); }
+.playIcon::before {
+  box-sizing: border-box;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .28);
+}
+.playIcon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin: 0;
+  transform: translate(-35%, -50%);
+  border-top: 7px solid transparent;
+  border-right: 0;
+  border-bottom: 7px solid transparent;
+  border-left: 10px solid #fff;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .4));
+}
 .galleryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(34px, 5vw, 70px) 22px; }
 .galleryImage { gap: 10px; }
 .galleryThumb { aspect-ratio: 3 / 2; border-radius: 10px; background: #171918; }

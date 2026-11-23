@@ -64,8 +64,10 @@ export default async function PortfolioDetailPage({
     <ContentSheet>
       <header className={styles.caseHeader}>
         <nav><Link href={`/${locale}`}>{dict.common.home}</Link><span>/</span><Link href={`/${locale}/portfolio`}>{portfolio.title}</Link></nav>
-        <h1>{item.title}</h1>
-        {item.client && <div className={styles.metaRow}><span className={styles.clientBadge}>{item.client}</span></div>}
+        <div className={styles.titleRow}>
+          <h1>{item.title}</h1>
+          {item.client && <span className={styles.clientBadge}>{item.client}</span>}
+        </div>
       </header>
 
       <section className={styles.heroSection}>
@@ -92,13 +94,14 @@ export default async function PortfolioDetailPage({
         />
       )}
 
-      <div className={styles.shareRow}>
-        <ShareButton title={item.title} label="แชร์ผลงาน" />
-      </div>
-
-      {related.length > 0 && (
-        <section className={styles.related}>
+      <section className={styles.related}>
+        <div className={styles.relatedHeader}>
           <h2 className={styles.relatedTitle}>{portfolio.relatedTitle}</h2>
+          <div className={styles.shareRow}>
+            <ShareButton title={item.title} label="แชร์ผลงาน" />
+          </div>
+        </div>
+        {related.length > 0 && (
           <div className={styles.relatedGrid}>
             {related.map((entry) => (
               <Link
@@ -122,8 +125,8 @@ export default async function PortfolioDetailPage({
               </Link>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
     </ContentSheet>
   );
 }

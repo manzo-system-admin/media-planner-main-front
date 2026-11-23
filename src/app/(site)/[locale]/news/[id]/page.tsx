@@ -58,66 +58,65 @@ export default async function NewsDetailPage({
   }
 
   const allNews = await getNewsList(locale);
-  const related = allNews.filter((entry) => entry.id !== id).slice(0, 3);
+  const related = allNews.filter((entry) => entry.id !== id).slice(0, 6);
   const safeBody = DOMPurify.sanitize(item.bodyHtml);
   const categoryLabels = await getNewsCategoryLabels();
   const categoryLabel = item.category ? categoryLabels[item.category] : undefined;
 
   return (
     <ContentSheet>
-      <header className={styles.articleHeader}>
-        <nav aria-label="Breadcrumb"><Link href={`/${locale}`}>{dict.common.home}</Link><span>/</span><Link href={`/${locale}/news`}>{news.title}</Link></nav>
-        <h1>{item.title}</h1>
-        <div className={styles.metaRow}>
-          {item.pinned && (
-            <span className={styles.pinBadge}>
-              Pin
-            </span>
-          )}
-          {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
-          <span className={styles.date}>{item.date}</span>
-        </div>
-      </header>
-
-      <section className={styles.heroSection}>
-        <NewsHeroImage src={item.image} alt={item.title} />
-      </section>
-
-      <section
-        className={styles.body}
-        // Sanitized above with isomorphic-dompurify; content is admin-authored,
-        // not raw visitor input, but still passes through DOMPurify defensively.
-        dangerouslySetInnerHTML={{ __html: safeBody }}
-      />
-
-      <div className={styles.shareRow}>
-        <ShareButton title={item.title} />
-      </div>
-
-      {related.length > 0 && (
-        <section className={styles.related}>
-          <h2 className={styles.relatedTitle}>{news.relatedTitle}</h2>
-          <div className={styles.relatedGrid}>
-            {related.map((entry) => (
-              <Link key={entry.id} href={`/${locale}/news/${entry.id}`} className={styles.relatedCard}>
-                <div className={styles.relatedImage}>
-                  <Image
-                    src={entry.image}
-                    alt={entry.title}
-                    fill
-                    sizes="(max-width: 780px) 100vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className={styles.relatedBody}>
-                  <span className={styles.relatedDate}>{entry.date}</span>
-                  <span className={styles.relatedCardTitle}>{entry.title}</span>
-                </div>
-              </Link>
-            ))}
+      <main className={styles.articlePage}>
+        <header className={styles.articleHeader}>
+          <nav aria-label="Breadcrumb"><Link href={`/${locale}`}>{dict.common.home}</Link><span>/</span><Link href={`/${locale}/news`}>{news.title}</Link><span>/</span><span>{item.title}</span></nav>
+          <h1>{item.title}</h1>
+          <div className={styles.metaRow}>
+            <div className={styles.articleMeta}>
+              {item.pinned && <span className={styles.pinBadge}>แนะนำ</span>}
+              {categoryLabel && <span className={styles.category}>{categoryLabel}</span>}
+              <span className={styles.date}>{item.date}</span>
+            </div>
+            <div className={styles.shareRow}>
+              <ShareButton title={item.title} />
+            </div>
           </div>
+        </header>
+
+        <section className={styles.heroSection}>
+          <NewsHeroImage src={item.image} alt={item.title} />
         </section>
-      )}
+
+        <section
+          className={styles.body}
+          // Sanitized above with isomorphic-dompurify; content is admin-authored,
+          // not raw visitor input, but still passes through DOMPurify defensively.
+          dangerouslySetInnerHTML={{ __html: safeBody }}
+        />
+
+        {related.length > 0 && (
+          <section className={styles.related}>
+            <h2 className={styles.relatedTitle}>{news.relatedTitle}</h2>
+            <div className={styles.relatedGrid}>
+              {related.map((entry) => (
+                <Link key={entry.id} href={`/${locale}/news/${entry.id}`} className={styles.relatedCard}>
+                  <div className={styles.relatedImage}>
+                    <Image
+                      src={entry.image}
+                      alt={entry.title}
+                      fill
+                      sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  <div className={styles.relatedBody}>
+                    <span className={styles.relatedDate}>{entry.date}</span>
+                    <span className={styles.relatedCardTitle}>{entry.title}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </main>
     </ContentSheet>
   );
 }

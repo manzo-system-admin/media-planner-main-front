@@ -1,8 +1,9 @@
 .wrap {
   background: var(--surface);
-  border-radius: 12px;
-  border: 1px solid var(--border-soft);
+  border-radius: 15px;
+  border: 1px solid rgba(27, 42, 74, 0.1);
   overflow: hidden;
+  box-shadow: 0 8px 26px rgba(27, 42, 74, 0.055);
 }
 
 .toolbar {
@@ -10,7 +11,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 17px 20px;
   border-bottom: 1px solid var(--border-soft);
   flex-wrap: wrap;
 }
@@ -20,30 +21,48 @@
   min-width: 180px;
   max-width: 320px;
   border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 9px 12px;
+  border-radius: 9px;
+  padding: 10px 13px;
+  background: #fdfdfb;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
   font: 400 13px var(--font-admin);
   outline: none;
 }
 
 .search:focus {
-  border-color: var(--grad-blue);
+  border-color: var(--admin-green);
+  box-shadow: 0 0 0 3px rgba(162, 196, 67, 0.16);
 }
 
 .newButton {
   border: none;
-  border-radius: 7px;
-  padding: 9px 16px;
+  border-radius: 9px;
+  padding: 10px 17px;
   font: 600 13px var(--font-admin);
   color: #fff;
   background: var(--gradient-cta);
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(64, 157, 72, 0.16);
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
+
+.newButton:hover { transform: translateY(-1px); box-shadow: 0 7px 15px rgba(64, 157, 72, 0.22); }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.tableScroll { width: 100%; overflow-x: auto; }
+.tableScroll:focus-visible { outline: 3px solid var(--admin-green-light); outline-offset: -3px; }
+.retryButton { margin-left: 12px; padding: 7px 12px; border: 1px solid var(--admin-green); border-radius: 7px; background: #fff; color: var(--admin-green); cursor: pointer; font-weight: 700; }
+
+@media (max-width: 700px) {
+  .table { min-width: 640px; }
+  .toolbar { padding: 14px; }
+  .toolbar > * { max-width: none; width: 100%; }
+  .pagination { justify-content: center; }
 }
 
 .table th {
@@ -52,6 +71,7 @@
   color: var(--text-muted);
   letter-spacing: 0.03em;
   padding: 10px 16px;
+  background: #f8faf4;
   border-bottom: 1px solid var(--border-soft);
 }
 
@@ -66,6 +86,9 @@
   border-bottom: none;
 }
 
+.table tbody tr { transition: background-color 140ms ease; }
+.table tbody tr:hover { background: #fbfcf8; }
+
 .actionsHeader,
 .actionsCell {
   text-align: right;
@@ -74,7 +97,7 @@
 }
 
 .empty {
-  padding: 40px 16px;
+  padding: 48px 20px;
   text-align: center;
   color: var(--text-muted);
   font: 400 13.5px var(--font-admin);

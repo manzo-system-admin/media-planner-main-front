@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import styles from "./RowActionsMenu.module.css";
 
 const MENU_HEIGHT_ESTIMATE = 90;
@@ -21,6 +22,7 @@ export default function RowActionsMenu({
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -36,7 +38,20 @@ export default function RowActionsMenu({
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setOpen(false); triggerRef.current?.focus(); }
+    };
+    const closeOnMove = () => setOpen(false);
+    document.addEventListener("keydown", handleEscape);
+    window.addEventListener("resize", closeOnMove);
+    window.addEventListener("scroll", closeOnMove, true);
+    menuRef.current?.querySelector<HTMLElement>("a")?.focus();
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("resize", closeOnMove);
+      window.removeEventListener("scroll", closeOnMove, true);
+    };
   }, [open]);
 
   const toggleOpen = () => {
@@ -45,7 +60,7 @@ export default function RowActionsMenu({
       const openUpward = window.innerHeight - rect.bottom < MENU_HEIGHT_ESTIMATE;
       setMenuPos({
         top: openUpward ? rect.top - MENU_HEIGHT_ESTIMATE : rect.bottom + 4,
-        left: rect.right - 130,
+        left: Math.max(8, Math.min(window.innerWidth - 138, rect.right - 130)),
       });
     }
     setOpen((v) => !v);
@@ -54,6 +69,7 @@ export default function RowActionsMenu({
   return (
     <div className={styles.wrap} ref={wrapRef}>
       <button
+        ref={triggerRef}
         type="button"
         className={styles.trigger}
         aria-label="เปิดเมนู"
@@ -70,9 +86,9 @@ export default function RowActionsMenu({
             ref={menuRef}
             style={{ position: "fixed", top: menuPos.top, left: menuPos.left }}
           >
-            <a href={editHref} className={styles.menuItem}>
+            <Link href={editHref} className={styles.menuItem} onClick={() => setOpen(false)}>
               {editLabel}
-            </a>
+            </Link>
             <button
               type="button"
               className={`${styles.menuItem} ${styles.menuItemDanger}`}

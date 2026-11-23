@@ -33,11 +33,7 @@ export async function getNewsList(locale: Locale, max?: number): Promise<CmsNews
     .sort((a, b) => {
       const pinnedDiff = Number(b.data().pinned === true) - Number(a.data().pinned === true);
       if (pinnedDiff !== 0) return pinnedDiff;
-      const dateDiff = (b.data().date ?? "").localeCompare(a.data().date ?? "");
-      if (dateDiff !== 0) return dateDiff;
-      const aCreated = a.data().createdAt?.toMillis?.() ?? 0;
-      const bCreated = b.data().createdAt?.toMillis?.() ?? 0;
-      return bCreated - aCreated;
+      return (b.data().date ?? "").localeCompare(a.data().date ?? "");
     });
   return (max === undefined ? visibleDocs : visibleDocs.slice(0, max))
     .map((doc) => toCmsItem(doc.id, doc.data(), locale));

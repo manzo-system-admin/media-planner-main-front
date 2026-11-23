@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
+import { useAdminLoad } from "@/lib/admin/useAdminLoad";
 import { excludeDeleted, reorderCollection, softDeleteDoc } from "@/lib/admin/adminData";
 import AdminAlertModal from "@/components/admin/AdminAlertModal";
 import AdminConfirmModal from "@/components/admin/AdminConfirmModal";
@@ -22,8 +23,8 @@ const CATEGORY_LABELS = Object.fromEntries(
 export default function ClientsListPage() {
   const router = useRouter();
   const [items, setItems] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
@@ -32,13 +33,10 @@ export default function ClientsListPage() {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    (async () => {
+  const { loading, loadError, retry } = useAdminLoad(async () => {
       const snapshot = await getDocs(query(collection(getFirebaseDb(), "clients"), orderBy("order", "asc")));
       setItems(excludeDeleted(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Row, "id">) }))));
-      setLoading(false);
-    })();
-  }, []);
+  });
 
   const persistOrder = async (ordered: Row[]) => {
     setSaveStatus("saving");
@@ -112,12 +110,18 @@ export default function ClientsListPage() {
   const confirmDelete = async () => {
     if (!confirmId) return;
     setDeleting(true);
-    const target = items.find((item) => item.id === confirmId);
-    await softDeleteDoc("clients", confirmId, "ลูกค้า/พันธมิตร", target?.name ?? confirmId);
-    setItems((list) => list.filter((item) => item.id !== confirmId));
-    setDeleting(false);
-    setConfirmId(null);
-    setDeleted(true);
+    setDeleteError(null);
+    try {
+      const target = items.find((item) => item.id === confirmId);
+      await softDeleteDoc("clients", confirmId, "ลูกค้า/พันธมิตร", target?.name ?? confirmId);
+      setItems((list) => list.filter((item) => item.id !== confirmId));
+      setConfirmId(null);
+      setDeleted(true);
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : "ลบข้อมูลไม่สำเร็จ");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const filtered = search.trim()
@@ -136,6 +140,7 @@ export default function ClientsListPage() {
         <div className={styles.toolbar}>
           <input
             type="text"
+            aria-label="ค้นหาลูกค้า"
             className={styles.search}
             placeholder="ค้นหา..."
             value={search}
@@ -157,10 +162,11 @@ export default function ClientsListPage() {
           </div>
         )}
 
-        {loading && <div className={styles.empty}>กำลังโหลด...</div>}
-        {!loading && filtered.length === 0 && <div className={styles.empty}>ไม่พบข้อมูล</div>}
+        {loading && <div className={styles.empty} role="status">กำลังโหลด...</div>}
+        {loadError && <div className={styles.empty} role="alert">โหลดข้อมูลไม่สำเร็จ: {loadError} <button type="button" onClick={retry}>ลองใหม่</button></div>}
+        {!loading && !loadError && filtered.length === 0 && <div className={styles.empty}>ไม่พบข้อมูล</div>}
 
-        {!loading && filtered.length > 0 && (
+        {!loading && !loadError && filtered.length > 0 && (
           <div className={styles.list}>
             {filtered.map((item, index) => (
               <ClientRow
@@ -195,6 +201,7 @@ export default function ClientsListPage() {
       />
 
       <AdminAlertModal open={deleted} message="ลบสำเร็จ" tone="success" onClose={() => setDeleted(false)} />
+      <AdminAlertModal open={!!deleteError} message={deleteError ?? ""} tone="error" onClose={() => setDeleteError(null)} />
     </div>
   );
 }

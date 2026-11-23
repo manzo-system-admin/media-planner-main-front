@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import AdminAlertModal, { type AdminAlertTone } from "@/components/admin/AdminAlertModal";
 import { logActivity } from "@/lib/admin/adminData";
+import { useAdminLoad } from "@/lib/admin/useAdminLoad";
 import { toText } from "@/lib/cms/types";
 import SocialIcon from "@/components/SocialIcon";
 import type { SiteSettingsDoc } from "@/lib/cms/siteSettings";
@@ -25,22 +26,30 @@ const EMPTY: FormState = {
 
 export default function ContactSettingsPage() {
   const [form, setForm] = useState<FormState>(EMPTY);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState<{ message: string; tone: AdminAlertTone } | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const snapshot = await getDoc(doc(getFirebaseDb(), "siteSettings", DOC_ID));
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setForm({ ...EMPTY, ...data, address: toText(data.address) });
-      }
-      setLoading(false);
-    })();
-  }, []);
+  const { loading, loadError, retry } = useAdminLoad(async () => {
+    const snapshot = await getDoc(doc(getFirebaseDb(), "siteSettings", DOC_ID));
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      setForm({ ...EMPTY, ...data, address: toText(data.address) });
+    }
+  });
 
   const handleSave = async () => {
+    if (!form.address.trim()) {
+      setAlert({ message: "กรุณาระบุที่อยู่", tone: "error" });
+      return;
+    }
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setAlert({ message: "กรุณาระบุอีเมลที่ถูกต้อง", tone: "error" });
+      return;
+    }
+    if (!form.phone.trim()) {
+      setAlert({ message: "กรุณาระบุหมายเลขโทรศัพท์", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       await setDoc(doc(getFirebaseDb(), "siteSettings", DOC_ID), form);
@@ -59,7 +68,8 @@ export default function ContactSettingsPage() {
     setForm({ ...form, socialLinks: next });
   };
 
-  if (loading) return <p>กำลังโหลด...</p>;
+  if (loading) return <p role="status">กำลังโหลด...</p>;
+  if (loadError) return <div role="alert">โหลดข้อมูลไม่สำเร็จ: {loadError} <button type="button" onClick={retry}>ลองใหม่</button></div>;
 
   return (
     <div>

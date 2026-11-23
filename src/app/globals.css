@@ -12,6 +12,7 @@
   /* Primary site accent from the approved green palette. */
   --brand-green-light: #a2c443;
   --brand-green: #409d48;
+  --brand-text-gradient: linear-gradient(90deg, #409d48 0%, #a7c643 100%);
   --brand-gradient: linear-gradient(105deg, var(--brand-green-light), var(--brand-green));
 
   --grad-deep-purple: #3a1f5c;

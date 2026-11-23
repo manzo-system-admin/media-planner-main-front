@@ -56,6 +56,10 @@ export default function NewsCategoryFormPage() {
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.label?.trim()) {
+      setAlert({ message: "กรุณาระบุชื่อหมวดหมู่", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       const payload = { ...form, key: form.key.trim() || slugifyKey(form.label) };
@@ -77,10 +81,15 @@ export default function NewsCategoryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
+    try {
     await softDeleteDoc("newsCategories", params.id, "หมวดหมู่ข่าว", form.label);
-    setDeleting(false);
-    setConfirmOpen(false);
-    setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+      setConfirmOpen(false);
+      setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    } catch (err) {
+      setAlert({ message: err instanceof Error ? err.message : "ลบไม่สำเร็จ กรุณาลองใหม่", tone: "error" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) return <p>กำลังโหลด...</p>;

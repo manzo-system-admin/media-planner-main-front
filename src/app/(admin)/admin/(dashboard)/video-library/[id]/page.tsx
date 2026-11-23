@@ -61,6 +61,19 @@ export default function VideoLibraryFormPage() {
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.title?.trim()) {
+      setAlert({ message: "กรุณาระบุชื่อวิดีโอ", tone: "error" });
+      return;
+    }
+    const hasVideoSource = form.videoSource.kind === "upload"
+      ? Boolean(form.videoSource.url.trim())
+      : form.videoSource.kind === "youtube" || form.videoSource.kind === "tiktok"
+        ? Boolean(form.videoSource.videoId.trim())
+        : Boolean(form.videoSource.url.trim());
+    if (!hasVideoSource) {
+      setAlert({ message: "กรุณาระบุไฟล์หรือลิงก์วิดีโอ", tone: "error" });
+      return;
+    }
     if (!form.date) {
       setAlert({ message: "กรุณาระบุวันที่", tone: "error" });
       return;
@@ -84,10 +97,15 @@ export default function VideoLibraryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
-    await softDeleteDoc("videoLibrary", params.id, "คลังวิดีโอ", form.title);
-    setDeleting(false);
-    setConfirmOpen(false);
-    setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    try {
+      await softDeleteDoc("videoLibrary", params.id, "คลังวิดีโอ", form.title);
+      setConfirmOpen(false);
+      setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    } catch (err) {
+      setAlert({ message: err instanceof Error ? err.message : "ลบไม่สำเร็จ กรุณาลองใหม่", tone: "error" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) return <p>กำลังโหลด...</p>;

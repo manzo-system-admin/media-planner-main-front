@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { getFirebaseStorage } from "@/lib/firebase/client";
 import { resizeImageFile } from "@/lib/media/resizeImageFile";
+import { mediaUploadErrorMessage, validateMediaFile } from "@/lib/admin/mediaValidation";
 import styles from "./MultiImageUploader.module.css";
 
 type UploadingFile = { id: string; name: string; progress: number; error?: string };
@@ -35,29 +36,38 @@ export default function MultiImageUploader({
   }, [values]);
 
   const uploadFile = async (file: File) => {
-    const id = `${Date.now()}-${file.name}`;
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
     setUploading((list) => [...list, { id, name: file.name, progress: 0 }]);
-    const upload = file.type.startsWith("image/") ? await resizeImageFile(file) : file;
-    const path = `uploads/${folder}/${id}`;
-    const task = uploadBytesResumable(ref(getFirebaseStorage(), path), upload);
-
-    task.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-        setUploading((list) => list.map((u) => (u.id === id ? { ...u, progress } : u)));
-      },
-      (err) => {
-        setUploading((list) => list.map((u) => (u.id === id ? { ...u, error: err.message } : u)));
-      },
-      async () => {
-        const url = await getDownloadURL(task.snapshot.ref);
-        const next = [...valuesRef.current, url];
-        valuesRef.current = next;
-        onChange(next);
-        setUploading((list) => list.filter((u) => u.id !== id));
-      }
-    );
+    const validationError = validateMediaFile(file, accept);
+    if (validationError) {
+      setUploading((list) => list.map((u) => u.id === id ? { ...u, error: validationError } : u));
+      return;
+    }
+    try {
+      const upload = file.type.startsWith("image/") ? await resizeImageFile(file) : file;
+      const path = `uploads/${folder}/${id}`;
+      const task = uploadBytesResumable(ref(getFirebaseStorage(), path), upload);
+      task.on("state_changed",
+        (snapshot) => {
+          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          setUploading((list) => list.map((u) => (u.id === id ? { ...u, progress } : u)));
+        },
+        (err) => setUploading((list) => list.map((u) => u.id === id ? { ...u, error: mediaUploadErrorMessage(err) } : u)),
+        async () => {
+          try {
+            const url = await getDownloadURL(task.snapshot.ref);
+            const next = [...valuesRef.current, url];
+            valuesRef.current = next;
+            onChange(next);
+            setUploading((list) => list.filter((u) => u.id !== id));
+          } catch (error) {
+            setUploading((list) => list.map((u) => u.id === id ? { ...u, error: error instanceof Error ? error.message : "อ่าน URL ไฟล์ไม่สำเร็จ" } : u));
+          }
+        }
+      );
+    } catch (error) {
+      setUploading((list) => list.map((u) => u.id === id ? { ...u, error: error instanceof Error ? error.message : "เตรียมไฟล์ไม่สำเร็จ" } : u));
+    }
   };
 
   const handleFiles = (files: FileList | null) => {
@@ -109,19 +119,33 @@ export default function MultiImageUploader({
             <div className={styles.progressTrack}>
               <div className={styles.progressFill} style={{ width: `${u.progress}%` }} />
             </div>
-            {u.error && <span className={styles.error}>{u.error}</span>}
+            {u.error && (
+              <span className={styles.error} role="alert">
+                {u.name}: {u.error}{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUploading((list) => list.filter((item) => item.id !== u.id));
+                    inputRef.current?.click();
+                  }}
+                >
+                  ลองเลือกใหม่
+                </button>
+              </span>
+            )}
           </div>
         ))}
 
-        <div className={styles.addTile} onClick={() => inputRef.current?.click()}>
+        <button type="button" className={styles.addTile} onClick={() => inputRef.current?.click()}>
           <span>+</span>
           <span className={styles.hint}>{label}</span>
-        </div>
+        </button>
       </div>
 
       <input
         ref={inputRef}
         type="file"
+        aria-label={label}
         accept={accept}
         multiple
         hidden

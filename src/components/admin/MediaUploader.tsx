@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { getFirebaseStorage } from "@/lib/firebase/client";
 import { resizeImageFile } from "@/lib/media/resizeImageFile";
+import { isVideoUrl, mediaUploadErrorMessage, validateMediaFile } from "@/lib/admin/mediaValidation";
 import styles from "./MediaUploader.module.css";
 
 export default function MediaUploader({
@@ -25,32 +26,32 @@ export default function MediaUploader({
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const isVideo = /\.(mp4|webm|mov)$/i.test(value);
+  const isVideo = isVideoUrl(value);
   const acceptsImage = accept.includes("image");
 
   const handleFile = async (file: File) => {
     setError(null);
+    const validationError = validateMediaFile(file, accept);
+    if (validationError) { setError(validationError); return; }
     setProgress(0);
-    const isImage = accept.includes("image") && file.type.startsWith("image/");
-    const upload = isImage ? await resizeImageFile(file) : file;
-    const path = `uploads/${folder}/${Date.now()}-${upload.name}`;
-    const task = uploadBytesResumable(ref(getFirebaseStorage(), path), upload);
-
-    task.on(
-      "state_changed",
-      (snapshot) => {
-        setProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
-      },
-      (err) => {
-        setError(err.message);
-        setProgress(null);
-      },
-      async () => {
-        const url = await getDownloadURL(task.snapshot.ref);
-        onChange(url);
-        setProgress(null);
-      }
-    );
+    try {
+      const isImage = file.type.startsWith("image/");
+      const upload = isImage ? await resizeImageFile(file) : file;
+      const path = `uploads/${folder}/${Date.now()}-${upload.name}`;
+      const task = uploadBytesResumable(ref(getFirebaseStorage(), path), upload);
+      task.on("state_changed",
+        (snapshot) => setProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)),
+        (err) => { setError(mediaUploadErrorMessage(err)); setProgress(null); },
+        async () => {
+          try { onChange(await getDownloadURL(task.snapshot.ref)); }
+          catch (error) { setError(error instanceof Error ? error.message : "อ่าน URL ไฟล์ไม่สำเร็จ กรุณาลองใหม่"); }
+          finally { setProgress(null); }
+        }
+      );
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "เตรียมไฟล์ไม่สำเร็จ กรุณาลองใหม่");
+      setProgress(null);
+    }
   };
 
   return (
@@ -70,9 +71,9 @@ export default function MediaUploader({
           )}
         </div>
       ) : (
-        <div className={styles.dropzone} onClick={() => inputRef.current?.click()}>
+        <button type="button" className={styles.dropzone} onClick={() => inputRef.current?.click()} disabled={progress !== null}>
           <span className={styles.hint}>{label} (คลิกเพื่อเลือกไฟล์)</span>
-        </div>
+        </button>
       )}
 
       {progress !== null && (
@@ -81,11 +82,12 @@ export default function MediaUploader({
         </div>
       )}
 
-      {error && <span className={styles.error}>{error}</span>}
+      {error && <span className={styles.error} role="alert">{error} <button type="button" onClick={() => inputRef.current?.click()}>เลือกไฟล์ใหม่</button></span>}
 
       <input
         ref={inputRef}
         type="file"
+        aria-label={label}
         accept={accept}
         hidden
         onChange={(e) => {

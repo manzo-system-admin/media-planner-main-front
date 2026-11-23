@@ -135,6 +135,18 @@ export default function NewsFormPage() {
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.title?.trim()) {
+      setAlert({ message: "กรุณาระบุชื่อข่าว", tone: "error" });
+      return;
+    }
+    if (!form.category?.trim()) {
+      setAlert({ message: "กรุณาเลือกหมวดหมู่", tone: "error" });
+      return;
+    }
+    if (!form.date?.trim()) {
+      setAlert({ message: "กรุณาระบุวันที่", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       if (form.pinned) {
@@ -164,10 +176,15 @@ export default function NewsFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
+    try {
     await softDeleteDoc("news", params.id, "ข่าวสาร", form.title);
-    setDeleting(false);
-    setConfirmOpen(false);
-    setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+      setConfirmOpen(false);
+      setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    } catch (err) {
+      setAlert({ message: err instanceof Error ? err.message : "ลบไม่สำเร็จ กรุณาลองใหม่", tone: "error" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) return <p>กำลังโหลด...</p>;

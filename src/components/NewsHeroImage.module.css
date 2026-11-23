@@ -1,7 +1,7 @@
 .wrap {
   position: relative;
+  width: 100%;
   aspect-ratio: var(--ratio, 16 / 9);
-  max-height: 640px;
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;

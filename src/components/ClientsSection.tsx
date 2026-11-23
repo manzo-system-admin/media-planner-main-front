@@ -182,7 +182,10 @@ export default function ClientsSection({
             onMouseDown={(event) => event.stopPropagation()}
           >
             <div className={panelStyles.header}>
-              <ClientLogo name={activeClient.name} index={0} logoUrl={activeClient.logoUrl} />
+              <div className={panelStyles.clientIdentity}>
+                <ClientLogo name={activeClient.name} index={0} logoUrl={activeClient.logoUrl} />
+                <span className={panelStyles.clientName}>{activeClient.name}</span>
+              </div>
               <button
                 type="button"
                 className={panelStyles.closeButton}

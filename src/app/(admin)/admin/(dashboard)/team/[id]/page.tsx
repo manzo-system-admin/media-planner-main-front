@@ -49,6 +49,10 @@ export default function TeamGalleryFormPage() {
   }, [isNew, params.id]);
 
   const handleSave = async () => {
+    if (!form.image?.trim()) {
+      setAlert({ message: "กรุณาอัปโหลดรูปภาพ", tone: "error" });
+      return;
+    }
     setSaving(true);
     try {
       if (isNew) {
@@ -68,10 +72,15 @@ export default function TeamGalleryFormPage() {
 
   const confirmDelete = async () => {
     setDeleting(true);
+    try {
     await softDeleteDoc("team", params.id, "แกลเลอรีภาพทีมงาน", form.caption || "รูปทีมงาน");
-    setDeleting(false);
-    setConfirmOpen(false);
-    setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+      setConfirmOpen(false);
+      setAlert({ message: "ลบสำเร็จ", tone: "success", redirect: true });
+    } catch (err) {
+      setAlert({ message: err instanceof Error ? err.message : "ลบไม่สำเร็จ กรุณาลองใหม่", tone: "error" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) return <p>กำลังโหลด...</p>;

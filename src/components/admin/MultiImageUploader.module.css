@@ -54,7 +54,7 @@
   transition: opacity 0.15s ease;
 }
 
-.tile:hover .tileActions {
+.tile:hover .tileActions, .tile:focus-within .tileActions {
   opacity: 1;
 }
 
@@ -119,8 +119,8 @@
 }
 
 .addTile:hover {
-  border-color: var(--grad-blue);
-  color: var(--grad-blue);
+  border-color: var(--admin-green);
+  color: var(--admin-green);
 }
 
 .hint {
