@@ -294,7 +294,7 @@
 }
 
 .portfolioIntroCta:hover {
-    color: #071923;
+    color: #fff;
     background: var(--brand-gradient);
     transform: translateY(-2px);
 }

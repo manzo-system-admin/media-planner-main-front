@@ -87,8 +87,8 @@
 
 .filterPillActive {
   font-weight: 600;
-  color: #001625;
-  background: var(--brand-green);
+  color: #fff;
+  background: var(--brand-gradient);
   border-color: var(--brand-green);
 }
 
@@ -702,7 +702,7 @@
 .filters { gap: 8px; margin-bottom: 26px; }
 .filterPill { padding: 8px 14px; border: 1px solid rgba(248, 244, 235, .28); border-radius: 999px; color: #f8f4eb; background: #191a19; font: 500 12px/1.35 var(--font-heading); transition: color .22s ease, background .22s ease, border-color .22s ease, transform .22s ease; }
 .filterPill:hover { border-color: var(--brand-green-light); transform: translateY(-1px); }
-.filterPillActive { border-color: var(--brand-green); color: #081008; background: var(--brand-gradient); }
+.filterPillActive { border-color: var(--brand-green); color: #fff; background: var(--brand-gradient); }
 .searchEmpty { margin: 20px 0; color: rgba(248, 244, 235, .65); font: 400 15px/1.6 var(--font-body); }
 .featuredNews { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; gap: clamp(24px, 2.6vw, 38px); min-height: 0; margin: 0 0 28px; overflow: visible; border: 0; border-radius: 0; color: #f8f4eb; background: transparent; box-shadow: none; }
 .featuredNews:hover { transform: none; box-shadow: none; }
@@ -765,7 +765,7 @@
 .galleryThumb { aspect-ratio: 3 / 2; border-radius: 10px; background: #171918; }
 .galleryImage:hover .galleryThumb img { transform: scale(1.045); }
 .galleryCaption { color: var(--brand-green-light); font: 600 15px/1.5 var(--font-heading); }
-.newsPagination { --pagination-size: 54px; --pagination-gap: 8px; --pagination-padding: 0; --pagination-border: transparent; --pagination-surface: transparent; --pagination-active: var(--brand-green-light); --pagination-active-foreground: #081008; --pagination-text: #f8f4eb; margin-top: 56px; }
+.newsPagination { --pagination-size: 54px; --pagination-gap: 8px; --pagination-padding: 0; --pagination-border: transparent; --pagination-surface: transparent; --pagination-active: var(--brand-gradient); --pagination-active-foreground: #fff; --pagination-text: #f8f4eb; margin-top: 56px; }
 
 @media (max-width: 900px) {
   .featuredNews { grid-template-columns: minmax(0, 1fr); gap: 22px; }

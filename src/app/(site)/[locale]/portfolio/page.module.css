@@ -32,8 +32,8 @@
 
 .filterPillActive {
   font-weight: 600;
-  color: #001625;
-  background: var(--brand-green);
+  color: #fff;
+  background: var(--brand-gradient);
   border-color: var(--brand-green);
 }
 

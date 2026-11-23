@@ -22,7 +22,12 @@ export default function ShareButton({ title, label = "แชร์บทคว�
   };
 
   return (
-    <button type="button" className={styles.button} onClick={handleShare}>
+    <button
+      type="button"
+      className={styles.button}
+      onClick={handleShare}
+      aria-label={copied ? "คัดลอกลิงก์แล้ว" : label}
+    >
       <span className={styles.icon} aria-hidden="true">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path

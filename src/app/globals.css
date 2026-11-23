@@ -52,8 +52,8 @@
   --site-content-width: 80%;
   --shell-pad: clamp(20px, 5vw, 56px);
 
-  --font-heading: var(--font-kanit), "Noto Sans Thai", sans-serif;
-  --font-body: var(--font-kanit), sans-serif;
+  --font-heading: var(--font-inter), var(--font-noto-sans-thai), sans-serif;
+  --font-body: var(--font-inter), var(--font-noto-sans-thai), sans-serif;
 }
 
 html {

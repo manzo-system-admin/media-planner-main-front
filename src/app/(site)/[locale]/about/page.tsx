@@ -9,6 +9,7 @@ import { getDictionary } from "@/lib/dictionaries";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getTeamGallery } from "@/lib/cms/org";
 import { getAboutContent } from "@/lib/cms/about";
+import { getPortfolioList } from "@/lib/cms/portfolio";
 
 export const dynamic = "force-dynamic";
 
@@ -39,13 +40,16 @@ export default async function AboutPage({
   const locale: Locale = rawLocale;
   const dict = getDictionary(locale);
   const { about } = dict;
-  const teamGallery = await getTeamGallery();
-  const content = await getAboutContent();
-  const visionBody = content?.visionBody || about.visionBody;
-  const missionBody = content?.missionBody || about.missionBody;
+  const [teamGallery, content, portfolioItems] = await Promise.all([
+    getTeamGallery(),
+    getAboutContent(),
+    getPortfolioList(),
+  ]);
   const historyBody = content?.historyBody || about.historyBody;
   const visionImage = teamGallery[0]?.image || content?.historyImage;
-  const missionImage = teamGallery[1]?.image || teamGallery[0]?.image;
+  const addTechItems = portfolioItems.filter((item) => /add\s*tech|แอดเทค/i.test(item.client));
+  const addTechIpoImage = (addTechItems.find((item) => /ipo/i.test(item.title)) || addTechItems[0])?.image;
+  const missionImage = addTechIpoImage || teamGallery[1]?.image || teamGallery[0]?.image || content?.historyImage;
 
   return (
     <ContentSheet>
@@ -61,17 +65,30 @@ export default async function AboutPage({
 
       <section className={styles.values} id="vision" aria-label={`${about.visionTitle} และ ${about.missionTitle}`}>
         <article className={styles.valueRow} data-reveal data-reveal-repeat>
-          <div className={styles.valueCopy}>
+          <div className={`${styles.valueCopy} ${styles.visionCopy}`}>
             <h2>{about.visionTitle}</h2>
-            <p>{visionBody}</p>
+            <p>
+              ภาพลักษณ์องค์กรที่ดี นำไปสู่ความน่าเชื่อถือ ช่องทางการสื่อสารที่ดี
+              <br />นำไปสู่ประสิทธิภาพในการเข้าถึงกลุ่มเป้าหมาย การวางแผนกลยุทธ์ที่ดี
+              <br />นำไปสู่กุญแจแห่ง <strong>“ความสำเร็จ”</strong>
+            </p>
           </div>
-          {missionImage && <div className={styles.valueImage}><Image src={missionImage} alt={about.visionTitle} fill sizes="(max-width: 700px) 88vw, 40vw" /></div>}
+          {visionImage && <div className={styles.valueImage}><Image src={visionImage} alt={about.visionTitle} fill sizes="(max-width: 700px) 88vw, 40vw" /></div>}
         </article>
         <article className={`${styles.valueRow} ${styles.reverse}`} data-reveal data-reveal-repeat>
-          {visionImage && <div className={styles.valueImage}><Image src={visionImage} alt={about.missionTitle} fill sizes="(max-width: 700px) 88vw, 40vw" /></div>}
+          {missionImage && <div className={styles.valueImage}><Image src={missionImage} alt={about.missionTitle} fill sizes="(max-width: 700px) 88vw, 40vw" /></div>}
           <div className={styles.valueCopy}>
             <h2>{about.missionTitle}</h2>
-            <p>{missionBody}</p>
+            <p>
+              <strong>“เรา” เป็นส่วนหนึ่งของเบื้องหลังความสำเร็จ</strong>
+              <br />ในการสร้างภาพลักษณ์ความน่าเชื่อถือเสริมแบรนด์ ให้กับบริษัทจดทะเบียน
+              <br />ที่ก้าวสู่การเป็นบริษัทมหาชนในสายผู้สื่อข่าวและนักลงทุน
+            </p>
+            <p>
+              <strong>“เรา” เป็นส่วนหนึ่งของเบื้องหลังความสำเร็จ</strong>
+              <br />ในการวางแผนกลยุทธ์การขับเคลื่อนงานประชาสัมพันธ์และอีเวนต์
+              <br />จนเกิดเทรนด์ เพื่อให้ผู้สื่อข่าวและนักลงทุนพูดถึงในตลาดหลักทรัพย์
+            </p>
           </div>
         </article>
       </section>

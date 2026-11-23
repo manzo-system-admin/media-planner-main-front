@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Kanit } from "next/font/google";
+import { Inter, Noto_Sans_Thai } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../../globals.css";
 import Header from "@/components/Header";
@@ -12,9 +12,14 @@ import { locales, isLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/dictionaries";
 import { getSiteSettings } from "@/lib/cms/siteSettings";
 
-const kanit = Kanit({
-  variable: "--font-kanit",
-  subsets: ["thai", "latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const notoSansThai = Noto_Sans_Thai({
+  variable: "--font-noto-sans-thai",
+  subsets: ["thai"],
   weight: ["400", "500", "600", "700"],
 });
 
@@ -47,7 +52,7 @@ export default async function LocaleLayout({
   const settings = await getSiteSettings();
 
   return (
-    <html lang={dict.meta.htmlLang} className={kanit.variable}>
+    <html lang={dict.meta.htmlLang} className={`${inter.variable} ${notoSansThai.variable}`}>
       <body>
         <MotionObserver />
         <MotionParallax />

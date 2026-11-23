@@ -14,7 +14,7 @@
   gap: 9px;
   overflow: hidden;
   color: #929292;
-  font: 400 13px/1.5 var(--font-body);
+  font: 400 15px/1.5 var(--font-body);
   white-space: nowrap;
 }
 
@@ -30,7 +30,7 @@
 
 .articleHeader h1 {
   margin: 22px 0 14px;
-  max-width: 1100px;
+  max-width: 100%;
   color: #f5f3f0;
   font: 700 clamp(27px, 3vw, 42px)/1.28 var(--font-heading);
   letter-spacing: -.025em;
@@ -63,12 +63,12 @@
 
 .category {
   color: var(--brand-green-light);
-  font: 600 12px/1.4 var(--font-heading);
+  font: 600 14px/1.4 var(--font-heading);
 }
 
 .date {
   color: #969696;
-  font: 400 12px/1.4 var(--font-body);
+  font: 400 14px/1.4 var(--font-body);
 }
 
 .shareRow { flex: 0 0 auto; }
@@ -83,8 +83,8 @@
   font-size: 11px;
 }
 .shareRow :global(button:hover) {
-  color: #10130a;
-  background: var(--brand-green-light);
+  color: #fff;
+  background: var(--brand-gradient);
   border-color: var(--brand-green-light);
 }
 .shareRow :global(button) > span:first-child {
@@ -107,14 +107,14 @@
   margin: 0 auto;
   padding: 0 0 54px;
   color: #d0cdca;
-  font: 400 14px/1.85 var(--font-body);
+  font: 400 16px/1.85 var(--font-body);
   overflow-wrap: anywhere;
 }
 .body p { margin: 0 0 17px; }
 .body h2, .body h3 {
   margin: 28px 0 12px;
   color: #f4f1ec;
-  font: 700 19px/1.4 var(--font-heading);
+  font: 700 21px/1.4 var(--font-heading);
 }
 .body ul, .body ol { margin: 0 0 18px; padding-left: 22px; }
 .body a { color: var(--brand-green-light); text-decoration: underline; }
@@ -152,12 +152,12 @@
 .relatedImage :global(img) { transition: transform .35s ease; }
 .relatedCard:hover .relatedImage :global(img) { transform: scale(1.035); }
 .relatedBody { display: flex; flex-direction: column; gap: 7px; padding: 12px 12px 15px; }
-.relatedDate { color: #929292; font: 400 11px/1.4 var(--font-body); }
-.relatedCardTitle { color: #f2efeb; font: 600 14px/1.55 var(--font-heading); }
+.relatedDate { color: #929292; font: 400 12px/1.4 var(--font-body); }
+.relatedCardTitle { color: #f2efeb; font: 600 15px/1.55 var(--font-heading); }
 
 @media (min-width: 1500px) {
   .articlePage { width: min(1240px, calc(100% - 80px)); }
-  .body { font-size: 15px; }
+  .body { font-size: 17px; }
   .relatedGrid { gap: 32px 24px; }
 }
 
@@ -166,7 +166,7 @@
   .articleHeader { margin-bottom: 23px; }
   .articleHeader h1 { margin: 17px 0 12px; font-size: clamp(25px, 5vw, 36px); }
   .heroSection { margin-bottom: 23px; }
-  .body { font-size: 14px; line-height: 1.9; padding-bottom: 42px; }
+  .body { font-size: 15px; line-height: 1.9; padding-bottom: 42px; }
   .related { padding: 26px 0 54px; }
   .relatedGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; }
   .relatedBody { padding: 10px; }
@@ -175,18 +175,29 @@
 
 @media (max-width: 520px) {
   .articlePage { width: calc(100% - 36px); padding-top: 91px; }
-  .articleHeader nav { font-size: 11px; }
+  .articleHeader nav { font-size: 13px; }
   .articleHeader h1 { font-size: clamp(23px, 6vw, 29px); line-height: 1.38; }
-  .metaRow { align-items: flex-start; }
+  .metaRow { align-items: center; }
   .articleMeta { gap: 7px 9px; }
-  .category, .date { font-size: 11px; }
-  .shareRow :global(button) { min-height: 31px; padding: 4px 9px; }
+  .category, .date { font-size: 13px; }
+  .shareRow :global(button) {
+    width: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0;
+  }
   .shareRow :global(button) > span:last-child { display: none; }
-  .shareRow :global(button) > span:first-child { margin: 0; }
+  .shareRow :global(button) > span:first-child {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    margin: 0;
+  }
+  .shareRow :global(button) > span:first-child svg { width: 18px; height: 18px; }
   .heroSection { width: 100%; margin-bottom: 20px; }
   .heroSection :global(div) { border-radius: 10px; }
-  .body { font-size: 13px; line-height: 1.85; padding-bottom: 34px; }
-  .body p { margin-bottom: 14px; }
+  .body { font-size: 16px; line-height: 1.8; padding-bottom: 34px; }
+  .body p { margin-bottom: 16px; }
   .relatedGrid { grid-template-columns: 1fr; gap: 16px; }
   .relatedCard { display: grid; grid-template-columns: 38% minmax(0, 1fr); align-items: stretch; }
   .relatedImage { min-height: 108px; aspect-ratio: auto; }

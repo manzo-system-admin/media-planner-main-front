@@ -63,7 +63,7 @@
   background: var(--brand-green-light);
   transition: transform .22s ease, color .22s ease, background-color .22s ease, box-shadow .22s ease;
 }
-.socialIcon:hover { transform: translateY(-3px); color: #f8f4eb; background: var(--brand-green); box-shadow: 0 8px 22px rgba(64, 157, 72, .28); }
+.socialIcon:hover { transform: translateY(-3px); color: #fff; background: var(--brand-gradient); box-shadow: 0 8px 22px rgba(64, 157, 72, .28); }
 .socialIcon:focus-visible, .fieldValue:focus-visible, .mapLink:focus-visible { outline: 2px solid var(--brand-green-light); outline-offset: 4px; }
 .mapWrap {
   position: relative;

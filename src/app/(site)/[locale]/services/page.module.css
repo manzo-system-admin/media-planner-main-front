@@ -101,7 +101,7 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 12px 30px rgba(0, 0, 0, .16);
   transition: opacity 650ms cubic-bezier(.2, .7, .2, 1), transform 260ms ease, border-color 260ms ease, background 260ms ease, box-shadow 260ms ease, color 260ms ease;
 }
-.serviceCard:hover { transform: translateY(-3px); border-color: transparent; color: #07110a; background: var(--brand-gradient); box-shadow: 0 18px 38px rgba(0, 0, 0, .28); }
+.serviceCard:hover { transform: translateY(-3px); border-color: transparent; color: #fff; background: var(--brand-gradient); box-shadow: 0 18px 38px rgba(0, 0, 0, .28); }
 .cardHeader { display: flex; min-height: 48px; align-items: center; gap: 12px; }
 .cardIcon { box-sizing: border-box; display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border: 1px solid rgba(255, 255, 255, .24); border-radius: 16px; background: rgba(255, 255, 255, .12); transition: border-color 260ms ease, background-color 260ms ease; }
 .cardIcon img { width: 27px; height: 27px; object-fit: contain; transition: filter 260ms ease; }
@@ -112,10 +112,10 @@
 .cardArrow path { fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
 .serviceCard:hover .cardArrow { transform: translateX(3px); }
 .cardDescription { display: -webkit-box; overflow: hidden; margin-top: 10px; color: #b6beb9; font: 400 10.5px/1.5 var(--font-body); -webkit-box-orient: vertical; -webkit-line-clamp: 4; transition: color 260ms ease; }
-.serviceCard:hover .cardHeader strong, .serviceCard:hover .cardDescription { color: #07110a; }
+.serviceCard:hover .cardHeader strong, .serviceCard:hover .cardDescription { color: #fff; }
 .serviceCard:hover .cardIcon { border-color: #070907; background: #070907; }
 .serviceCard:hover .cardIcon img { filter: brightness(0) saturate(100%) invert(82%) sepia(40%) saturate(578%) hue-rotate(21deg) brightness(94%) contrast(91%); }
-.serviceCard:hover .cardLink { padding-inline: 9px; color: #a2c443; background: #070907; }
+.serviceCard:hover .cardLink { padding-inline: 9px; color: #fff; background: rgba(7, 9, 7, .88); }
 .emptyState { padding: 30px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 20px; color: #b6beb9; text-align: center; }
 .closing { width: min(100% - 40px, 800px); margin: 0 auto; padding: 34px 0 76px; color: #aeb9b3; font: 300 clamp(15px, 1.4vw, 19px)/1.8 var(--font-body); text-align: center; white-space: pre-line; }
 .closing p { margin: 0; }
