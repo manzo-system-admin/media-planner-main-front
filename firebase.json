@@ -3,7 +3,7 @@
     "rules": "firestore.rules"
   },
   "hosting": {
-    "site": "media-planner-dark",
+    "site": "media-planner-consultant",
     "source": ".",
     "ignore": [
       "firebase.json",

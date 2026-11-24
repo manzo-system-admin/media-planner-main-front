@@ -72,7 +72,8 @@
 .valueRow:last-child { border-bottom: 1px solid rgba(232, 240, 236, .17); }
 .reverse { grid-template-columns: minmax(240px, .68fr) minmax(0, 1fr); }
 .valueCopy { max-width: 650px; }
-.visionCopy { text-align: right; }
+.visionCopy { width: 100%; justify-self: start; text-align: right; }
+.missionCopy { width: 100%; justify-self: end; }
 .valueIndex, .teamHeading > span, .principleHeading > span {
   color: var(--brand-green-light);
   font: 600 10px/1.4 var(--font-heading);
@@ -173,7 +174,7 @@
   .values, .principles, .team { width: 88%; }
   :global(.contentSheet) > .intro, :global(.contentSheet) > .values, :global(.contentSheet) > .principles, :global(.contentSheet) > .team { width: 88%; }
   .valueRow, .reverse { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 22px 0; }
-  .visionCopy { text-align: left; }
+  .visionCopy, .missionCopy { margin-inline: 0; justify-self: stretch; text-align: left; }
   .reverse .valueImage { order: 2; }
   .reverse .valueCopy { order: 1; }
   .valueImage { min-height: 0; aspect-ratio: 1.65 / 1; }

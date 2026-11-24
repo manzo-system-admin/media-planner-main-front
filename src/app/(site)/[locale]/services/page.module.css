@@ -50,7 +50,7 @@
   text-align: center;
   transform: translate(-50%, -50%);
 }
-.orbitCenter img { width: 174px; height: 108px; object-fit: contain; filter: drop-shadow(0 8px 22px rgba(86, 171, 62, .18)); }
+.orbitCenter img { width: 348px; height: 216px; object-fit: contain; filter: drop-shadow(0 8px 22px rgba(86, 171, 62, .18)); }
 .orbitCenter h2 { margin: 4px 0 0; color: var(--service-accent); font: 700 clamp(24px, 2.7vw, 34px)/1.2 var(--font-heading); letter-spacing: .04em; }
 .orbitNodes { position: absolute; inset: 0; }
 .orbitNode {

@@ -68,8 +68,8 @@ export default async function AboutPage({
           <div className={`${styles.valueCopy} ${styles.visionCopy}`}>
             <h2>{about.visionTitle}</h2>
             <p>
-              ภาพลักษณ์องค์กรที่ดี นำไปสู่ความน่าเชื่อถือ ช่องทางการสื่อสารที่ดี
-              <br />นำไปสู่ประสิทธิภาพในการเข้าถึงกลุ่มเป้าหมาย การวางแผนกลยุทธ์ที่ดี
+              <strong>ภาพลักษณ์</strong>องค์กรที่ดี นำไปสู่ความน่าเชื่อถือ ช่องทางการ<strong>สื่อสาร</strong>ที่ดี
+              <br />นำไปสู่ประสิทธิภาพในการเข้าถึงกลุ่มเป้าหมาย การวางแผน<strong>กลยุทธ์</strong>ที่ดี
               <br />นำไปสู่กุญแจแห่ง <strong>“ความสำเร็จ”</strong>
             </p>
           </div>
@@ -77,7 +77,7 @@ export default async function AboutPage({
         </article>
         <article className={`${styles.valueRow} ${styles.reverse}`} data-reveal data-reveal-repeat>
           {missionImage && <div className={styles.valueImage}><Image src={missionImage} alt={about.missionTitle} fill sizes="(max-width: 700px) 88vw, 40vw" /></div>}
-          <div className={styles.valueCopy}>
+          <div className={`${styles.valueCopy} ${styles.missionCopy}`}>
             <h2>{about.missionTitle}</h2>
             <p>
               <strong>“เรา” เป็นส่วนหนึ่งของเบื้องหลังความสำเร็จ</strong>
@@ -106,7 +106,7 @@ export default async function AboutPage({
             </article>
           ))}
         </div>
-        <p className={styles.promiseCopy} data-reveal data-reveal-repeat>{dict.home.subtitle}</p>
+        <p className={styles.promiseCopy} data-reveal data-reveal-repeat>“การประชาสัมพันธ์ไม่ใช่แค่การส่งสาร แต่คือการกำหนดทิศทางความสำเร็จ” ขององค์กรเพื่อตอลโจทย์ทุกความน่าเชื่อถือ</p>
       </section>
 
       <section className={styles.team} aria-label={about.teamTitle}>

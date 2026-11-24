@@ -21,6 +21,7 @@ const serviceIcons: Record<string, string> = {
   video: "/images/service-icons/play_circle.png",
   ir: "/images/service-icons/android_cell_4_bar.png",
   portrait: "/images/service-icons/photo_camera_back.png",
+  MediaPlanner: "/images/service-icons/MediaPlanner3.png",
 };
 
 const orbitPositions: Record<string, string> = {
@@ -106,8 +107,7 @@ export default async function ServicesPage({
         <div className={styles.diagram}>
           <div className={styles.orbitRing} aria-hidden="true" data-reveal data-reveal-repeat />
           <div className={styles.orbitCenter} data-reveal data-reveal-repeat>
-            <Image src="/images/brand-mark.png" alt="" aria-hidden="true" width={546} height={328} />
-            <h2>MEDIA PLANNER CONSULTANT</h2>
+            <Image src="/images/MediaPlanner3.png" alt="" aria-hidden="true" width={546} height={328} />
           </div>
           <nav className={styles.orbitNodes} aria-label={services.listTitle}>
             {orbitServices.map((service, index) => {
