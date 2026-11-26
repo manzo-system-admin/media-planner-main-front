@@ -366,7 +366,7 @@
     flex-direction: column;
     align-items: center;
     gap: 7px;
-    color: #fff;
+    color: var(--service-accent, #fff);
     font: 500 clamp(12px, 1.2vw, 16px)/1.25 var(--font-heading);
     letter-spacing: .04em;
     text-align: center;
@@ -375,7 +375,7 @@
 }
 
 .serviceOrbitNode:hover {
-    color: var(--brand-green-light);
+    color: var(--service-accent, var(--brand-green-light));
     transform: translateY(-4px);
 }
 
@@ -425,15 +425,28 @@
 :global(html[data-motion-ready="true"]) .serviceOverviewContent[class~="service-items-visible"] .serviceOverviewCopy { animation-delay: 220ms; }
 
 .serviceOrbitIcon {
+    position: relative;
     box-sizing: border-box;
     width: 64px;
     height: 58px;
     display: grid;
     place-items: center;
-    border: 1px solid #ffffff38;
+    border: 1px solid color-mix(in srgb, var(--service-accent, #fff) 68%, transparent);
     border-radius: 20px;
-    background: rgba(255, 255, 255, .12);
+    background: color-mix(in srgb, var(--service-accent, #fff) 15%, rgba(31, 42, 49, .76));
     backdrop-filter: blur(8px);
+}
+
+.serviceOrbitIcon[style*="--service-icon-mask"]::after {
+    position: absolute;
+    inset: 0;
+    width: 30px;
+    height: 30px;
+    margin: auto;
+    background: var(--service-accent, #fff);
+    content: "";
+    mask: var(--service-icon-mask) center / contain no-repeat;
+    -webkit-mask: var(--service-icon-mask) center / contain no-repeat;
 }
 
 .serviceOrbitIcon :global(img),
@@ -443,6 +456,8 @@
     height: 30px;
     object-fit: contain;
 }
+
+.serviceOrbitIcon[style*="--service-icon-mask"] :global(img) { opacity: 0; }
 
 .serviceNodeIpo {
     top: 0;
@@ -1147,6 +1162,385 @@
 
     .finalGallery {
         padding-block: clamp(88px, 9svh, 130px) clamp(96px, 11svh, 150px);
+    }
+}
+
+/* Homepage section 3: service cards arranged around the brand ring. */
+.serviceOverviewContent {
+    width: min(86vw, 1480px);
+    height: min(62svh, 620px);
+    min-height: 0;
+}
+
+.serviceOverview {
+    height: calc(100svh - 90px);
+    min-height: calc(100svh - 90px);
+    padding-block: 16px;
+}
+
+.serviceOverviewCopy {
+    bottom: clamp(-90px, -7svh, -48px);
+}
+
+.serviceOrbitCenter {
+    top: 50%;
+    z-index: 1;
+    width: clamp(300px, 30vw, 410px);
+    aspect-ratio: 1;
+    justify-content: center;
+}
+
+.serviceOrbitCenter::before {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+        from -28deg,
+        #5caf22 0deg 48deg,
+        transparent 48deg 57deg,
+        #ff6900 57deg 108deg,
+        transparent 108deg 117deg,
+        #e51d3b 117deg 168deg,
+        transparent 168deg 177deg,
+        #a855f7 177deg 228deg,
+        transparent 228deg 237deg,
+        #087bd1 237deg 288deg,
+        transparent 288deg 297deg,
+        #15b3be 297deg 348deg,
+        transparent 348deg 360deg
+    );
+    content: "";
+    mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+}
+
+.serviceOrbitLogo,
+.serviceOverviewTitle {
+    position: relative;
+    z-index: 1;
+}
+
+.serviceOrbitLogo {
+    width: min(230px, 18vw, 25svh);
+    max-height: 22svh;
+    margin-bottom: -6px;
+}
+
+.serviceOverviewTitle {
+    font-size: clamp(30px, 3.1vw, 48px);
+    letter-spacing: .03em;
+}
+
+.serviceOrbitNode {
+    z-index: 2;
+    box-sizing: border-box;
+    width: clamp(300px, 29vw, 390px);
+    min-height: 138px;
+    padding: 18px 24px 18px 26px;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 17px;
+    border: 1px solid rgba(255, 255, 255, .24);
+    border-radius: 36px;
+    background: linear-gradient(135deg, rgba(112, 118, 117, .62) 0%, rgba(68, 74, 74, .56) 100%);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow:
+        7px 7px 0 -3px color-mix(in srgb, var(--service-accent) 76%, transparent),
+        0 14px 32px color-mix(in srgb, var(--service-accent) 10%, transparent),
+        0 18px 36px rgba(0, 0, 0, .28);
+    color: #f1f3f1;
+    letter-spacing: 0;
+    text-align: left;
+    text-decoration: none;
+    text-transform: none;
+    transition: transform .24s ease, box-shadow .24s ease, filter .24s ease;
+}
+
+.serviceOrbitNode:hover {
+    transform: translateY(-5px);
+    box-shadow:
+        8px 8px 0 -3px color-mix(in srgb, var(--service-accent) 82%, transparent),
+        0 16px 34px color-mix(in srgb, var(--service-accent) 14%, transparent),
+        0 22px 40px rgba(0, 0, 0, .32);
+    color: #fff;
+    filter: saturate(1.08);
+}
+
+.serviceOrbitIcon {
+    box-sizing: border-box;
+    width: 78px;
+    height: 78px;
+    flex: 0 0 78px;
+    border: 5px solid var(--service-accent);
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--service-accent) 12%, transparent);
+    backdrop-filter: none;
+}
+
+.serviceOrbitIcon :global(img),
+.serviceOrbitIcon :global(svg) {
+    width: 38px;
+    height: 38px;
+}
+
+.serviceOrbitIcon[style*="--service-icon-mask"]::after {
+    width: 38px;
+    height: 38px;
+}
+
+.serviceOrbitText {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.serviceOrbitText strong {
+    color: var(--service-accent);
+    font: 700 clamp(16px, 1.35vw, 21px)/1.15 var(--font-heading);
+    text-transform: uppercase;
+}
+
+.serviceOrbitDescription {
+    display: -webkit-box;
+    overflow: hidden;
+    color: rgba(245, 247, 245, .86);
+    font: 400 clamp(11px, .9vw, 13px)/1.42 var(--font-body);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.serviceNodeIpo {
+    top: 23%;
+    right: auto;
+    bottom: auto;
+    left: 0;
+    transform: none;
+}
+
+.serviceNodeIpo:hover {
+    transform: translateY(-5px);
+}
+
+.serviceNodeIr {
+    top: -16%;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.serviceNodeIr:hover,
+.serviceNodePr:hover {
+    transform: translate(-50%, -5px);
+}
+
+.serviceNodeVideo {
+    top: auto;
+    right: 0;
+    bottom: 23%;
+    left: auto;
+    transform: none;
+}
+
+.serviceNodeWebsite {
+    top: auto;
+    right: auto;
+    bottom: 23%;
+    left: 0;
+    transform: none;
+}
+
+.serviceNodePortrait {
+    top: auto;
+    right: auto;
+    bottom: -16%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.serviceNodePr {
+    top: 23%;
+    right: 0;
+    bottom: auto;
+    left: auto;
+    transform: none;
+}
+
+.serviceNodeIr:hover,
+.serviceNodePortrait:hover {
+    transform: translate(-50%, -5px);
+}
+
+.serviceNodePr:hover,
+.serviceNodeVideo:hover {
+    transform: translateY(-5px);
+}
+
+@media (max-width: 1000px) {
+    .serviceOverview {
+        min-height: 100svh;
+        height: auto;
+        padding: 84px 24px 52px;
+    }
+
+    .serviceOverviewContent {
+        display: grid;
+        width: min(100%, 860px);
+        height: auto;
+        min-height: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .serviceOrbitCenter {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 220px;
+        height: 220px;
+        aspect-ratio: auto;
+        grid-column: 1 / -1;
+        justify-self: center;
+        transform: none;
+    }
+
+    .serviceOrbitCenter::before {
+        mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+    }
+
+    .serviceOrbitLogo {
+        width: 136px;
+        max-height: 100px;
+    }
+
+    .serviceOverviewTitle {
+        font-size: 25px;
+    }
+
+    .serviceOrbitNodes {
+        display: contents;
+    }
+
+    .serviceOrbitNode,
+    .serviceNodeIpo,
+    .serviceNodeIr,
+    .serviceNodeVideo,
+    .serviceNodeWebsite,
+    .serviceNodePortrait,
+    .serviceNodePr {
+        position: relative;
+        inset: auto;
+        width: auto;
+        min-height: 124px;
+        padding: 15px;
+        transform: none;
+    }
+
+    .serviceOrbitNode:hover,
+    .serviceNodeIpo:hover,
+    .serviceNodeIr:hover,
+    .serviceNodePr:hover {
+        transform: translateY(-3px);
+    }
+
+    .serviceOrbitIcon {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+        border-width: 4px;
+    }
+
+    .serviceOrbitIcon[style*="--service-icon-mask"]::after {
+        width: 34px;
+        height: 34px;
+    }
+
+    .serviceOrbitText strong {
+        font-size: clamp(13px, 2vw, 17px);
+    }
+
+    .serviceOrbitDescription {
+        font-size: 11px;
+        -webkit-line-clamp: 3;
+    }
+
+    .serviceOverviewCopy {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        grid-column: 1 / -1;
+        max-width: 700px;
+        margin: 8px auto 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .serviceOverview {
+        padding: 76px 18px 48px;
+    }
+
+    .serviceOverviewContent {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .serviceOrbitCenter {
+        width: 100%;
+        height: auto;
+        padding: 0;
+        margin-bottom: 4px;
+        grid-column: 1;
+    }
+
+    .serviceOrbitCenter::before {
+        display: none;
+    }
+
+    .serviceOrbitLogo {
+        display: none;
+    }
+
+    .serviceOverviewTitle {
+        font-size: clamp(36px, 9vw, 48px);
+    }
+
+    .serviceOrbitNode,
+    .serviceNodeIpo,
+    .serviceNodeIr,
+    .serviceNodeVideo,
+    .serviceNodeWebsite,
+    .serviceNodePortrait,
+    .serviceNodePr {
+        min-height: 102px;
+        padding: 13px 16px;
+        border-radius: 28px;
+        gap: 14px;
+    }
+
+    .serviceOrbitIcon {
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+    }
+
+    .serviceOrbitIcon[style*="--service-icon-mask"]::after {
+        width: 30px;
+        height: 30px;
+    }
+
+    .serviceOrbitDescription {
+        -webkit-line-clamp: 2;
+    }
+
+    .serviceOverviewCopy {
+        grid-column: 1;
+        font-size: 12px;
     }
 }
 

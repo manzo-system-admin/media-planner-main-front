@@ -34,6 +34,14 @@ const orbitPositions: Record<string, string> = {
 };
 
 const cardDisplayOrder = ["ipo", "website", "pr", "video", "ir", "portrait"];
+const serviceAccents: Record<string, string> = {
+  ipo: "#16B5C1",
+  ir: "#79BE28",
+  pr: "#F66A00",
+  video: "#EB1738",
+  website: "#087BD1",
+  portrait: "#823BC2",
+};
 
 function getServiceKey(service: Service): keyof typeof serviceIcons | null {
   const identity = `${service.slug} ${service.title}`.toLowerCase();
@@ -109,7 +117,7 @@ export default async function ServicesPage({
           <div className={styles.orbitCenter} data-reveal data-reveal-repeat>
             <Image src="/images/MediaPlanner3.png" alt="" aria-hidden="true" width={546} height={328} />
           </div>
-          <nav className={styles.orbitNodes} aria-label={services.listTitle}>
+          {/* <nav className={styles.orbitNodes} aria-label={services.listTitle}>
             {orbitServices.map((service, index) => {
               const key = getServiceKey(service);
               const position = key ? orbitPositions[key] : [styles.orbitTop, styles.orbitLeftTop, styles.orbitRightTop, styles.orbitLeftBottom, styles.orbitRightBottom, styles.orbitBottom][index];
@@ -121,13 +129,19 @@ export default async function ServicesPage({
                   className={`${styles.orbitNode} ${position}`}
                   data-reveal
                   data-reveal-repeat
+                  style={{ "--service-accent": serviceAccents[key ?? ""] ?? "#79BE28" } as CSSProperties}
                 >
-                  <span className={styles.orbitIcon}><Image src={icon} alt="" aria-hidden="true" width={30} height={30} /></span>
+                  <span
+                    className={styles.orbitIcon}
+                    style={{ "--service-icon-mask": `url("${icon}")` } as CSSProperties}
+                  >
+                    <Image src={icon} alt="" aria-hidden="true" width={30} height={30} />
+                  </span>
                   <span className={styles.orbitText}><strong>{service.title}</strong><span>{serviceCopy(service)}</span></span>
                 </Link>
               );
             })}
-          </nav>
+          </nav> */}
         </div>
       </section>
 
@@ -147,10 +161,18 @@ export default async function ServicesPage({
                   className={styles.serviceCard}
                   data-reveal
                   data-reveal-repeat
-                  style={{ "--card-index": index } as CSSProperties}
+                  style={{
+                    "--card-index": index,
+                    "--service-accent": "#A2C443",
+                  } as CSSProperties}
                 >
                   <span className={styles.cardHeader}>
-                    <span className={styles.cardIcon}><Image src={icon} alt="" aria-hidden="true" width={30} height={30} /></span>
+                    <span
+                      className={styles.cardIcon}
+                      style={{ "--service-icon-mask": `url("${icon}")` } as CSSProperties}
+                    >
+                      <Image src={icon} alt="" aria-hidden="true" width={30} height={30} />
+                    </span>
                     <strong>{service.title}</strong>
                     <span className={styles.cardLink}>
                       {services.viewDetailLink}

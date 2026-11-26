@@ -28,7 +28,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 8, 13, .8);
+  background: rgba(0, 0, 0, .9);
 }
 
 .arrow {

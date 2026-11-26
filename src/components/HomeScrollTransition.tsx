@@ -23,6 +23,13 @@ export default function HomeScrollTransition() {
     };
 
     const currentSectionIndex = () => {
+      const visibleTop = window.scrollY + (header?.getBoundingClientRect().height ?? 0) + 1;
+      const sectionUnderViewportTop = sections.findIndex((section) => {
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        return visibleTop >= top && visibleTop < top + section.offsetHeight;
+      });
+      if (sectionUnderViewportTop >= 0) return sectionUnderViewportTop;
+
       let closestIndex = 0;
       let closestDistance = Number.POSITIVE_INFINITY;
       sections.forEach((section, index) => {
@@ -37,9 +44,23 @@ export default function HomeScrollTransition() {
 
     const canAdvance = (direction: -1 | 1, index: number) => {
       if (index < 0 || index >= sections.length) return false;
+      const section = sections[index];
+      const headerOffset = header?.getBoundingClientRect().height ?? 0;
+      const availableHeight = Math.max(1, window.innerHeight - headerOffset);
+      const sectionStart = snapTop(section);
+
+      // Keep the section-by-section lock for viewport-sized sections. If a
+      // responsive layout makes a section taller than the visible area, let
+      // the browser scroll through its content before snapping onward.
+      if (section.offsetHeight > availableHeight + 24) {
+        const lastScrollPosition = sectionStart + section.offsetHeight - availableHeight;
+        if (direction > 0 && window.scrollY < lastScrollPosition - 24) return false;
+        if (direction < 0 && window.scrollY > sectionStart + 24) return false;
+      }
+
       // Let the final, tall gallery scroll naturally once its top has passed.
       if (index === sections.length - 1 && direction > 0) return false;
-      if (index === sections.length - 1 && direction < 0 && window.scrollY > snapTop(sections[index]) + 96) return false;
+      if (index === sections.length - 1 && direction < 0 && window.scrollY > sectionStart + 96) return false;
       return true;
     };
 

@@ -12,6 +12,7 @@ import ServiceIcon from "@/components/ServiceIcon";
 import HeroCarousel from "@/components/HeroCarousel";
 import HomeScrollTransition from "@/components/HomeScrollTransition";
 import { getHeroSlides } from "@/lib/cms/homepage";
+import type { CSSProperties } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,15 @@ const HOME_SERVICE_POSITIONS: Record<string, string> = {
   "website-service": styles.serviceNodeWebsite,
   "portrait-photography": styles.serviceNodePortrait,
   "pr-consultant": styles.serviceNodePr,
+};
+
+const HOME_SERVICE_ACCENTS: Record<string, string> = {
+  "ipo-service": "#16B5C1",
+  "ir-services": "#79BE28",
+  "vdo-corporate": "#EB1738",
+  "website-service": "#087BD1",
+  "portrait-photography": "#A855F7",
+  "pr-consultant": "#F66A00",
 };
 
 export default async function HomePage({
@@ -158,8 +168,12 @@ export default async function HomePage({
                   key={service.slug}
                   className={`${styles.serviceOrbitNode} ${HOME_SERVICE_POSITIONS[slug] ?? ""}`}
                   href={`/${locale}/services/${service.slug}`}
+                  style={{ "--service-accent": HOME_SERVICE_ACCENTS[slug] ?? "#79BE28" } as CSSProperties}
                 >
-                  <span className={styles.serviceOrbitIcon}>
+                  <span
+                    className={styles.serviceOrbitIcon}
+                    style={iconSrc ? { "--service-icon-mask": `url("${iconSrc}")` } as CSSProperties : undefined}
+                  >
                     {iconSrc ? (
                       <Image
                         src={iconSrc}
@@ -172,16 +186,18 @@ export default async function HomePage({
                       <ServiceIcon
                         icon={service.icon}
                         gradient={service.gradient}
-                        size={28}
+                        size={30}
                       />
                     )}
                   </span>
-                  <span>{service.title}</span>
+                  <span className={styles.serviceOrbitText}>
+                    <strong>{service.title}</strong>
+                    <span className={styles.serviceOrbitDescription}>{service.summary}</span>
+                  </span>
                 </Link>
               );
             })}
           </nav>
-          <p className={styles.serviceOverviewCopy}>{home.subtitle}</p>
         </div>
       </section>
       {teamGallery.length > 0 && (

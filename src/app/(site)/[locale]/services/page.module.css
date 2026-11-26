@@ -18,78 +18,56 @@
 .pageHeading h1 { margin: 0; color: rgba(242, 246, 243, .56); font: 600 clamp(34px, 4vw, 56px)/1.15 var(--font-heading); letter-spacing: .03em; }
 
 .overview { width: 100%; padding: 18px 24px 48px; }
-.diagram { position: relative; width: min(100%, 1080px); height: clamp(560px, 55vw, 680px); margin: 0 auto; }
+.diagram { position: relative; display: flex; width: min(100%, 1200px); height: auto; flex-direction: column; gap: 28px; margin: 0 auto; }
 .orbitRing {
-  position: absolute;
-  top: 50%; left: 50%;
-  width: clamp(285px, 30vw, 370px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: conic-gradient(from -30deg,
-    #9fc63e 0deg 48deg, transparent 48deg 60deg,
-    #7fb43c 60deg 108deg, transparent 108deg 120deg,
-    #9fc63e 120deg 168deg, transparent 168deg 180deg,
-    #7fb43c 180deg 228deg, transparent 228deg 240deg,
-    #9fc63e 240deg 288deg, transparent 288deg 300deg,
-    #7fb43c 300deg 348deg, transparent 348deg 360deg);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 17px), #000 calc(100% - 16px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 17px), #000 calc(100% - 16px));
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 20px rgba(157, 199, 60, .12));
+  display: none;
 }
 .orbitCenter {
-  position: absolute;
+  position: relative;
   z-index: 1;
-  top: 50%; left: 50%;
   display: flex;
-  width: 300px;
-  min-height: 300px;
+  width: 100%;
+  min-height: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 10px 0 0;
   text-align: center;
-  transform: translate(-50%, -50%);
 }
-.orbitCenter img { width: 348px; height: 216px; object-fit: contain; filter: drop-shadow(0 8px 22px rgba(86, 171, 62, .18)); }
+.orbitCenter img { width: min(1120px, 96vw); height: auto; max-height: 560px; object-fit: contain; filter: drop-shadow(0 8px 22px rgba(86, 171, 62, .18)); }
 .orbitCenter h2 { margin: 4px 0 0; color: var(--service-accent); font: 700 clamp(24px, 2.7vw, 34px)/1.2 var(--font-heading); letter-spacing: .04em; }
-.orbitNodes { position: absolute; inset: 0; }
+.orbitNodes { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .orbitNode {
-  position: absolute;
   box-sizing: border-box;
   display: flex;
-  width: min(33%, 350px);
-  min-height: 122px;
+  width: 100%;
+  min-height: 132px;
   align-items: center;
   gap: 17px;
   padding: 16px 20px;
-  border: 1px solid rgba(255, 255, 255, .7);
+  border: 1px solid color-mix(in srgb, var(--service-accent) 35%, #fff);
   border-radius: 27px;
   color: #18221c;
   background: rgba(250, 251, 248, .96);
-  box-shadow: 7px 0 0 rgba(110, 167, 49, .95), 0 14px 35px rgba(0, 0, 0, .18);
+  box-shadow: 7px 0 0 var(--service-accent), 0 14px 35px rgba(0, 0, 0, .18);
   text-align: left;
   transition: opacity 650ms cubic-bezier(.2, .7, .2, 1), transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
 }
 .orbitNode:hover { z-index: 2; transform: translateY(-5px); background: #fff; box-shadow: 9px 0 0 var(--service-accent), 0 20px 42px rgba(0, 0, 0, .3); }
-.orbitIcon { box-sizing: border-box; display: grid; width: 66px; height: 66px; flex: 0 0 66px; place-items: center; border: 4px solid var(--service-accent); border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px rgba(162, 196, 67, .1); }
-.orbitIcon img { width: 30px; height: 30px; object-fit: contain; filter: brightness(0) saturate(100%) invert(72%) sepia(38%) saturate(612%) hue-rotate(31deg) brightness(91%) contrast(88%); }
+.orbitIcon { position: relative; box-sizing: border-box; display: grid; width: 66px; height: 66px; flex: 0 0 66px; place-items: center; border: 4px solid var(--service-accent); border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px color-mix(in srgb, var(--service-accent) 12%, transparent); }
+.orbitIcon img { width: 30px; height: 30px; object-fit: contain; opacity: 0; }
+.orbitIcon::after, .cardIcon::after { position: absolute; inset: 0; width: 30px; height: 30px; margin: auto; background: var(--service-accent); content: ""; mask: var(--service-icon-mask) center / contain no-repeat; -webkit-mask: var(--service-icon-mask) center / contain no-repeat; }
 .orbitText { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
-.orbitText strong { color: #5b992f; font: 700 clamp(17px, 1.6vw, 22px)/1.15 var(--font-heading); }
+.orbitText strong { color: color-mix(in srgb, var(--service-accent) 82%, #1c281c); font: 700 clamp(17px, 1.6vw, 22px)/1.15 var(--font-heading); }
 .orbitText > span { display: -webkit-box; overflow: hidden; color: #64756d; font: 400 12px/1.5 var(--font-body); -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
-.orbitTop { top: 0; left: 50%; transform: translateX(-50%); }
-.orbitTop:hover { transform: translate(-50%, -5px); }
-.orbitLeftTop { top: 23%; left: 0; }
-.orbitRightTop { top: 23%; right: 0; }
-.orbitLeftBottom { top: 56%; left: 0; }
-.orbitRightBottom { top: 56%; right: 0; }
-.orbitBottom { bottom: 0; left: 50%; transform: translateX(-50%); }
-.orbitBottom:hover { transform: translate(-50%, -5px); }
+.orbitTop, .orbitLeftTop, .orbitRightTop, .orbitLeftBottom, .orbitRightBottom, .orbitBottom { position: relative; inset: auto; transform: none; }
 
 .list { position: relative; width: min(100% - 56px, 1040px); margin: 0 auto; padding: 48px 0 32px; border-top: 1px solid rgba(238, 243, 239, .2); }
-.list::after { position: absolute; top: 128px; bottom: 30px; left: 50%; width: 1px; background: rgba(238, 243, 239, .12); content: ""; pointer-events: none; }
+.list::after { display: none; }
 .listHeading { margin: 0 auto 30px; text-align: center; }
 .listHeading h2 { margin: 0; color: transparent; background: var(--brand-text-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font: 700 clamp(34px, 4.1vw, 54px)/1.2 var(--font-heading); letter-spacing: .02em; }
-.serviceGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 30px; }
+.serviceGrid { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 30px; }
+.serviceGrid::before { position: absolute; z-index: 0; top: 0; bottom: 0; left: 50%; width: 1px; background: rgba(238, 243, 239, .12); content: ""; pointer-events: none; }
 .serviceCard {
   box-sizing: border-box;
   min-height: 154px;
@@ -101,20 +79,20 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 12px 30px rgba(0, 0, 0, .16);
   transition: opacity 650ms cubic-bezier(.2, .7, .2, 1), transform 260ms ease, border-color 260ms ease, background 260ms ease, box-shadow 260ms ease, color 260ms ease;
 }
-.serviceCard:hover { transform: translateY(-3px); border-color: transparent; color: #fff; background: var(--brand-gradient); box-shadow: 0 18px 38px rgba(0, 0, 0, .28); }
+.serviceCard:hover { transform: translateY(-3px); border-color: transparent; color: #fff; background: var(--brand-gradient); box-shadow: 0 18px 38px rgba(64, 157, 72, .28); }
 .cardHeader { display: flex; min-height: 48px; align-items: center; gap: 12px; }
-.cardIcon { box-sizing: border-box; display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border: 1px solid rgba(255, 255, 255, .24); border-radius: 16px; background: rgba(255, 255, 255, .12); transition: border-color 260ms ease, background-color 260ms ease; }
-.cardIcon img { width: 27px; height: 27px; object-fit: contain; transition: filter 260ms ease; }
+.cardIcon { position: relative; box-sizing: border-box; display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border: 1px solid rgba(255, 255, 255, .24); border-radius: 16px; background: rgba(255, 255, 255, .12); transition: border-color 260ms ease, background-color 260ms ease; }
+.cardIcon img { width: 27px; height: 27px; object-fit: contain; opacity: 0; }
 .cardHeader strong { min-width: 0; color: #f6f8f5; font: 600 clamp(17px, 1.6vw, 22px)/1.2 var(--font-heading); transition: color 260ms ease; }
 .cardLink { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; margin-left: auto; padding: 4px 0; border-radius: 999px; color: #e1e8df; font: 500 11px/1.4 var(--font-heading); white-space: nowrap; transition: color 260ms ease, background-color 260ms ease, padding 260ms ease; }
-.cardArrow { display: inline-flex; width: 14px; height: 14px; flex: 0 0 14px; align-items: center; justify-content: center; color: #a2c443; transition: transform 180ms ease; }
+.cardArrow { display: inline-flex; width: 14px; height: 14px; flex: 0 0 14px; align-items: center; justify-content: center; color: var(--service-accent, #a2c443); transition: transform 180ms ease; }
 .cardArrow svg { display: block; width: 14px; height: 14px; overflow: visible; }
 .cardArrow path { fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
 .serviceCard:hover .cardArrow { transform: translateX(3px); }
-.cardDescription { display: -webkit-box; overflow: hidden; margin-top: 10px; color: #b6beb9; font: 400 10.5px/1.5 var(--font-body); -webkit-box-orient: vertical; -webkit-line-clamp: 4; transition: color 260ms ease; }
+.cardDescription { display: -webkit-box; overflow: hidden; margin-top: 10px; color: #b6beb9; font: 400 14px/1.6 var(--font-body); -webkit-box-orient: vertical; -webkit-line-clamp: 4; transition: color 260ms ease; }
 .serviceCard:hover .cardHeader strong, .serviceCard:hover .cardDescription { color: #fff; }
 .serviceCard:hover .cardIcon { border-color: #070907; background: #070907; }
-.serviceCard:hover .cardIcon img { filter: brightness(0) saturate(100%) invert(82%) sepia(40%) saturate(578%) hue-rotate(21deg) brightness(94%) contrast(91%); }
+.serviceCard:hover .cardIcon::after { background: var(--brand-green-light, #a2c443); }
 .serviceCard:hover .cardLink { padding-inline: 9px; color: #fff; background: rgba(7, 9, 7, .88); }
 .emptyState { padding: 30px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 20px; color: #b6beb9; text-align: center; }
 .closing { width: min(100% - 40px, 800px); margin: 0 auto; padding: 34px 0 76px; color: #aeb9b3; font: 300 clamp(15px, 1.4vw, 19px)/1.8 var(--font-body); text-align: center; white-space: pre-line; }
@@ -142,14 +120,11 @@
 
 @media (max-width: 960px) {
   .pageHeading { width: min(100% - 48px, 760px); }
-  .diagram { display: grid; width: min(100%, 760px); height: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-  .orbitRing { display: none; }
-  .orbitCenter { position: static; width: 100%; min-height: 0; grid-column: 1 / -1; grid-row: 1; transform: none; padding: 18px 0 14px; }
-  .orbitCenter img { width: clamp(150px, 28vw, 220px); height: auto; }
+  .diagram { width: min(100%, 820px); gap: 24px; }
+  .orbitNodes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .orbitCenter { padding: 0; }
+  .orbitCenter img { width: min(760px, 82vw); max-height: 400px; }
   .orbitCenter h2 { font-size: clamp(25px, 4vw, 34px); }
-  .orbitNodes { position: static; display: contents; }
-  .orbitNode, .orbitTop, .orbitLeftTop, .orbitRightTop, .orbitLeftBottom, .orbitRightBottom, .orbitBottom { position: static; width: auto; min-height: 124px; transform: none; }
-  .orbitNode:hover, .orbitTop:hover, .orbitBottom:hover { transform: translateY(-4px); }
   .overview { padding-top: 8px; }
 }
 
@@ -158,17 +133,18 @@
   .breadcrumb { margin-bottom: 8px; font-size: 12px; }
   .pageHeading h1 { font-size: clamp(30px, 8vw, 40px); }
   .overview { padding: 8px 20px 34px; }
-  .diagram { width: 100%; grid-template-columns: minmax(0, 1fr); gap: 13px; }
-  .orbitCenter { padding: 12px 0 18px; }
-  .orbitCenter img { width: 165px; }
+  .diagram { width: 100%; gap: 18px; }
+  .orbitNodes { grid-template-columns: minmax(0, 1fr); gap: 13px; }
+  .orbitCenter { padding: 0; }
+  .orbitCenter img { width: min(340px, 88vw); max-height: none; }
   .orbitCenter h2 { font-size: 27px; }
-  .orbitNode, .orbitTop, .orbitLeftTop, .orbitRightTop, .orbitLeftBottom, .orbitRightBottom, .orbitBottom { min-height: 108px; padding: 14px 16px; border-radius: 22px; }
+  .orbitNode { min-height: 108px; padding: 14px 16px; border-radius: 22px; }
   .orbitIcon { width: 56px; height: 56px; flex-basis: 56px; border-width: 3px; }
   .orbitIcon img { width: 26px; height: 26px; }
   .orbitText strong { font-size: 18px; }
   .orbitText > span { font-size: 12px; }
   .list { width: calc(100% - 40px); padding: 34px 0 18px; }
-  .list::after { display: none; }
+  .list::after, .serviceGrid::before { display: none; }
   .listHeading { margin-bottom: 21px; }
   .listHeading h2 { font-size: clamp(29px, 7vw, 38px); }
   .serviceGrid { grid-template-columns: minmax(0, 1fr); gap: 13px; }
@@ -178,7 +154,7 @@
   .cardIcon img { width: 27px; height: 27px; }
   .cardHeader strong { font-size: 17px; }
   .cardLink { gap: 4px; font-size: 9px; }
-  .cardDescription { margin-top: 12px; font-size: 12px; }
+  .cardDescription { margin-top: 12px; font-size: 13px; line-height: 1.6; }
   .closing { width: calc(100% - 40px); padding: 26px 0 62px; font-size: 13px; }
 }
 
