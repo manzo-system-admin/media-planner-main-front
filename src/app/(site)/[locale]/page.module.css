@@ -148,11 +148,9 @@
     width: calc(100% + 8vw);
     height: 80px;
     margin: 38px -4vw 0;
-    border-top: 1px solid #ffffff45;
-    border-bottom: 1px solid #ffffff38;
-    background: rgba(205, 212, 213, .24);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    border-top: 1px solid rgba(255, 255, 255, .72);
+    border-bottom: 1px solid rgba(255, 255, 255, .72);
+    background: #fff;
 }
 
 .clients {
@@ -209,8 +207,15 @@
 }
 
 .clientLogo:hover {
-    opacity: 1;
-    filter: none;
+    opacity: .82;
+    filter: grayscale(1);
+}
+
+.clientLogo:focus-visible {
+    opacity: .82;
+    filter: grayscale(1);
+    outline: 2px solid var(--brand-green-light);
+    outline-offset: 2px;
 }
 
 .portfolioIntro {

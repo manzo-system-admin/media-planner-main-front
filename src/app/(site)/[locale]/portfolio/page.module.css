@@ -350,26 +350,25 @@
   gap: 10px 20px;
   min-height: 550px;
   padding: 32px clamp(24px, 4vw, 48px);
-  border: 1px solid rgba(255, 255, 255, .2);
+  border: 1px solid rgba(255, 255, 255, .72);
   border-radius: 38px;
-  background: linear-gradient(135deg, rgba(235, 235, 235, .24), rgba(255, 255, 255, .19));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
-  backdrop-filter: blur(18px);
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
 }
 .clientLogo {
   --client-logo-image-max-width: min(100%, 148px);
   --client-logo-image-max-height: 76px;
   height: clamp(68px, 6vw, 92px);
   border-radius: 8px;
-  filter: grayscale(1);
-  opacity: .78;
+  filter: grayscale(0);
+  opacity: 1;
   transition: filter .28s ease, opacity .28s ease, transform .28s ease;
 }
 .clientLogo:hover,
 .clientLogo:focus-visible {
-  filter: grayscale(0);
-  opacity: 1;
-  transform: scale(1.06);
+  filter: grayscale(1);
+  opacity: .82;
+  transform: scale(.97);
 }
 .clientLogo:focus-visible { outline: 2px solid var(--brand-green-light); outline-offset: 2px; }
 @media (max-width: 900px) {

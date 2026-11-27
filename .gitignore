@@ -47,5 +47,6 @@ next-env.d.ts
 
 # local build and working artifacts
 /tmp/
+/logo-review/
 /.codex-finalizer/
 /manual-server*.log
